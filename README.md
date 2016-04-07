@@ -1,0 +1,2 @@
+# DDDCloudManager
+Metas dirbti
