@@ -1,0 +1,4 @@
+rootProject.name = 'debeselis'
+include 'web'
+include 'core'
+

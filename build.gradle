@@ -1,0 +1,76 @@
+group 'lt.milkusteam.cloud'
+version '1.0-SNAPSHOT'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile 'org.slf4j:slf4j-api:1.7.13'
+        compile 'org.slf4j:slf4j-simple:1.7.13'
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+        testCompile 'org.springframework:spring-test:4.2.4.RELEASE'
+        testCompile 'org.hamcrest:hamcrest-all:1.3'
+    }
+
+    tasks.withType(Test) {
+        // Add default Spring profile for all tests
+         systemProperty "spring.profiles.active", "test"
+        // Print to console all the test which were started, passed, failed or were skipped
+        testLogging {
+            events 'started', 'passed', 'failed', 'skipped'
+        }
+    }
+
+    sourceSets {
+        integrationTest {
+            java {
+                compileClasspath += main.output + test.output
+                runtimeClasspath += main.output + test.output
+                srcDir file('src/integrationTest/java')
+            }
+            resources.srcDir file('src/integrationTest/resources')
+        }
+    }
+
+    idea {
+        module {
+            testSourceDirs += file('src/integrationTest/java')
+            scopes.TEST.plus += [ configurations.integrationTestCompile ]
+        }
+    }
+
+    task testJar(type: Jar, dependsOn: testClasses) {
+        baseName = "test-${project.archivesBaseName}"
+        from sourceSets.test.output
+    }
+
+    configurations {
+        tests
+
+        integrationTestCompile.extendsFrom testCompile
+        integrationTestRuntime.extendsFrom testRuntime
+    }
+
+    artifacts {
+        tests testJar
+    }
+
+    task integrationTests(type: Test) {
+        testClassesDir = sourceSets.integrationTest.output.classesDir
+        classpath = sourceSets.integrationTest.runtimeClasspath
+    }
+
+    check.dependsOn integrationTests
+    integrationTests.mustRunAfter test
+}
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}

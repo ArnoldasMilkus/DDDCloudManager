@@ -1,0 +1,21 @@
+group 'lt.milkusteam.cloud'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'war'
+
+war {
+    archiveName 'debeselis.war'
+    destinationDir = file('../build')
+}
+
+dependencies {
+    compile project(':core')
+    compile 'org.springframework:spring-webmvc:4.2.5.RELEASE'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'javax.servlet:jstl:1.2'
+    compile 'org.springframework.security:spring-security-web:4.0.4.RELEASE'
+    compile 'org.springframework.security:spring-security-config:4.0.4.RELEASE'
+    compile 'org.springframework.security:spring-security-taglibs:4.0.4.RELEASE'
+    testCompile project(path: ':core', configuration: 'tests')
+    testCompile 'org.springframework.security:spring-security-test:4.0.4.RELEASE'
+}
