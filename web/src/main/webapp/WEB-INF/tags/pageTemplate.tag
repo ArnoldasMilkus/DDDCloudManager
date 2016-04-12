@@ -27,6 +27,29 @@
     <sec:authorize access="isAuthenticated()">
         <c:set var="username" value="${user.username}"/>
     </sec:authorize>
+
+
+    <script type="text/javascript">
+        $(function(){
+            function stripTrailingSlash(str) {
+                if(str.substr(-1) == '/') {
+                    return str.substr(0, str.length - 1);
+                }
+                return str;
+            }
+
+            var url = window.location.pathname;
+            var activePage = stripTrailingSlash(url);
+
+            $('.nav li a').each(function(){
+                var currentPage = stripTrailingSlash($(this).attr('href'));
+
+                if (activePage == currentPage) {
+                    $(this).parent().addClass('active');
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -41,7 +64,7 @@
                 </h1>
             </div>
             <ul class="nav nav-tabs">
-                <li class="active">
+                <li>
                     <a href="/"><spring:message code="template.home"/></a>
                 </li>
                 <li>

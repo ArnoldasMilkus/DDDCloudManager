@@ -44,7 +44,7 @@ public class UserServiceTest {
     }
 
     public List<User> getMockAllUsersList() {
-        List<User> result = new ArrayList<>();
+        List<User> result = new ArrayList<User>();
         result.add(new User("JohnD1999", "bravo@email.com", "ThisIsPassword123"));
         result.add(new User("JaneD2000", "unknown@email.com", "password"));
         return result;
