@@ -1,2 +1,2 @@
 # DDDCloudManager
-Metas dirbti
+Darbas verda
