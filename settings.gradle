@@ -1,4 +1,4 @@
-rootProject.name = 'debeselis'
+rootProject.name = 'DDDCloudManager'
 include 'web'
 include 'core'
 
