@@ -6,11 +6,11 @@
     <html>
     <head>
         <style>
-            #login-form{
+            #login-form {
                 width: 300px;
                 padding: 20px;
                 margin: 100px auto;
-                background: #fff;
+                /*background: #4c74ff;*/
             }
         </style>
     </head>
@@ -36,12 +36,8 @@
                     <td><spring:message code="login.password" /></td>
                     <td><input type="password" name="password"/></td>
                 </tr>
-                <tr>
-                    <td>
-                        <input name="submit" type="submit" value=<spring:message code="login.submit"/> />
-                    </td>
-                </tr>
             </table>
+            <input type="submit" style="height:30px; width:245px" value=<spring:message code="login.submit"/> />
 
             <input type="hidden"
                    name="${_csrf.parameterName}" value="${_csrf.token}"/>
