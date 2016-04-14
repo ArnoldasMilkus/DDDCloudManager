@@ -10,6 +10,9 @@ html {
       -ms-text-size-adjust: 100%;
 }
 body {
+  background: url(/resources/cloud.png);
+  background-position: center top;
+  background-size: 100% auto;
   margin: 0;
 }
 article,

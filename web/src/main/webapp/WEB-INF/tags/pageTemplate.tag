@@ -11,7 +11,7 @@
     <meta name="author" content="Some guys">
     <link rel="icon" type="image/png" href="/resources/favicon.png">
 
-    <link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
+    <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/resources/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
 
@@ -28,6 +28,11 @@
         <c:set var="username" value="${user.username}"/>
     </sec:authorize>
 
+    <script>
+        function confirmationRequest() {
+            confirm("english motherfucker!");
+        }
+    </script>
 
     <script type="text/javascript">
         $(function(){
@@ -59,11 +64,11 @@
         </div>
         <div class="col-md-8">
             <div class="page-header">
-                <h1>
-                    <spring:message code="template.header"/>
+                <h1 style="font-family:'Comic Sans MS';">
+                        <spring:message code="template.header"/>
                 </h1>
             </div>
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-pills">
                 <li>
                     <a href="/"><spring:message code="template.home"/></a>
                 </li>
@@ -75,8 +80,8 @@
                         <a href="/settings"><spring:message code="template.settings"/></a>
                     </li>
                 </c:if>
-                <li class="disabled">
-                    <a href="#"><spring:message code="template.about"/></a>
+                <li>
+                    <a href="/about"><spring:message code="template.about"/></a>
                 </li>
                 <li class="dropdown pull-right">
                     <a href="#" data-toggle="dropdown" class="dropdown-toggle">
@@ -94,7 +99,7 @@
                 <li class="pull-right">
                     <c:choose>
                         <c:when test="${!empty username}">
-                            <a href="/logout"><spring:message code="template.logout"/></a>
+                            <a href="/logout" onclick="return confirm('Are you sure?');"><spring:message code="template.logout"/></a>
                         </c:when>
                         <c:otherwise>
                             <a href="/login"><spring:message code="template.login"/></a>
