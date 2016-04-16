@@ -1,6 +1,5 @@
 package lt.milkusteam.cloud.web;
 
-import lt.milkusteam.cloud.web.TestWebConfiguration;
 import lt.milkusteam.cloud.web.config.SecurityConfiguration;
 import org.junit.Before;
 import org.junit.runner.RunWith;

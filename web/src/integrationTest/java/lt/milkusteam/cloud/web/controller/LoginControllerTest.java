@@ -51,11 +51,6 @@ public class LoginControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testUnsuccessfulLogin() throws Exception {
-//        RequestBuilder builder = post("/login").with(csrf())
-//                .param("username", "user")
-//                .param("password", "invalid_password")
-//                .accept(MediaType.TEXT_HTML);
-
         mockMvc.perform(formLogin().password("invalid_password"))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())

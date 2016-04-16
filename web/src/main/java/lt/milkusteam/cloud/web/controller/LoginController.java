@@ -19,7 +19,6 @@ public class LoginController {
         @RequestParam(value = "error", required = false) String error,
         @RequestParam(value = "logout", required = false) String logout) {
 
-        // redirect to / if already logged in
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             return "redirect:/";
         }

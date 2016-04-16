@@ -23,11 +23,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findById(Integer id) {
-        return userRepository.findOne(id);
-    }
-
-    @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
