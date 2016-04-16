@@ -1,7 +1,7 @@
 package lt.milkusteam.cloud.core.service.impl;
 
+import lt.milkusteam.cloud.core.dao.UserDao;
 import lt.milkusteam.cloud.core.model.UserRole;
-import lt.milkusteam.cloud.core.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,13 +23,13 @@ import java.util.Set;
 public class SimpleUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserService userService;
+    private UserDao userDao;
 
 
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        lt.milkusteam.cloud.core.model.User user = userService.findByUsername(username);
+        lt.milkusteam.cloud.core.model.User user = userDao.findByUsername(username);
         List<GrantedAuthority> authorities = buildUserAuthority(user.getUserRole());
         return buildSpringUser(user, authorities);
     }
@@ -39,7 +39,7 @@ public class SimpleUserDetailsServiceImpl implements UserDetailsService {
     }
 
     public List<GrantedAuthority> buildUserAuthority(Set<UserRole> userRoles) {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         for (UserRole userRole : userRoles) {
             authorities.add(new SimpleGrantedAuthority(userRole.getRole()));
         }

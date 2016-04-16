@@ -4,13 +4,11 @@ import lt.milkusteam.cloud.core.model.UserRole;
 import lt.milkusteam.cloud.core.service.impl.SimpleUserDetailsServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;

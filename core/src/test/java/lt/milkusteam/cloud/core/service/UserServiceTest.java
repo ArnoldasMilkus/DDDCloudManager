@@ -1,8 +1,8 @@
 package lt.milkusteam.cloud.core.service;
 
+import lt.milkusteam.cloud.core.dao.UserDao;
 import lt.milkusteam.cloud.core.model.User;
 import lt.milkusteam.cloud.core.service.impl.UserServiceImpl;
-import lt.milkusteam.cloud.core.dao.UserDao;
 import org.junit.Before;
 import org.junit.Test;
 
