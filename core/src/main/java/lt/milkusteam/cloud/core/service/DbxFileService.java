@@ -4,6 +4,7 @@ package lt.milkusteam.cloud.core.service;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.Metadata;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -11,6 +12,7 @@ import java.util.List;
  */
 public interface DbxFileService {
     List<Metadata> getFiles(String username, String path);
-    boolean contains(String username);
+    boolean containsUser(String username);
     void addClient(String username);
+    void upload(String username, String path, InputStream fileStream);
 }

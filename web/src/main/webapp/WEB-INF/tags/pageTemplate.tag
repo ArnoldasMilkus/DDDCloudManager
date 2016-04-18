@@ -79,6 +79,9 @@
                     <li>
                         <a href="/settings"><spring:message code="template.settings"/></a>
                     </li>
+                    <li>
+                        <a href="/dbx/files?path=">Dbx</a>
+                    </li>
                 </c:if>
                 <li>
                     <a href="/about"><spring:message code="template.about"/></a>
