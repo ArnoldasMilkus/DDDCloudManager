@@ -15,7 +15,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
@@ -43,7 +42,20 @@ public class DbxFilesController {
             if (!dbxFileService.containsUser(username)) {
                 dbxFileService.addClient(username);
             }
+
+            // -------- temporary file/folder check -------------
+            boolean isFolder = path.isEmpty();
+            if (!path.isEmpty()) {
+                Metadata clickedFile = dbxFileService.getFileData(principal.getName(), path);
+                isFolder = clickedFile.toString().contains("folder");
+            }
+            if (!isFolder) {
+                path = path.substring(0, path.lastIndexOf("/"));
+            }
+            //----------------------------------------------------
+
             List<Metadata> files = dbxFileService.getFiles(username, path);
+
             model.addAttribute("files", files);
             isLinked = true;
         }
@@ -93,15 +105,6 @@ public class DbxFilesController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "redirect:/dbx/files?path=" + path;
-    }
-
-    @RequestMapping(value = "/download", method = RequestMethod.POST)
-    public String downloadFile(Principal principal, HttpServletResponse response,
-                               @RequestParam("path") String path) {
-        System.out.println("  ****** ****** ***** " + response == null);
-        System.out.println(response);
-
         return "redirect:/dbx/files?path=" + path;
     }
 }

@@ -45,6 +45,18 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
+    public Metadata getFileData(String username, String path) {
+        Metadata result = null;
+        DbxClientV2 client = clients.get(username);
+        try {
+            result = client.files().getMetadata(path);
+        } catch (DbxException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
     public boolean containsUser(String username) {
         return clients.containsKey(username);
     }
@@ -62,7 +74,6 @@ public class DbxFileServiceImpl implements DbxFileService {
         DbxClientV2 client = clients.get(username);
         try {
             Metadata uploadedFile = client.files().upload(path).uploadAndFinish(fileStream);
-            System.out.println("*** kelias = " + path);
             System.out.println("Uploaded file: " + uploadedFile);
         } catch (DbxException e) {
             e.printStackTrace();
