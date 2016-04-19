@@ -1,7 +1,6 @@
 package lt.milkusteam.cloud.core.service;
 
 
-import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.Metadata;
 
 import java.io.InputStream;

@@ -1,7 +1,6 @@
 package lt.milkusteam.cloud.core.dao.repository;
 
 import lt.milkusteam.cloud.core.model.DbxToken;
-import lt.milkusteam.cloud.core.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

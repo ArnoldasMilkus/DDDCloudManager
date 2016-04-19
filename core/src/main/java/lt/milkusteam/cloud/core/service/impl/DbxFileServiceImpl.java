@@ -1,13 +1,10 @@
 package lt.milkusteam.cloud.core.service.impl;
 
-import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.DbxDownloadStyleBuilder;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
-import com.dropbox.core.v2.files.UploadSessionStartUploader;
 import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.service.DbxFileService;
@@ -25,6 +22,7 @@ import java.util.Locale;
  * Created by gediminas on 4/17/16.
  */
 @Service
+
 public class DbxFileServiceImpl implements DbxFileService {
 
     HashMap<String, DbxClientV2> clients = new HashMap<>();

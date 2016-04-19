@@ -5,6 +5,8 @@ import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -15,12 +17,17 @@ import java.util.Map;
  * Created by gediminas on 4/18/16.
  */
 @Service
+@PropertySource("classpath:dropbox-app.properties")
 public class DbxAuthServiceImpl implements DbxAuthService {
-    private static final String IDENTIFIER = "DDD Cloud Manager";
-    private static final String KEY = "gcx6333853tq53z";
-    private static final String SECRET = "a09ge1pm1sru3ie";
-    private static final String REDIRECT_URI = "http://localhost:8080/dbx/auth-finish";
-    private static final DbxAppInfo APP_INFO = new DbxAppInfo(KEY, SECRET);
+    @Value("${identifier}")
+    private final String IDENTIFIER = "DDD Cloud Manager";
+    @Value("${key}")
+    private final String KEY = "gcx6333853tq53z";
+    @Value("${secret}")
+    private final String SECRET = "a09ge1pm1sru3ie";
+    @Value("${redirect-uri}")
+    private final String REDIRECT_URI = "http://localhost:8080/dbx/auth-finish";
+    private final DbxAppInfo APP_INFO = new DbxAppInfo(KEY, SECRET);
 
     @Autowired
     DbxTokenDao dbxTokenDao;
