@@ -66,7 +66,7 @@ public class DbxFilesController {
     }
 
     @RequestMapping(value = "/auth-start", method = RequestMethod.POST)
-    public String startDbxAuth(Model model, Principal principal) {
+    public String startDbxAuth(Principal principal) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
 
@@ -77,10 +77,9 @@ public class DbxFilesController {
     }
 
     @RequestMapping(value = "/auth-finish")
-    public String finishDbxAuth(Model model, Principal principal,
+    public String finishDbxAuth(Principal principal,
                                 @RequestParam("state") String state,
                                 @RequestParam("code") String code) {
-
         String redirUrl = dbxAuthService.finishAuth(principal.getName(), state, code);
 
         return "redirect:" + redirUrl;
@@ -102,6 +101,8 @@ public class DbxFilesController {
                              @RequestParam("file") MultipartFile file) {
         try {
             if (file.getSize() > 100_000_000) {
+                // TODO Exception?
+                //throw new RuntimeException("File size > 100_000_000 upload is not supported yet.");
                 System.err.println("File size > 100_000_000 upload is not supported yet.");
             } else {
                 dbxFileService.upload(principal.getName(), path + "/" + file.getOriginalFilename(), file.getInputStream());

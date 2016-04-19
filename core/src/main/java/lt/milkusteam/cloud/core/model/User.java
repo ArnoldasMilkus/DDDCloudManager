@@ -19,7 +19,7 @@ public class User {
     private String email;
     private String password;
     private boolean enabled;
-    private Set<UserRole> userRole = new HashSet<UserRole>(0);
+    private Set<UserRole> userRole = new HashSet<>(0);
 
     public User() {
     }

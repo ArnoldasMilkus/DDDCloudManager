@@ -22,13 +22,12 @@ import java.util.Locale;
  * Created by gediminas on 4/17/16.
  */
 @Service
-
 public class DbxFileServiceImpl implements DbxFileService {
 
-    HashMap<String, DbxClientV2> clients = new HashMap<>();
+    private HashMap<String, DbxClientV2> clients = new HashMap<>();
 
     @Autowired
-    DbxTokenDao dbxTokenDao;
+    private DbxTokenDao dbxTokenDao;
 
     @Override
     public List<Metadata> getFiles(String username, String path) {
@@ -37,6 +36,7 @@ public class DbxFileServiceImpl implements DbxFileService {
             ListFolderResult folderResult = clients.get(username).files().listFolder(path);
             result = folderResult.getEntries();
         } catch (DbxException e) {
+            // TODO Logger
             e.printStackTrace();
         }
         return result;

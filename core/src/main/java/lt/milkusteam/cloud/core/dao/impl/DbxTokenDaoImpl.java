@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DbxTokenDaoImpl implements DbxTokenDao {
     @Autowired
-    DbxTokenRepository dbxTokenRepository;
+    private DbxTokenRepository dbxTokenRepository;
 
     @Override
     public DbxToken findByUsername(String username) {

@@ -12,8 +12,8 @@ import javax.persistence.Table;
 @Table(name = "dbx_tokens")
 public class DbxToken {
 
-    String username;
-    String token;
+    private String username;
+    private String token;
 
     public DbxToken() {
     }
@@ -59,7 +59,6 @@ public class DbxToken {
 
         if (!username.equals(dbxToken.username)) return false;
         return token.equals(dbxToken.token);
-
     }
 
     @Override

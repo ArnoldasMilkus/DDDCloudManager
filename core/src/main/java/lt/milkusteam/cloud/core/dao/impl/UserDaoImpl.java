@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public List<User> findAll() {

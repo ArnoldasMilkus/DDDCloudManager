@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by gediminas on 4/18/16.
@@ -19,28 +20,33 @@ import java.util.Map;
 @Service
 @PropertySource("classpath:dropbox-app.properties")
 public class DbxAuthServiceImpl implements DbxAuthService {
+    private final static Logger LOG = Logger.getLogger("DbxAuthServiceImpl");
+
     @Value("${identifier}")
     private final String IDENTIFIER = "DDD Cloud Manager";
+
     @Value("${key}")
     private final String KEY = "gcx6333853tq53z";
+
     @Value("${secret}")
     private final String SECRET = "a09ge1pm1sru3ie";
+
     @Value("${redirect-uri}")
     private final String REDIRECT_URI = "http://localhost:8080/dbx/auth-finish";
+
     private final DbxAppInfo APP_INFO = new DbxAppInfo(KEY, SECRET);
 
     @Autowired
-    DbxTokenDao dbxTokenDao;
+    private DbxTokenDao dbxTokenDao;
 
-    HashMap<String, DbxWebAuth> activeWebAuths = new HashMap<>();
+    private HashMap<String, DbxWebAuth> activeWebAuths = new HashMap<>();
 
     @Override
     public String startAuth(String username, DbxSessionStore store) {
         DbxRequestConfig config = new DbxRequestConfig(IDENTIFIER, Locale.getDefault().toString());
         DbxWebAuth auth = new DbxWebAuth(config, APP_INFO, REDIRECT_URI, store);
         activeWebAuths.put(username, auth);
-        String authUrl = auth.start();
-        return authUrl;
+        return auth.start();
     }
 
     @Override
@@ -57,7 +63,8 @@ public class DbxAuthServiceImpl implements DbxAuthService {
             try {
                 authResult = webAuth.finish(params);
             } catch (Exception e) {
-                e.printStackTrace();
+                // ARBA http://www.mkyong.com/logging/log4j-hello-world-example/
+                LOG.severe(e.getMessage());
             }
 
             if (authResult != null) {
@@ -69,11 +76,9 @@ public class DbxAuthServiceImpl implements DbxAuthService {
         return result;
     }
 
-
     @Override
-    public String undoAuth(String username) {
+    public void undoAuth(String username) {
         dbxTokenDao.delete(username);
-        return "files?path=";
     }
 
     @Override
