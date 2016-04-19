@@ -57,8 +57,13 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public boolean containsUser(String username) {
+    public boolean containsClient(String username) {
         return clients.containsKey(username);
+    }
+
+    @Override
+    public void removeClient(String username) {
+        clients.remove(username);
     }
 
     @Override

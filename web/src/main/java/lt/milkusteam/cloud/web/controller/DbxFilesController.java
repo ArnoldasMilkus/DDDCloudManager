@@ -39,7 +39,7 @@ public class DbxFilesController {
         String username = principal.getName();
         boolean isLinked = false;
         if (dbxAuthService.isLinked(username)) {
-            if (!dbxFileService.containsUser(username)) {
+            if (!dbxFileService.containsClient(username)) {
                 dbxFileService.addClient(username);
             }
 
@@ -89,6 +89,10 @@ public class DbxFilesController {
     @RequestMapping(value = "/auth-clear", method = RequestMethod.POST)
     public String clearDbxAuth(Principal principal) {
         dbxAuthService.undoAuth(principal.getName());
+        if (dbxFileService.containsClient(principal.getName())) {
+            dbxFileService.removeClient(principal.getName());
+
+        }
         return "index";
     }
 
