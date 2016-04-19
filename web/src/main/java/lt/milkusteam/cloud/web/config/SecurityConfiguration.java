@@ -1,5 +1,6 @@
 package lt.milkusteam.cloud.web.config;
 
+import lt.milkusteam.cloud.core.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource dataSource;
 
+    /*@Autowired
+    private MyUserDetailsService myUserDetailsService;
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(myUserDetailsService);
+    }*/
+
     @Autowired
     UserDetailsService userDetailsService;
 
@@ -38,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/", "/index", "/about").permitAll()
+                .antMatchers("/", "/index", "/about", "/registration").permitAll()
                 .antMatchers("/secret/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
