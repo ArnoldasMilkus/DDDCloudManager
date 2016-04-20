@@ -30,7 +30,7 @@
 
     <script>
         function confirmationRequest() {
-            confirm("english motherfucker!");
+            confirm("english gentlemen!");
         }
     </script>
 
@@ -110,12 +110,12 @@
                     </c:choose>
                 </li>
             </ul>
+            <div class="col-md-2">
+                <c:if test="${!empty username}">
+                    <label>${username}</label>
+                </c:if>
+            </div>
             <jsp:doBody/>
-        </div>
-        <div class="col-md-2">
-            <c:if test="${!empty username}">
-                <label>${username}</label>
-            </c:if>
         </div>
     </div>
 </div>

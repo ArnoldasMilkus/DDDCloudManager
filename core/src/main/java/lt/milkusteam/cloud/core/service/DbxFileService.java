@@ -11,9 +11,10 @@ import java.util.List;
  */
 public interface DbxFileService {
     List<Metadata> getFiles(String username, String path);
-    Metadata getFileData(String username, String path);
+    Metadata getFile(String username, String path);
     boolean containsClient(String username);
     void removeClient(String username);
     void addClient(String username);
     void upload(String username, String path, InputStream fileStream);
+    void createFolder(String username, String path);
 }

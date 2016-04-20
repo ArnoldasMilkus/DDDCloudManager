@@ -46,7 +46,7 @@ public class DbxFilesController {
             // -------- temporary file/folder check -------------
             boolean isFolder = path.isEmpty();
             if (!path.isEmpty()) {
-                Metadata clickedFile = dbxFileService.getFileData(principal.getName(), path);
+                Metadata clickedFile = dbxFileService.getFile(principal.getName(), path);
                 isFolder = clickedFile.toString().contains("folder");
             }
             if (!isFolder) {
@@ -101,15 +101,23 @@ public class DbxFilesController {
                              @RequestParam("file") MultipartFile file) {
         try {
             if (file.getSize() > 100_000_000) {
-                // TODO Exception?
-                //throw new RuntimeException("File size > 100_000_000 upload is not supported yet.");
-                System.err.println("File size > 100_000_000 upload is not supported yet.");
+                throw new RuntimeException("File size > 100_000_000 upload is not supported yet.");
             } else {
                 dbxFileService.upload(principal.getName(), path + "/" + file.getOriginalFilename(), file.getInputStream());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "redirect:/dbx/files?path=" + path;
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String createFolder(Principal principal,
+                               @RequestParam("path") String path,
+                               @RequestParam("name") String name) {
+
+        dbxFileService.createFolder(principal.getName(), path + "/" + name);
+
         return "redirect:/dbx/files?path=" + path;
     }
 }

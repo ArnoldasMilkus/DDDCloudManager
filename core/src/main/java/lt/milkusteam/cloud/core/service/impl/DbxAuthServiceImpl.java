@@ -18,23 +18,19 @@ import java.util.logging.Logger;
  * Created by gediminas on 4/18/16.
  */
 @Service
-@PropertySource("classpath:dropbox-app.properties")
 public class DbxAuthServiceImpl implements DbxAuthService {
+
     private final static Logger LOG = Logger.getLogger("DbxAuthServiceImpl");
 
-    @Value("${identifier}")
-    private final String IDENTIFIER = "DDD Cloud Manager";
+    private final static String IDENTIFIER = "DDD Cloud Manager";
 
-    @Value("${key}")
-    private final String KEY = "gcx6333853tq53z";
+    private final static String KEY = "gcx6333853tq53z";
 
-    @Value("${secret}")
-    private final String SECRET = "a09ge1pm1sru3ie";
+    private final static String SECRET = "a09ge1pm1sru3ie";
 
-    @Value("${redirect-uri}")
-    private final String REDIRECT_URI = "http://localhost:8080/dbx/auth-finish";
+    private final static String REDIRECT_URI = "http://localhost:8080/dbx/auth-finish";
 
-    private final DbxAppInfo APP_INFO = new DbxAppInfo(KEY, SECRET);
+    private final static DbxAppInfo APP_INFO = new DbxAppInfo(KEY, SECRET);
 
     @Autowired
     private DbxTokenDao dbxTokenDao;

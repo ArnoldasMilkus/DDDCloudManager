@@ -9,7 +9,15 @@
     <html>
     <body>
     <div class="container col-md-12">
-        <h2><a href="/dbx/files?path=">home</a>${currentPath}/</h2> <br/>
+        <h3 style="background-color: whitesmoke">
+            <a href="/dbx/files?path=">HOME</a>
+            <c:forTokens var="folder" items="${currentPath}" delims="/">
+                <c:set var="varPath" value="${varPath}/${folder}"/>
+                > <a href="/dbx/files?path=${varPath}">${folder}</a>
+            </c:forTokens>
+        </h3>
+
+
         <c:if test="${dbxAuth eq false}">
             <form name="authForm"
                   action="<c:url value="/dbx/auth-start" />" method='POST'>
@@ -21,54 +29,81 @@
             </form>
         </c:if>
         <c:if test="${dbxAuth eq true}">
-            <table class="table table-bordered" style="background-color:whitesmoke">
-                <thead>
+        <table class="table table-bordered" style="background-color:whitesmoke">
+            <thead>
+            <tr>
+                <th><spring:message code="dbxfiles.table.col1"/></th>
+                <th><spring:message code="dbxfiles.table.col2"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:set var="folder_tag" value="folder"></c:set>
+            <c:forEach var="file" items="${files}">
+                <c:set var="file_tag" value="${fn:substring(file, 1, 16)}"/>
                 <tr>
-                    <th><spring:message code="dbxfiles.table.col1"/></th>
-                    <th><spring:message code="dbxfiles.table.col2"/></th>
+                    <td style="width:150px">
+                        <c:if test="${fn:contains(file_tag, folder_tag)}">
+                            <a href="/dbx/files?path=${file.pathLower}">${file.name}</a>
+                        </c:if>
+                        <c:if test="${!fn:contains(file_tag, folder_tag)}">
+                            ${file.name}
+                        </c:if>
+                    </td>
+                    <td style="width:150px">
+                            ${file.pathDisplay}
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                <c:set var="folder_tag" value="folder"></c:set>
-                <c:forEach var="file" items="${files}">
-                    <c:set var="file_tag" value="${fn:substring(file, 1, 16)}"/>
-                    <tr>
-                        <td style="width:150px">
-                            <c:if test="${fn:contains(file_tag, folder_tag)}">
-                                <a href="/dbx/files?path=${file.pathLower}">${file.name}</a>
-                            </c:if>
-                            <c:if test="${!fn:contains(file_tag, folder_tag)}">
-                                ${file.name}
-                            </c:if>
-                        </td>
-                        <td style="width:150px">
-                                ${file.pathDisplay}
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-            <form method="POST" enctype="multipart/form-data" action=
-                    <c:url value="/dbx/upload?path=${currentPath}&${_csrf.parameterName}=${_csrf.token}"/>>
-                <table style="background-color:whitesmoke">
-                    <tr>
-                        <td>File to upload:</td>
-                        <td><input type="file" name="file"/></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><input type="submit" value="Upload"/></td>
-                    </tr>
-                </table>
-            </form>
-            <br/>
+            </c:forEach>
+            </tbody>
+        </table>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="POST" enctype="multipart/form-data" action=
+                            <c:url value="/dbx/upload?path=${currentPath}&${_csrf.parameterName}=${_csrf.token}"/>>
+                        <table style="background-color:whitesmoke">
+                            <tr>
+                                <td>File to upload:</td>
+                                <td><input type="file" name="file"/></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="submit" value="Upload"/></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form method="POST" action=
+                            <c:url value="/dbx/create"/>>
+                        <table style="background-color:whitesmoke">
+                            <tr>
+                                <td>Name:</td>
+                                <td><input type="text" name="name" value=""/></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="submit" value="Create folder"/></td>
+                            </tr>
+                            <input type="hidden"
+                                   name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <input type="hidden"
+                                   name="path" value="${currentPath}"/>
+                        </table>
+                    </form>
 
-            <form name="authForm"
-                  action="<c:url value="/dbx/auth-clear" />" method='POST'>
-                <input type="submit" value=<spring:message code="dbxfiles.unlinkbutton"/>/>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            </form>
-        </c:if>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <form name="authForm"
+              action="<c:url value="/dbx/auth-clear" />" method='POST'>
+            <input type="submit" value=<spring:message code="dbxfiles.unlinkbutton"/>/>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        </form>
+    </div>
+
+    </c:if>
     </div>
     </body>
     </html>
