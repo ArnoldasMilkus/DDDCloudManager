@@ -19,6 +19,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import lt.milkusteam.cloud.core.comparators.FilesSortComparator;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -36,12 +37,24 @@ public class GDrive {
     private static final String MIME_FILE = "application/vnd.google-apps.file";
     private static final String MIME_PHOTO = "application/vnd.google-apps.photo";
 
+    private   Drive DRIVE_SERVICE;
 
-    private static final String DIR_FOR_DOWNLOADS = "Downloads";
+    private java.io.File DATA_STORE_DIR; /*= new java.io.File(
+            System.getProperty("user.home"), ".credentials/drive-java-quickstart.json");*/
 
-    private static final java.io.File DATA_STORE_DIR = new java.io.File(
-            System.getProperty("user.home"), ".credentials/drive-java-quickstart.json");
-            //"D:/Info/Gdrive/.credentials/drive-java-quickstart.json");
+    public GDrive(String userId, String driveID) {
+        DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/"+
+                userId +"/" + driveID +".json");
+        try {
+            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+            DRIVE_SERVICE = getDriveService();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            System.exit(1);
+        }
+    }
+    //"D:/Info/Gdrive/.credentials/drive-java-quickstart.json");
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -64,22 +77,12 @@ public class GDrive {
     private static final List<String> SCOPES =
             Arrays.asList(DriveScopes.DRIVE);
 
-    static {
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
-        }
-    }
-
     /**
      * Creates an authorized Credential object.
      * @return an authorized Credential object.
      * @throws IOException
      */
-    public static Credential authorize() throws IOException {
+    private Credential authorize() throws IOException {
         // Load client secrets.
         InputStream in =
                 GDrive.class.getResourceAsStream("/client_secret.json");
@@ -105,12 +108,24 @@ public class GDrive {
         return credential;
     }
 
+    public Drive getDRIVE_SERVICE() {
+        return DRIVE_SERVICE;
+    }
+
     /**
      * Build and return an authorized Drive client service.
      * @return an authorized Drive client service
      * @throws IOException
      */
-    public static Drive getDriveService() throws IOException {
+    private Drive getDriveService() throws IOException {
+        Credential credential = authorize();
+        return new Drive.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+
+    private Drive getDriveServiceByUsername(String userName) throws IOException {
         Credential credential = authorize();
         return new Drive.Builder(
                 HTTP_TRANSPORT, JSON_FACTORY, credential)
@@ -120,7 +135,8 @@ public class GDrive {
 
     public static void main(String[] args) throws IOException {
         // Build a new authorized API client service.
-        Drive service = getDriveService();
+        GDrive drv = new GDrive("vilstr3", "drive001");
+        Drive service = drv.getDriveService();
 
         // Print the names and IDs for up to 10 files.
        /* FileList result = service.files().list()
@@ -144,9 +160,9 @@ public class GDrive {
         FileOfCloud cFile = new FileOfCloud();
         cFile.setgFile(fileMetadata);
         simpleUpload(service, cFile);*/
-        String folderId = findFileId("Tests", MIME_FOLDER, service);
+        String folderId = drv.findFileId("Tests", MIME_FOLDER, service);
         if (folderId == null){
-            folderId = createFolder("Tests", service);
+            folderId = drv.createFolder("Tests", service);
         }
         else {
             File fileMetadata = new File();
@@ -175,9 +191,11 @@ public class GDrive {
             else {
                 System.out.println("Something went wrong with upload.");
             }
-            String dFileID = findFileId("dff.png", "image/png", service);
+            String dFileID = drv.findFileId("dff.png", "image/png", service);
             System.out.println(dFileID);
             System.out.println(new GDriveDownloader().simpleDownload(service, HTTP_TRANSPORT, dFileID, false));
+            drv.getListByParentId("root");
+            //System.out.println(service.about().);
         }
     }
 
@@ -202,7 +220,7 @@ public class GDrive {
         return res;
     }
 
-    public static String createFolder(String name, Drive service) {
+    public String createFolder(String name, Drive service) {
         File fileMetadata = new File();
         fileMetadata.setName(name);
         fileMetadata.setMimeType(MIME_FOLDER);
@@ -219,7 +237,7 @@ public class GDrive {
         System.out.println("Folder ID: " + file.getId());
         return file.getId();
     }
-    public static String findFileId(String name, String mimeType, Drive service) {
+    public String findFileId(String name, String mimeType, Drive service) {
         if (mimeType.isEmpty()) {
             mimeType = MIME_FILE;
         }
@@ -257,4 +275,59 @@ public class GDrive {
         }
         return false;
     }
+
+    public List<File> getListByParentId(String parentId) {
+        List <File> list = new ArrayList<>();
+        StringBuilder build = new StringBuilder();
+        build.append("trashed=false and '");
+        build.append(parentId);
+        build.append("' in parents");
+        if (parentId.isEmpty()) {
+            build.setLength(0);
+            build.append("trashed=false");
+        }
+        String pageToken = null;
+        do {
+            FileList result = null;
+            try {
+                result = DRIVE_SERVICE.files().list()
+                        .setQ(build.toString())
+                        .setSpaces("drive")
+                        .setFields("nextPageToken, files(name, id, parents, mimeType)")
+                        .setPageToken(pageToken)
+                        .execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for(File file: result.getFiles()) {
+                /*System.out.printf("Found file: %s (%s)\n",
+                        file.getName(), file.getId());*/
+                if (file.getMimeType().contains("folder")) {
+                    file.setMimeType("folder");
+                }
+                list.add(file);
+            }
+            pageToken = result.getNextPageToken();
+        } while (pageToken != null);
+        /*for (File file: list) {
+            System.out.printf("From list %s %s %s %s\n", file.getName(), file.getId(), file.getMimeType(), file.getParents().toString());
+        }*/
+        list.sort(new FilesSortComparator());
+        return list;
+    }
+
+    public String getParentId(String fileId) {
+        String parentId = null;
+        List<String> list = null;
+        try {
+            list = DRIVE_SERVICE.files().get(fileId).setFields("parents").execute().getParents();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (list != null && !list.isEmpty()) {
+            parentId = list.get(list.size()-1);
+        }
+        return parentId;
+    }
+
 }

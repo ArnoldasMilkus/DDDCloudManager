@@ -80,6 +80,11 @@
                         <a href="/settings"><spring:message code="template.settings"/></a>
                     </li>
                 </c:if>
+                <c:if test="${!empty username}">
+                    <li>
+                        <a href="/GDriveFiles"><spring:message code="template.GDriveFiles"/></a>
+                    </li>
+                </c:if>
                 <li>
                     <a href="/about"><spring:message code="template.about"/></a>
                 </li>
