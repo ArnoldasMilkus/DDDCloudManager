@@ -14,13 +14,13 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            <img src="/resources/onedrive.jpg" alt="One Drive" width="150" height="100"/>
+            <img src="/resources/onedrive.png" alt="One Drive" width="100" height="100"/>
         </div>
         <div class="col-md-2">
-            <img src="/resources/google_drive.png" alt="Google Drive" width="100" height="100"/>
+            <img src="/resources/googledrive.png" alt="Google Drive" width="126" height="100"/>
         </div>
         <div class="col-md-2">
-            <img src="/resources/dropbox.jpeg" alt="Dropbox" width="100" height="100"/>
+            <img src="/resources/dropbox.png" alt="Dropbox" width="100" height="100"/>
         </div>
     </div>
     <div class="container col-md-13">

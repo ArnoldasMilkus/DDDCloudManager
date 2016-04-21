@@ -36,6 +36,9 @@ public class DbxFilesController {
     @RequestMapping(value = "/files")
     public String showFiles(Model model, Principal principal,
                             @RequestParam(name = "path", required = false) String path) {
+        if (path == null) {
+            path = "";
+        }
         String username = principal.getName();
         boolean isLinked = false;
         if (dbxAuthService.isLinked(username)) {

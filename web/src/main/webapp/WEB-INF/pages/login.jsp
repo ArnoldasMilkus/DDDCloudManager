@@ -10,11 +10,11 @@
                 width: 300px;
                 padding: 20px;
                 margin: 100px auto;
-                /*background: #4c74ff;*/
             }
         </style>
     </head>
 
+    <body>
     <div id="login-form">
 
         <c:if test="${not empty error}">
@@ -43,8 +43,6 @@
             <input type="hidden"
                    name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-    </div>
-
     </body>
     </html>
 </customtags:pageTemplate>
