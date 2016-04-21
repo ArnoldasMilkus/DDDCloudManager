@@ -11,13 +11,12 @@
     </div>
 
     <div>
-        <form method="POST" enctype="multipart/form-data" action="/upload?${_csrf.parameterName}=${_csrf.token}">
+        <form method="POST" enctype="multipart/form-data" action="/GDriveUpload?${_csrf.parameterName}=${_csrf.token}">
             <table>
                 <tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-                <tr><td>Name:</td><td><input type="text" name="name" /></td></tr>
                 <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
             </table>
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="hidden" name="parentId" value="${parentId}"/>
         </form>
     </div>
 
