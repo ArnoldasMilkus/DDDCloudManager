@@ -2,6 +2,7 @@ package lt.milkusteam.cloud.web.controller;
 
 import com.dropbox.core.DbxSessionStore;
 import com.dropbox.core.DbxStandardSessionStore;
+import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
@@ -15,10 +16,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.Principal;
-import java.util.List;
 
 /**
  * Created by gediminas on 4/17/16.
@@ -43,20 +45,8 @@ public class DbxFilesController {
                 dbxFileService.addClient(username);
             }
 
-            // -------- temporary file/folder check -------------
-            boolean isFolder = path.isEmpty();
-            if (!path.isEmpty()) {
-                Metadata clickedFile = dbxFileService.getFile(principal.getName(), path);
-                isFolder = clickedFile.toString().contains("folder");
-            }
-            if (!isFolder) {
-                path = path.substring(0, path.lastIndexOf("/"));
-            }
-            //----------------------------------------------------
-
-            List<Metadata> files = dbxFileService.getFiles(username, path);
-
-            model.addAttribute("files", files);
+            model.addAttribute("files", dbxFileService.getFilesMetadata(username, path));
+            model.addAttribute("folders", dbxFileService.getFoldersMetadata(username, path));
             isLinked = true;
         }
         model.addAttribute("dbxAuth", isLinked);
@@ -80,9 +70,9 @@ public class DbxFilesController {
     public String finishDbxAuth(Principal principal,
                                 @RequestParam("state") String state,
                                 @RequestParam("code") String code) {
-        String redirUrl = dbxAuthService.finishAuth(principal.getName(), state, code);
+        dbxAuthService.finishAuth(principal.getName(), state, code);
 
-        return "redirect:" + redirUrl;
+        return "redirect:/dbx/files?path=";
     }
 
     @RequestMapping(value = "/auth-clear", method = RequestMethod.POST)
@@ -120,5 +110,27 @@ public class DbxFilesController {
 
         return "redirect:/dbx/files?path=" + path;
     }
-}
 
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
+    public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("path") String path) {
+        System.out.println(" ********** DOWNLOAD = " +path);
+
+        OutputStream stream = null;
+        try {
+            stream = response.getOutputStream();
+            response.setContentType("application/force-download");
+            response.setHeader("Content-Disposition", "attachment; filename=" + path.substring(path.lastIndexOf("/") + 1));
+            dbxFileService.download(principal.getName(), path, stream);
+            response.flushBuffer();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public String deleteFile(Principal principal, @RequestParam("path") String path) {
+        System.out.println(" ********** DELETE = " +path);
+        dbxFileService.delete(principal.getName(), path);
+        return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
+    }
+}

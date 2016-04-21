@@ -46,8 +46,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
     }
 
     @Override
-    public String finishAuth(String username, String state, String code) {
-        String result = "files?path=";
+    public void finishAuth(String username, String state, String code) {
 
         DbxWebAuth webAuth = activeWebAuths.get(username);
         if (webAuth != null) {
@@ -69,7 +68,6 @@ public class DbxAuthServiceImpl implements DbxAuthService {
             }
             activeWebAuths.remove(username);
         }
-        return result;
     }
 
     @Override

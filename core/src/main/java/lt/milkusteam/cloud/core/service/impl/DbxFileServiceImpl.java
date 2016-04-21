@@ -4,6 +4,7 @@ import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
@@ -17,10 +18,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Created by gediminas on 4/17/16.
@@ -36,11 +39,17 @@ public class DbxFileServiceImpl implements DbxFileService {
     private DbxTokenDao dbxTokenDao;
 
     @Override
-    public List<Metadata> getFiles(String username, String path) {
-        List<Metadata> result = new ArrayList<>();
+    public List<FileMetadata> getFilesMetadata(String username, String path) {
+        List<FileMetadata> result = new ArrayList<>();
         try {
             ListFolderResult folderResult = clients.get(username).files().listFolder(path);
-            result = folderResult.getEntries();
+            List<Metadata> temp = folderResult.getEntries();
+            for (Metadata data : temp) {
+                if (data instanceof FileMetadata) {
+                    result.add((FileMetadata) data);
+                    System.out.println(((FileMetadata) data).getMediaInfo());
+                }
+            }
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
         }
@@ -48,7 +57,26 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public Metadata getFile(String username, String path) {
+    public List<FolderMetadata> getFoldersMetadata(String username, String path) {
+        List<FolderMetadata> result = new ArrayList<>();
+        try {
+            ListFolderResult folderResult = clients.get(username).files().listFolder(path);
+            List<Metadata> temp = folderResult.getEntries();
+            for (Metadata data : temp) {
+                if (data instanceof FolderMetadata) {
+                    result.add((FolderMetadata) data);
+                } else {
+                    break;
+                }
+            }
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public Metadata getMetadata(String username, String path) {
         Metadata result = null;
         DbxClientV2 client = clients.get(username);
         try {
@@ -80,11 +108,25 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public void upload(String username, String path, InputStream fileStream) {
+    public void upload(String username, String path, InputStream inputStream) {
         DbxClientV2 client = clients.get(username);
         try {
-            Metadata uploadedFile = client.files().upload(path).uploadAndFinish(fileStream);
+            Metadata uploadedFile = client.files().upload(path).uploadAndFinish(inputStream);
             LOGGER.info(username + " uploaded file: " + uploadedFile + ".");
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void download(String username, String path, OutputStream outputStream) {
+        DbxClientV2 client = clients.get(username);
+        try {
+            DbxDownloader downloader = client.files().download(path);
+            downloader.download(outputStream);
+            LOGGER.info(username + " downloaded " + path + ".");
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
         } catch (IOException e) {
@@ -99,6 +141,17 @@ public class DbxFileServiceImpl implements DbxFileService {
             client.files().createFolder(path);
             FolderMetadata createdFolder = client.files().createFolder(path);
             LOGGER.info(username + " created folder: " + createdFolder + ".");
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void delete(String username, String path) {
+        DbxClientV2 client = clients.get(username);
+        try {
+            Metadata deletedFile = client.files().delete(path);
+            LOGGER.info(username + " deleted file: " + deletedFile.getName());
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
         }

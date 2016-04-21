@@ -7,7 +7,7 @@ import com.dropbox.core.DbxSessionStore;
  */
 public interface DbxAuthService {
     String startAuth(String username, DbxSessionStore store);
-    String finishAuth(String username, String state, String code);
+    void finishAuth(String username, String state, String code);
     void undoAuth(String username);
     boolean isLinked(String username);
 }
