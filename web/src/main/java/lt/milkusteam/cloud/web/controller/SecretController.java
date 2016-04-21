@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by gediminas on 3/30/16.
  */
 @Controller
-//@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping(value = "/secret")
 public class SecretController {
 

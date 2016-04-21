@@ -7,7 +7,7 @@
     <html>
     <body>
     <div class="container">
-        <sec:authentication var="user" property="principal" />
+        <sec:authentication var="user" property="principal"/>
         <h2>${user.username}</h2>
     </div>
     </body>

@@ -30,7 +30,7 @@
 
     <script>
         function confirmationRequest() {
-            confirm("english motherfucker!");
+            confirm("english gentlemen!");
         }
     </script>
 
@@ -79,6 +79,9 @@
                     <li>
                         <a href="/settings"><spring:message code="template.settings"/></a>
                     </li>
+                    <li>
+                        <a href="/dbx/files?path=">Dbx</a>
+                    </li>
                 </c:if>
                 <c:if test="${!empty username}">
                     <li>
@@ -112,12 +115,12 @@
                     </c:choose>
                 </li>
             </ul>
+            <div class="col-md-2">
+                <c:if test="${!empty username}">
+                    <label>${username}</label>
+                </c:if>
+            </div>
             <jsp:doBody/>
-        </div>
-        <div class="col-md-2">
-            <c:if test="${!empty username}">
-                <label>${username}</label>
-            </c:if>
         </div>
     </div>
 </div>

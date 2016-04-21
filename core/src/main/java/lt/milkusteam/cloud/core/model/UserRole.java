@@ -63,7 +63,6 @@ public class UserRole {
 
         if (!userRoleId.equals(userRole.userRoleId)) return false;
         return role.equals(userRole.role);
-
     }
 
     @Override

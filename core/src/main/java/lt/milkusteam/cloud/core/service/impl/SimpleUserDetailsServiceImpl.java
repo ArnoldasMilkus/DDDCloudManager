@@ -25,7 +25,6 @@ public class SimpleUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserDao userDao;
 
-
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
