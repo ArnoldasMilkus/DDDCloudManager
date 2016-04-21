@@ -1,6 +1,5 @@
 package lt.milkusteam.cloud.web.config;
 
-import lt.milkusteam.cloud.core.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.sql.DataSource;
-
 /**
  * Created by gediminas on 3/31/16.
  */
@@ -23,17 +20,6 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    DataSource dataSource;
-
-    /*@Autowired
-    private MyUserDetailsService myUserDetailsService;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myUserDetailsService);
-    }*/
 
     @Autowired
     UserDetailsService userDetailsService;
