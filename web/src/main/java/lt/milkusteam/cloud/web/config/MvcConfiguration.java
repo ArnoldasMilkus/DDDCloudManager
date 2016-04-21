@@ -72,18 +72,10 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         return interceptor;
     }
 
-    @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
-    }
-
-    @Bean
-    public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-        resolver.setDefaultEncoding("utf-8");
-        return resolver;
-    }
-
+//    @Bean
+//    public RequestContextListener requestContextListener() {
+//        return new RequestContextListener();
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
