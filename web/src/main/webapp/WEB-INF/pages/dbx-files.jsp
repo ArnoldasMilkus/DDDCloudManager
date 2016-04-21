@@ -102,12 +102,13 @@
                     <form method="POST" enctype="multipart/form-data" action=${url}>
                         <table style="background-color:whitesmoke">
                             <tr>
-                                <td><spring:message code="dbxfiles.uploadform.choose"/></td>
+                                <td><spring:message code="dbxfiles.uploadform.chosen"/></td>
                                 <td><input type="file" name="file"/></td>
                             </tr>
                             <tr>
                                 <td></td>
-                                <td><input type="submit" value="<spring:message code="dbxfiles.uploadform.submit"/>"/></td>
+                                <td><input type="submit" value="<spring:message code="dbxfiles.uploadform.submit"/>"/>
+                                </td>
                             </tr>
                         </table>
                     </form>
@@ -122,7 +123,8 @@
                             </tr>
                             <tr>
                                 <td></td>
-                                <td><input type="submit" value="<spring:message code="dbxfiles.createfolder.submit"/>"/></td>
+                                <td><input type="submit" value="<spring:message code="dbxfiles.createfolder.submit"/>"/>
+                                </td>
                             </tr>
                             <input type="hidden"
                                    name="${_csrf.parameterName}" value="${_csrf.token}"/>

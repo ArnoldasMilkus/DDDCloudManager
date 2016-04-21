@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AboutController {
 
     @RequestMapping(value = "/about", method = RequestMethod.GET)
-    public String showIndex(){
+    public String showIndex() {
         return "about";
     }
 }

@@ -31,13 +31,11 @@ public class GDriveFilesController {
         if (folderId != null && !folderId.isEmpty()) {
             model.addAttribute("files", files.findAllInDirectory(folderId, username));
             model.addAttribute("curId", folderId);
-        }
-        else if (childId != null && !childId.isEmpty()) {
+        } else if (childId != null && !childId.isEmpty()) {
             folderId = files.getIfChild(childId, username);
             model.addAttribute("files", files.findAllInDirectory(folderId, username));
             model.addAttribute("curId", folderId);
-        }
-        else {
+        } else {
             model.addAttribute("files", files.findAllInDirectory("root", username));
             model.addAttribute("curId", "root");
         }
@@ -47,7 +45,7 @@ public class GDriveFilesController {
     @RequestMapping(method = RequestMethod.GET, value = "/GDriveUpload")
     public String provideUploadInfo(Model model,
                                     @RequestParam(name = "parentId", required = true) String parentId) {
-        if (!parentId.isEmpty()){
+        if (!parentId.isEmpty()) {
             model.addAttribute("parentId", parentId);
         }
         return "GDriveUpload";
@@ -63,7 +61,7 @@ public class GDriveFilesController {
         String fileName = file.getOriginalFilename();
         System.out.println(file.getOriginalFilename());
         System.out.println(parentId);
-        if (!parentId.isEmpty()){
+        if (!parentId.isEmpty()) {
             model.addAttribute("parentId", parentId);
         }
 

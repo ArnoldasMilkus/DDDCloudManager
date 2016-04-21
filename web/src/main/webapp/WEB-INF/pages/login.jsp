@@ -29,15 +29,16 @@
 
             <table>
                 <tr>
-                    <td><spring:message code="login.username" /></td>
+                    <td><spring:message code="login.username"/></td>
                     <td><input type="text" name="username" value=""></td>
                 </tr>
                 <tr>
-                    <td><spring:message code="login.password" /></td>
+                    <td><spring:message code="login.password"/></td>
                     <td><input type="password" name="password"/></td>
                 </tr>
             </table>
-            <input type="submit" style="height:30px; width:245px" value=<spring:message code="login.submit"/> />
+            <input type="submit" style="height:30px; width:245px" value=
+                "<spring:message code="login.submit"/>"/>
 
             <input type="hidden"
                    name="${_csrf.parameterName}" value="${_csrf.token}"/>

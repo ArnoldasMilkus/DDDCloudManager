@@ -14,7 +14,7 @@
     <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/resources/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-
+    <script src="/resources/jquery/reloader.js"></script>
     <script src="/resources/jquery/jquery-2.2.0.js"></script>
     <script src="/resources/bootstrap/js/bootstrap.js"></script>
 
@@ -36,6 +36,8 @@
 
     <script type="text/javascript">
         $(function(){
+
+
             function stripTrailingSlash(str) {
                 if(str.substr(-1) == '/') {
                     return str.substr(0, str.length - 1);
@@ -52,12 +54,13 @@
                 if (activePage == currentPage) {
                     $(this).parent().addClass('active');
                 }
+
             });
         });
     </script>
 </head>
 
-<body>
+<body onload="myFunction1()">
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-2">
@@ -110,7 +113,16 @@
                             <a href="/logout" onclick="return confirm('Are you sure?');"><spring:message code="template.logout"/></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="/login"><spring:message code="template.login"/></a>
+                            <ul >
+                                <li>
+                                    <a href="/login"><spring:message code="template.login"/></a>
+                                </li>
+
+                                <li>
+                                    <a href="/registration"><spring:message code="template.registration"/></a>
+                                </li>
+
+                            </ul>
                         </c:otherwise>
                     </c:choose>
                 </li>

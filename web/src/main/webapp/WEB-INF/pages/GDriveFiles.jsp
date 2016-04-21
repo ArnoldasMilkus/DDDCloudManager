@@ -7,12 +7,12 @@
     <head>
         <input type="hidden" id="currenId" name="currenId" value="${curId}"/>
         <script language="javascript">
-            function rootAction(){
+            function rootAction() {
                 window.location = '/GDriveFiles?rootId=root';
             }
         </script>
         <script language="javascript">
-            function backAction(){
+            function backAction() {
                 var id = $("#currenId").val();
                 var path = '/GDriveFiles?backId=';
                 path = path.concat(id);
@@ -20,7 +20,7 @@
             }
         </script>
         <script language="javascript">
-            function uploadAction(){
+            function uploadAction() {
                 var id = $("#currenId").val();
                 var path = '/GDriveUpload?parentId=';
                 path = path.concat(id);

@@ -2,8 +2,6 @@ package lt.milkusteam.cloud.web.controller;
 
 import com.dropbox.core.DbxSessionStore;
 import com.dropbox.core.DbxStandardSessionStore;
-import com.dropbox.core.v2.files.FolderMetadata;
-import com.dropbox.core.v2.files.Metadata;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +111,7 @@ public class DbxFilesController {
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("path") String path) {
-        System.out.println(" ********** DOWNLOAD = " +path);
+        System.out.println(" ********** DOWNLOAD = " + path);
 
         OutputStream stream = null;
         try {
@@ -129,7 +127,7 @@ public class DbxFilesController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String deleteFile(Principal principal, @RequestParam("path") String path) {
-        System.out.println(" ********** DELETE = " +path);
+        System.out.println(" ********** DELETE = " + path);
         dbxFileService.delete(principal.getName(), path);
         return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
     }

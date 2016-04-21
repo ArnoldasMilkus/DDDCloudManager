@@ -6,11 +6,11 @@
     <html>
     <body>
     <div class="container">
-        <h2><spring:message code="about.question" /></h2>
+        <h2><spring:message code="about.question"/></h2>
     </div>
     <div class="container" style="max-width: 1000px">
-        <h4><spring:message code="about.description" /></h4>
-        <h4><spring:message code="about.clouds" /></h4>
+        <h4><spring:message code="about.description"/></h4>
+        <h4><spring:message code="about.clouds"/></h4>
     </div>
     <div class="row">
         <div class="col-md-2">
@@ -34,26 +34,26 @@
             </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Gediminas</td>
-                    <td>Kurpavičius</td>
-                    <td>gediminas.kurpavicius@ktu.edu</td>
-                </tr>
-                <tr>
-                    <td>Tomas</td>
-                    <td>Brusokas</td>
-                    <td>tomas.brusokas@ktu.edu</td>
-                </tr>
-                <tr>
-                    <td>Vilintas</td>
-                    <td>Strielčiūnas</td>
-                    <td>vilintas.strielciunas@ktu.edu</td>
-                </tr>
-                <tr>
-                    <td>Arnoldas</td>
-                    <td>Milkus</td>
-                    <td>arnoldas.milkus@ktu.edu</td>
-                </tr>
+            <tr>
+                <td>Gediminas</td>
+                <td>Kurpavičius</td>
+                <td>gediminas.kurpavicius@ktu.edu</td>
+            </tr>
+            <tr>
+                <td>Tomas</td>
+                <td>Brusokas</td>
+                <td>tomas.brusokas@ktu.edu</td>
+            </tr>
+            <tr>
+                <td>Vilintas</td>
+                <td>Strielčiūnas</td>
+                <td>vilintas.strielciunas@ktu.edu</td>
+            </tr>
+            <tr>
+                <td>Arnoldas</td>
+                <td>Milkus</td>
+                <td>arnoldas.milkus@ktu.edu</td>
+            </tr>
             </tbody>
         </table>
     </div>

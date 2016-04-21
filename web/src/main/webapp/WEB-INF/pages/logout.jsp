@@ -6,7 +6,7 @@
     <html>
     <head>
         <style>
-            #login-form{
+            #login-form {
                 width: 300px;
                 padding: 20px;
                 margin: 100px auto;
@@ -25,7 +25,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <input name="submit" type="submit" value=<spring:message code="login.submit"/> />
+                        <input name="submit" type="submit" value=
+                            <spring:message code="login.submit"/>/>
                     </td>
                 </tr>
             </table>

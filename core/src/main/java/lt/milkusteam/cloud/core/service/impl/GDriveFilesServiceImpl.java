@@ -64,8 +64,7 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
             list.add(drive);
             driveMap.put(userName, list);
             return drive;
-        }
-        else {
+        } else {
             return driveMap.get(userName).get(0);
         }
     }
