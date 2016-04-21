@@ -1,14 +1,12 @@
 package lt.milkusteam.cloud.core.model;
 
-import lt.milkusteam.cloud.core.validation.ValidEmail;
-import lt.milkusteam.cloud.core.validation.PasswordMatches;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  * Created by Arnoldas on 2016-04-18.
  */
-@PasswordMatches
+
 public class UserDTO {
     @NotNull
     @Size(min = 1)
@@ -23,7 +21,7 @@ public class UserDTO {
     @Size(min = 1)
     private String password;
     private String matchingPassword;
-    @ValidEmail
+
     @NotNull
     @Size(min = 1)
     private String email;

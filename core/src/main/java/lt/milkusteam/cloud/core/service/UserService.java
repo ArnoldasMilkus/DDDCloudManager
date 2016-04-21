@@ -3,6 +3,7 @@ package lt.milkusteam.cloud.core.service;
 import lt.milkusteam.cloud.core.model.User;
 import lt.milkusteam.cloud.core.model.UserDTO;
 import lt.milkusteam.cloud.core.validation.EmailExistsException;
+import lt.milkusteam.cloud.core.validation.UsernameExistsException;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface UserService {
     User findByUsername(String username);
     User findByEmail(String email);
     User registerNewUserAccount(UserDTO accountDto)
-            throws EmailExistsException;
+            throws EmailExistsException, UsernameExistsException;
 }

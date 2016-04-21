@@ -5,6 +5,7 @@ import lt.milkusteam.cloud.core.model.UserDTO;
 import lt.milkusteam.cloud.core.service.UserService;
 import lt.milkusteam.cloud.core.service.impl.UserServiceImpl;
 import lt.milkusteam.cloud.core.validation.EmailExistsException;
+import lt.milkusteam.cloud.core.validation.UsernameExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,7 +68,10 @@ public class RegistrationController {
             registered = createUserAccount(accountDto, result);
         }
         if (registered == null) {
-            result.rejectValue("email", "message.regError");
+            ///result.rejectValue("email", "message.regError");
+            ObjectError objectError = new ObjectError("error","email or username is in the database");
+            result.addError(objectError);
+            return new ModelAndView("registration", "user", accountDto);
         }
         if (result.hasErrors()) {
             return new ModelAndView("registration", "user", accountDto);
@@ -83,6 +87,10 @@ public class RegistrationController {
         } catch (EmailExistsException e) {
             return null;
         }
+        catch (UsernameExistsException e1){
+            return null;
+        }
+
         return registered;
     }
     private boolean validateEmail(final String email) {

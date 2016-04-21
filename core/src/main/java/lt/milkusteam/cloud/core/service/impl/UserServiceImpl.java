@@ -7,6 +7,7 @@ import lt.milkusteam.cloud.core.model.UserDTO;
 import lt.milkusteam.cloud.core.model.UserRole;
 import lt.milkusteam.cloud.core.service.UserService;
 import lt.milkusteam.cloud.core.validation.EmailExistsException;
+import lt.milkusteam.cloud.core.validation.UsernameExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,10 +43,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User registerNewUserAccount(UserDTO accountDto) throws EmailExistsException {
+    public User registerNewUserAccount(UserDTO accountDto) throws EmailExistsException, UsernameExistsException {
         if (emailExist(accountDto.getEmail())) {
             throw new EmailExistsException("There is an account with that email address:"
                     + accountDto.getEmail());
+        }
+        if (usernameExist(accountDto.getUsername())) {
+            throw new UsernameExistsException("There is an account with that username:"
+                    + accountDto.getUsername());
         }
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -64,6 +69,13 @@ public class UserServiceImpl implements UserService {
     }
     private boolean emailExist(String email) {
         User user = repository.findByEmail(email);
+        if (user != null) {
+            return true;
+        }
+        return false;
+    }
+    private boolean usernameExist(String username) {
+        User user = repository.findByUsername(username);
         if (user != null) {
             return true;
         }
