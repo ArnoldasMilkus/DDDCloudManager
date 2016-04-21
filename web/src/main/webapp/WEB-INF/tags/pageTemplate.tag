@@ -28,12 +28,6 @@
         <c:set var="username" value="${user.username}"/>
     </sec:authorize>
 
-    <script>
-        function confirmationRequest() {
-            confirm("english motherfucker!");
-        }
-    </script>
-
     <script type="text/javascript">
         $(function(){
             function stripTrailingSlash(str) {
@@ -64,9 +58,19 @@
         </div>
         <div class="col-md-8">
             <div class="page-header">
-                <h1 style="font-family:'Comic Sans MS';">
+                <%--<input type='button' Onclick="document.body.style.cssText+=';background: url(/resources/dropbox.png);'" />--%>
+                <form method="get" action="/error404">
+                    <button type="submit">ccc</button>
+                </form>
+                <%--<h1 style="font-family:'Comic Sans MS';">
                         <spring:message code="template.header"/>
-                </h1>
+                </h1>--%>
+                <img src="/resources/DDD%20Cloud%20Manager%20logo.png" alt="Logotype" width="400" height="150"/>
+                    <ul align="right">
+                    <c:if test="${!empty username}">
+                            <label><font color="#1e90ff"><spring:message code="template.logged"/>: </font>${username}</label>
+                    </c:if>
+                </ul>
             </div>
             <ul class="nav nav-pills">
                 <li>
@@ -89,17 +93,17 @@
                         <strong class="caret"></strong></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="?lang=en"><spring:message code="template.language.en"/></a>
+                            <a href="?lang=en"><img src="/resources/uk_flag.png"> <spring:message code="template.language.en"/></a>
                         </li>
                         <li>
-                            <a href="?lang=lt"><spring:message code="template.language.lt"/></a>
+                            <a href="?lang=lt"><img src="/resources/lt_flag.png"> <spring:message code="template.language.lt"/></a>
                         </li>
                     </ul>
                 </li>
                 <li class="pull-right">
                     <c:choose>
                         <c:when test="${!empty username}">
-                            <a href="/logout" onclick="return confirm('Are you sure?');"><spring:message code="template.logout"/></a>
+                            <a href="/logout" onclick="return confirm('<spring:message code="template.confirmation"/>');"><spring:message code="template.logout"/></a>
                         </c:when>
                         <c:otherwise>
                             <a href="/login"><spring:message code="template.login"/></a>
@@ -109,11 +113,11 @@
             </ul>
             <jsp:doBody/>
         </div>
-        <div class="col-md-2">
+        <%--<div class="col-md-2">
             <c:if test="${!empty username}">
                 <label>${username}</label>
             </c:if>
-        </div>
+       </div>--%>
     </div>
 </div>
 </body>
