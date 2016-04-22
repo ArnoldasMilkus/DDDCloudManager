@@ -30,15 +30,15 @@
     </head>
     <body>
     <div class="container col-md-12">
-        <h2><spring:message code="users.table.title"/></h2>
+        <h2><spring:message code="Grive.table.title"/></h2>
         <input type='button' value="Root" name="Root" href="#" onclick="return rootAction()">
         <input type='button' value="Back" name="Back" href="#" onclick="return backAction()">
         <input type='button' value="Upload here" name="Upload here" href="#" onclick="return uploadAction()">
         <table class="table table-striped">
             <thead>
             <tr>
-                <th><spring:message code="users.table.col1"/></th>
-                <th><spring:message code="users.table.col2"/></th>
+                <th><spring:message code="Grive.table.col1"/></th>
+                <th><spring:message code="Grive.table.col2"/></th>
             </tr>
             </thead>
             <tbody>

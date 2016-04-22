@@ -18,7 +18,7 @@
             <p>Laikrodis</p>
             <p id="clock"></p>
         </div>
-        <p>Change background or not :</p>
+        <p></p>
         <div id="result"></div>
         <script>
 
