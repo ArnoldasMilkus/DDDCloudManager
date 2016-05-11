@@ -91,10 +91,11 @@ public class DbxFilesController {
                              @RequestParam("path") String path,
                              @RequestParam("file") MultipartFile file) {
         try {
-            if (file.getSize() > 100_000_000) {
-                throw new RuntimeException("File size > 100_000_000 upload is not supported yet.");
+            if (file.getSize() > dbxFileService.CHUNK_SIZE) {
+                dbxFileService.uploadBig(principal.getName(), path + "/" + file.getOriginalFilename(),
+                        file.getInputStream(), file.getSize());
             } else {
-                dbxFileService.upload(principal.getName(), path + "/" + file.getOriginalFilename(), file.getInputStream());
+                dbxFileService.uploadSmall(principal.getName(), path + "/" + file.getOriginalFilename(), file.getInputStream());
             }
         } catch (IOException e) {
             e.printStackTrace();

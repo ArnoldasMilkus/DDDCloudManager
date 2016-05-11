@@ -3,11 +3,9 @@ package lt.milkusteam.cloud.core.service.impl;
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.DbxUploader;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.FolderMetadata;
-import com.dropbox.core.v2.files.ListFolderResult;
-import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.*;
 import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.service.DbxFileService;
@@ -29,6 +27,8 @@ import java.util.Locale;
  */
 @Service
 public class DbxFileServiceImpl implements DbxFileService {
+
+    public final static int CHUNK_SIZE = 104857600;
 
     private HashMap<String, DbxClientV2> clients = new HashMap<>();
 
@@ -107,11 +107,46 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public void upload(String username, String path, InputStream inputStream) {
+    public void uploadSmall(String username, String path, InputStream inputStream) {
         DbxClientV2 client = clients.get(username);
         try {
+            long starttime = System.currentTimeMillis();
             Metadata uploadedFile = client.files().upload(path).uploadAndFinish(inputStream);
-            LOGGER.info(username + " uploaded file: " + uploadedFile + ".");
+            long endtime = System.currentTimeMillis();
+            LOGGER.info(username + " uploaded small file in " + ((endtime-starttime)/1000) + "s: " + uploadedFile + ".");
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void uploadBig(String username, String path, InputStream inputStream, long size) {
+        DbxClientV2 client = clients.get(username);
+        try {
+            long starttime = System.currentTimeMillis();
+
+            long progress = 0;
+            CommitInfo commitInfo = new CommitInfo(path);
+
+            UploadSessionStartUploader uploader = client.files().uploadSessionStart();
+            UploadSessionStartResult startResult = uploader.uploadAndFinish(inputStream, CHUNK_SIZE);
+            progress += CHUNK_SIZE;
+
+            UploadSessionAppendUploader appender;
+            while (progress  + CHUNK_SIZE < size) {
+                appender = client.files().uploadSessionAppend(startResult.getSessionId(), progress);
+                appender.uploadAndFinish(inputStream, CHUNK_SIZE);
+                progress += CHUNK_SIZE;
+            }
+            progress = progress > size ? size : progress;
+
+            UploadSessionCursor cursor = new UploadSessionCursor(startResult.getSessionId(), progress);
+            UploadSessionFinishUploader finisher = client.files().uploadSessionFinish(cursor, commitInfo);
+            Metadata uploadedFile = finisher.uploadAndFinish(inputStream);
+            long endtime = System.currentTimeMillis();
+            LOGGER.info(username + " uploaded big file in " + ((endtime - starttime) / 1000) + "s: " + uploadedFile + ".");
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
         } catch (IOException e) {

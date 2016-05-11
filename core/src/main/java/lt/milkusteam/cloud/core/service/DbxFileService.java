@@ -13,6 +13,7 @@ import java.util.List;
  * Created by gediminas on 4/17/16.
  */
 public interface DbxFileService {
+    int CHUNK_SIZE = 104857600;
 
     List<FileMetadata> getFilesMetadata(String username, String path);
 
@@ -26,7 +27,9 @@ public interface DbxFileService {
 
     void addClient(String username);
 
-    void upload(String username, String path, InputStream inputStream);
+    void uploadSmall(String username, String path, InputStream inputStream);
+
+    void uploadBig(String username, String path, InputStream inputStream, long size);
 
     void download(String username, String path, OutputStream outputStream);
 
