@@ -196,6 +196,22 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
+    public InputStream getInputStream(String username, String path) throws InvalidAccessTokenException {
+        InputStream result = null;
+        DbxClientV2 client = clients.get(username);
+        try {
+            DbxDownloader downloader = client.files().download(path);
+            result = downloader.getInputStream();
+        } catch (InvalidAccessTokenException e) {
+            LOGGER.error("Invalid " + username + " dropbox access token.");
+            throw e;
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public void createFolder(String username, String path) throws InvalidAccessTokenException {
         DbxClientV2 client = clients.get(username);
         try {

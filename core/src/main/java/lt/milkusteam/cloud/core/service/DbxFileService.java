@@ -38,6 +38,8 @@ public interface DbxFileService {
 
     void download(String username, String path, OutputStream outputStream) throws InvalidAccessTokenException;
 
+    InputStream getInputStream(String username, String path) throws InvalidAccessTokenException;
+
     void createFolder(String username, String path) throws InvalidAccessTokenException;
 
     void delete(String username, String path) throws InvalidAccessTokenException;

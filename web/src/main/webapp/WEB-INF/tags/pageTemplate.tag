@@ -46,7 +46,6 @@
                 if ((activePage.indexOf (currentPage) != -1 && currentPage.length > 0) || activePage == currentPage) {
                     $(this).parent().addClass('active');
                 }
-
             });
         });
     </script>

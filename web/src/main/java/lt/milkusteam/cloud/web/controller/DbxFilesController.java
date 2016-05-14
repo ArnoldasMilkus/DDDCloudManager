@@ -6,10 +6,10 @@ import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.v2.files.DeletedMetadata;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
-import com.dropbox.core.v2.files.Metadata;
 import lt.milkusteam.cloud.core.model.Pair;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
+import lt.milkusteam.cloud.core.service.GDriveFilesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -46,6 +47,9 @@ public class DbxFilesController {
 
     @Autowired
     DbxAuthService dbxAuthService;
+
+    @Autowired
+    GDriveFilesService gdFilesService;
 
     @RequestMapping(value = "/")
     public String checkDbxAuthentication(Principal principal, RedirectAttributes redirectAttributes) {
@@ -241,5 +245,21 @@ public class DbxFilesController {
             }
         }
         return result;
+    }
+
+    @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)
+    public String copyFileToGDrive(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) {
+        try {
+            InputStream is = dbxFileService.getInputStream(principal.getName(), path);
+            gdFilesService.uploadFile(is, "root", path.substring(path.lastIndexOf("/") + 1), principal.getName(), true);
+            is.close();
+        } catch (InvalidAccessTokenException e) {
+            redirectAttributes.addFlashAttribute("error", 2);
+            clearUserDbxData(principal.getName());
+            return "redirect:/dbx/error";
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return "index";
     }
 }
