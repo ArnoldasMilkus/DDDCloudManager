@@ -14,12 +14,12 @@
         <form method="POST" enctype="multipart/form-data" action="/GDriveUpload?${_csrf.parameterName}=${_csrf.token}">
             <table>
                 <tr>
-                    <td>File to upload:</td>
+                    <td><spring:message code="GDrive.fileToUpload"/></td>
                     <td><input type="file" name="file"/></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="submit" value="Upload"/></td>
+                    <td><input type="submit" value="<spring:message code="GDrive.upload"/>"/></td>
                 </tr>
             </table>
             <input type="hidden" name="parentId" value="${parentId}"/>

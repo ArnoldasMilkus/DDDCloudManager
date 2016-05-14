@@ -30,35 +30,50 @@
     </head>
     <body>
     <div class="container col-md-12">
-        <h2><spring:message code="Grive.table.title"/></h2>
-        <input type='button' value="Root" name="Root" href="#" onclick="return rootAction()">
-        <input type='button' value="Back" name="Back" href="#" onclick="return backAction()">
-        <input type='button' value="Upload here" name="Upload here" href="#" onclick="return uploadAction()">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th><spring:message code="Grive.table.col1"/></th>
-                <th><spring:message code="Grive.table.col2"/></th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="file" items="${files}">
+        <c:if test="${driveAuth eq false}">
+            <form name="authForm"
+                  action="<c:url value="/GDriveFiles/startAuth" />" method='GET'>
+                <input type="submit" style="height:30px; width:400px" value="<spring:message
+                        code="GDrive.linkButtonName"/>"/>
+                <c:if test="${isError eq true}">
+                    <h2><spring:message code="${error}"/></h2>
+                </c:if>
+
+                <input type="hidden"
+                       name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </c:if>
+        <c:if test="${driveAuth eq true}">
+            <h2><spring:message code="Grive.table.title"/></h2>
+            <input type='button' value="<spring:message code="GDrive.rootButtonName"/>" name="Root" href="#" onclick="return rootAction()">
+            <input type='button' value="<spring:message code="GDrive.backButtonName"/>" name="Back" href="#" onclick="return backAction()">
+            <input type='button' value="<spring:message code="GDrive.uploadButtonName"/>" name="Upload here" href="#" onclick="return uploadAction()">
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                    <td style="width:150px">
-                        <c:choose>
-                            <c:when test="${file.mimeType eq 'folder'}">
-                                <a href="GDriveFiles?rootId=${file.id}">${file.name}</a>
-                            </c:when>
-                            <c:otherwise>${file.name}</c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td style="width:200px">
-                            ${file.mimeType}
-                    </td>
+                    <th><spring:message code="Grive.table.col1"/></th>
+                    <th><spring:message code="Grive.table.col2"/></th>
                 </tr>
-            </c:forEach>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <c:forEach var="file" items="${files}">
+                    <tr>
+                        <td style="width:150px">
+                            <c:choose>
+                                <c:when test="${file.mimeType eq 'folder'}">
+                                    <a href="GDriveFiles?rootId=${file.id}">${file.name}</a>
+                                </c:when>
+                                <c:otherwise>${file.name}</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td style="width:200px">
+                                ${file.mimeType}
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </c:if>
     </div>
     </body>
     </html>

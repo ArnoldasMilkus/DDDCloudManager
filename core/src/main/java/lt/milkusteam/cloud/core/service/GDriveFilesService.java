@@ -19,4 +19,12 @@ public interface GDriveFilesService {
     String getIfChild(String childId, String userName);
 
     File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload);
+
+    boolean containsClient(String username, int ind);
+
+    void removeClient(String username, int ind);
+
+    int addClient(String username);
+
+    void revokeToken(String username, int ind);
 }
