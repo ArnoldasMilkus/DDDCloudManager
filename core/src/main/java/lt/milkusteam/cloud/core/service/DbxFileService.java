@@ -1,6 +1,7 @@
 package lt.milkusteam.cloud.core.service;
 
 
+import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.v2.files.DeletedMetadata;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -19,32 +20,31 @@ import java.util.List;
 public interface DbxFileService {
     int CHUNK_SIZE = 104857600;
 
-    Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path);
+    Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) throws InvalidAccessTokenException;
 
-    List<DeletedMetadata> getAllDeletedMetadata(String username);
+    List<DeletedMetadata> getAllDeletedMetadata(String username) throws InvalidAccessTokenException;
 
-    Metadata getMetadata(String username, String path);
+    Metadata getMetadata(String username, String path) throws InvalidAccessTokenException;
 
     boolean containsClient(String username);
 
     void removeClient(String username);
 
-    void addClient(String username);
+    boolean addClient(String username);
 
-    void uploadSmall(String username, String path, InputStream inputStream);
+    void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException;
 
-    void uploadBig(String username, String path, InputStream inputStream, long size);
+    void uploadBig(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException;
 
-    void download(String username, String path, OutputStream outputStream);
+    void download(String username, String path, OutputStream outputStream) throws InvalidAccessTokenException;
 
-    void createFolder(String username, String path);
+    void createFolder(String username, String path) throws InvalidAccessTokenException;
 
-    void delete(String username, String path);
+    void delete(String username, String path) throws InvalidAccessTokenException;
 
-    void permDelete(String username, String path);
+    void restore(String username, String path) throws InvalidAccessTokenException;
 
-    void restore(String username, String path);
+    FullAccount getAccountInfo(String username) throws InvalidAccessTokenException;
 
-    FullAccount getAccountInfo(String username);
-    SpaceUsage getStorageInfo(String username);
+    SpaceUsage getStorageInfo(String username) throws InvalidAccessTokenException;
 }

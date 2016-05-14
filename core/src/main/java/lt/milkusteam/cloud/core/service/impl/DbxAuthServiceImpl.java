@@ -1,7 +1,6 @@
 package lt.milkusteam.cloud.core.service.impl;
 
 import com.dropbox.core.*;
-import com.dropbox.core.v2.DbxAppClientV2Base;
 import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
@@ -11,7 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by gediminas on 4/18/16.
@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 @Service
 public class DbxAuthServiceImpl implements DbxAuthService {
 
-    private final static Logger LOG = Logger.getLogger("DbxAuthServiceImpl");
+    private final static Logger LOG = LoggerFactory.getLogger(DbxAuthServiceImpl.class);
 
     private final static String IDENTIFIER = "DDD Cloud Manager";
 
@@ -57,7 +57,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
             try {
                 authResult = webAuth.finish(params);
             } catch (Exception e) {
-                LOG.severe(e.getMessage());
+                LOG.error(e.getMessage());
             }
 
             if (authResult != null) {
@@ -70,6 +70,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
 
     @Override
     public void undoAuth(String username) {
+
         dbxTokenDao.delete(username);
     }
 

@@ -18,20 +18,6 @@
         </h3>
         <a href="/dbx/trash">Trash</a>
 
-            <%-- If user hasn't linked to his dropbox account --%>
-        <c:if test="${dbxAuth eq false}">
-            <form name="authForm"
-                  action="<c:url value="/dbx/auth-start" />" method='POST'>
-                <input type="submit" style="height:30px; width:245px" value="<spring:message
-                        code="dbxfiles.linkbutton"/>"/>
-
-                <input type="hidden"
-                       name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            </form>
-        </c:if>
-
-            <%-- If user has linked to his dropbox account --%>
-        <c:if test="${dbxAuth eq true}">
         <table class="table table-bordered" style="background-color:whitesmoke">
             <thead>
             <tr>
@@ -51,7 +37,7 @@
                 </c:url>
                 <tr>
                     <td style="width:auto">
-                        <a href="${folderUrl}">${folder.name}</a>
+                        <a href="${folderUrl}"> ${folder.name}</a>
                     </td>
                     <td style="width:auto">
                         --
@@ -60,7 +46,7 @@
                         --
                     </td>
                     <td style="width:auto">
-                        <a href="${deleteUrl}"><span
+                        <a href="${deleteUrl}" title="<spring:message code="dbxfiles.removeButton"/>"><span
                                 class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 </tr>
@@ -82,11 +68,10 @@
                     <td style="width:auto">
                             ${file.size}
                     </td>
-                    <td style="width:auto">
-                        <a href="${downloadUrl}"><span
+                    <td title="<spring:message code="dbxfiles.downloadButton"/>" style="width:auto">
+                        <a  href="${downloadUrl}"><span
                                 class="glyphicon glyphicon-download-alt"></span></a>
-                        |
-                        <a href="${deleteUrl}"><span
+                        <a title="<spring:message code="dbxfiles.removeButton"/>" href="${deleteUrl}"><span
                                 class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 </tr>
@@ -143,9 +128,6 @@
             <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-    </div>
-
-    </c:if>
     </div>
     </body>
     </html>
