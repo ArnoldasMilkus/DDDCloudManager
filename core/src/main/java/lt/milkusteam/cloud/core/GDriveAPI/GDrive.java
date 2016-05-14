@@ -357,25 +357,25 @@ public class GDrive {
         } while (pageToken != null);
         return null;
     }
-    public static boolean moveToTrashBin(Drive service, String fileId) {
+    public void setTrashed(String fileId, boolean isTrashed) {
         try {
-            service.files().get(fileId).set("trashed", true).setFields("trashed").execute();
-            return true;
+            File fileMetadata = new File();
+            fileMetadata.setTrashed(isTrashed);
+            System.out.println("File is trashed " + drive.files().update(fileId, fileMetadata).execute().getTrashed());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
-    public List<File> getListByParentId(String parentId) {
+    public List<File> getListByParentId(String parentId, boolean isTrashed) {
         List <File> list = new ArrayList<>();
         StringBuilder build = new StringBuilder();
-        build.append("trashed=false and '");
+        build.append("trashed=" +isTrashed + " and '");
         build.append(parentId);
         build.append("' in parents");
         if (parentId.isEmpty()) {
             build.setLength(0);
-            build.append("trashed=false");
+            build.append("trashed="+isTrashed);
         }
         String pageToken = null;
         do {
@@ -422,9 +422,6 @@ public class GDrive {
             parentId = list.get(list.size()-1);
         }
         return parentId;
-    }
-
-    public void requestAccessToken(String code) {
     }
 
     public Drive getDrive() {

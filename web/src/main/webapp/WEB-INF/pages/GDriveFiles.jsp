@@ -6,6 +6,7 @@
     <html>
     <head>
         <input type="hidden" id="currenId" name="currenId" value="${curId}"/>
+        <input type="hidden" id="isTrashed" name="currenId" value="${isTrashed}"/>
         <script language="javascript">
             function rootAction() {
                 window.location = '/GDriveFiles?rootId=root';
@@ -24,6 +25,12 @@
                 var id = $("#currenId").val();
                 var path = '/GDriveUpload?parentId=';
                 path = path.concat(id);
+                window.location.href = path;
+            }
+        </script>
+        <script language="javascript">
+            function trashBinAction() {
+                var path = '/GDriveFiles?parentId=root&isTrashed=true';
                 window.location.href = path;
             }
         </script>
@@ -46,8 +53,13 @@
         <c:if test="${driveAuth eq true}">
             <h2><spring:message code="Grive.table.title"/></h2>
             <input type='button' value="<spring:message code="GDrive.rootButtonName"/>" name="Root" href="#" onclick="return rootAction()">
-            <input type='button' value="<spring:message code="GDrive.backButtonName"/>" name="Back" href="#" onclick="return backAction()">
-            <input type='button' value="<spring:message code="GDrive.uploadButtonName"/>" name="Upload here" href="#" onclick="return uploadAction()">
+            <c:choose>
+                <c:when test="${!isTrashed}">
+                    <input type='button' value="<spring:message code="GDrive.backButtonName"/>" name="Back" href="#" onclick="return backAction()">
+                    <input type='button' value="<spring:message code="GDrive.uploadButtonName"/>" name="Upload here" href="#" onclick="return uploadAction()">
+                </c:when>
+            </c:choose>
+            <input type='button' value="<spring:message code="GDrive.trashButtonName"/>" name="TrashBin" href="#" onclick="return trashBinAction()">
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -62,7 +74,7 @@
                     <tr>
                         <td style="width:auto">
                             <c:choose>
-                                <c:when test="${file.mimeType eq 'folder'}">
+                                <c:when test="${file.mimeType eq 'folder' && isTrashed eq 'false'}">
                                     <a href="GDriveFiles?rootId=${file.id}">${file.name}</a>
                                 </c:when>
                                 <c:otherwise>${file.name}</c:otherwise>
@@ -84,8 +96,15 @@
                                 </c:when>
                             </c:choose>
 
-                            <!--a href="${deleteUrl}"><span
-                                    class="glyphicon glyphicon-trash"></span></a-->
+                            <a href="/GDriveFiles/delete?parentId=${curId}&fileId=${file.id}&isTrashed=${isTrashed}">
+                                <c:choose>
+                                    <c:when test="${isTrashed}">
+                                        <span class="glyphicon glyphicon-export"></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </c:otherwise>
+                                </c:choose></a>
                         </td>
                     </tr>
                 </c:forEach>

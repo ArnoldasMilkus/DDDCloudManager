@@ -41,11 +41,13 @@ public class GDriveFilesController {
                             @RequestParam(name = "rootId", required = false) String folderId,
                             @RequestParam(name = "backId", required = false) String childId,
                             @RequestParam(name = "error", required = false) String error,
+                            @RequestParam(name = "isTrashed", required = false) boolean isTrashed,
                             Principal principal) {
         int id = 0;
         String username = principal.getName();
         boolean isLinked = false;
         boolean isError = false;
+        model.addAttribute("isTrashed", isTrashed);
         if (error != null && !error.isEmpty()) {
             if (error.contains("access_denied")) {
                 model.addAttribute("error", "GDrive.error.access_denied");
@@ -62,15 +64,18 @@ public class GDriveFilesController {
             if (!files.containsClient(username, 0)) {
                 files.addClient(username);
             }
-            if (folderId != null && !folderId.isEmpty()) {
-                model.addAttribute("files", files.findAllInDirectory(folderId, username));
+            if (isTrashed) {
+                model.addAttribute("files", files.findAllInDirectory("", username, isTrashed));
+                model.addAttribute("curId", "root");
+            } else if (folderId != null && !folderId.isEmpty()) {
+                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed));
                 model.addAttribute("curId", folderId);
             } else if (childId != null && !childId.isEmpty()) {
                 folderId = files.getIfChild(childId, username);
-                model.addAttribute("files", files.findAllInDirectory(folderId, username));
+                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed));
                 model.addAttribute("curId", folderId);
             } else {
-                model.addAttribute("files", files.findAllInDirectory("root", username));
+                model.addAttribute("files", files.findAllInDirectory("root", username, isTrashed));
                 model.addAttribute("curId", "root");
             }
             isLinked = true;
@@ -146,5 +151,23 @@ public class GDriveFilesController {
     public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("fileId") String fileId) {
         String username = principal.getName();
         files.downloadToClient(response, fileId, username, 0);
+    }
+
+    @RequestMapping(value = "/GDriveFiles/delete", method = RequestMethod.GET)
+    public String deleteFile(Principal principal, @RequestParam("fileId") String fileId,
+                           @RequestParam(name = "parentId", required = false) String parentId,
+                             @RequestParam(name = "isTrashed", required = false) boolean isTrashed) {
+        isTrashed = !isTrashed;
+        String username = principal.getName();
+        files.fixTrashed(username, 0, isTrashed, fileId);
+        if (parentId == null || parentId.isEmpty()) {
+            parentId = "root";
+        }
+        if (isTrashed == false) {
+            parentId = files.getIfChild(fileId, username);
+            isTrashed = !isTrashed;
+        }
+
+        return "redirect:/GDriveFiles?rootId=" + parentId + "&isTrashed=" + !isTrashed;
     }
 }

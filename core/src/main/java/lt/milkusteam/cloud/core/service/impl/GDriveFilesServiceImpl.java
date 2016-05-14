@@ -35,11 +35,11 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     private HashMap<String, List<GDrive>> driveMap = new HashMap<>();
 
     @Override
-    public List<File> findAllInDirectory(String directoryId, String userName) {
-        if (directoryId == null || directoryId.isEmpty()) {
+    public List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed) {
+        /*if (directoryId == null || directoryId.isEmpty()) {
             directoryId = new String("root");
-        }
-        return getDriveService(userName, 0).getListByParentId(directoryId);
+        }*/
+        return getDriveService(userName, 0).getListByParentId(directoryId, isTrashed);
     }
 
     @Override
@@ -122,6 +122,12 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     @Override
     public void downloadToClient(HttpServletResponse response, String fileId, String username, int ind) {
         new GDriveDownloader().downloadToClient(getDriveService(username, ind).getDrive(), response, fileId);
+    }
+
+    @Override
+    public void fixTrashed(String username, int ind, boolean trashed, String fileId) {
+        GDrive drive = getDriveService(username, ind);
+        drive.setTrashed(fileId, trashed);
     }
 
 

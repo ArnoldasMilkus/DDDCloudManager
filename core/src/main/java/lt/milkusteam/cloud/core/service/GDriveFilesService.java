@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface GDriveFilesService {
 
-    List<File> findAllInDirectory(String directoryId, String userName);
+    List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed);
 
     String addToPath(File folder);
 
@@ -31,4 +31,6 @@ public interface GDriveFilesService {
     void revokeToken(String username, int ind);
 
     void downloadToClient(HttpServletResponse response, String fileId, String username, int ind);
+
+    void fixTrashed(String username, int ind, boolean trashed, String fileId);
 }

@@ -34,6 +34,7 @@ public class GDriveUploader {
             Drive.Files.Create create = service.files().create(metadata, astr);
             MediaHttpUploader uploader = create.getMediaHttpUploader();
             uploader.setDirectUploadEnabled(useDirectUpload);
+            uploader.setProgressListener(new GDriveUploadProgressListener());
             return create.execute();
         } catch (IOException e) {
             e.printStackTrace();
