@@ -16,6 +16,7 @@
                 > <a href="/dbx/files?path=${varPath}">${folder}</a>
             </c:forTokens>
         </h3>
+        <a href="/dbx/trash">Trash</a>
 
             <%-- If user hasn't linked to his dropbox account --%>
         <c:if test="${dbxAuth eq false}">

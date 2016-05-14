@@ -1,6 +1,7 @@
 package lt.milkusteam.cloud.core.service.impl;
 
 import com.dropbox.core.*;
+import com.dropbox.core.v2.DbxAppClientV2Base;
 import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
@@ -56,7 +57,6 @@ public class DbxAuthServiceImpl implements DbxAuthService {
             try {
                 authResult = webAuth.finish(params);
             } catch (Exception e) {
-                // ARBA http://www.mkyong.com/logging/log4j-hello-world-example/
                 LOG.severe(e.getMessage());
             }
 

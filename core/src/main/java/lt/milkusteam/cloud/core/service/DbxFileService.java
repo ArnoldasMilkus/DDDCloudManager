@@ -1,9 +1,13 @@
 package lt.milkusteam.cloud.core.service;
 
 
+import com.dropbox.core.v2.files.DeletedMetadata;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.users.FullAccount;
+import com.dropbox.core.v2.users.SpaceUsage;
+import lt.milkusteam.cloud.core.model.Pair;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,9 +19,9 @@ import java.util.List;
 public interface DbxFileService {
     int CHUNK_SIZE = 104857600;
 
-    List<FileMetadata> getFilesMetadata(String username, String path);
+    Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path);
 
-    List<FolderMetadata> getFoldersMetadata(String username, String path);
+    List<DeletedMetadata> getAllDeletedMetadata(String username);
 
     Metadata getMetadata(String username, String path);
 
@@ -36,4 +40,11 @@ public interface DbxFileService {
     void createFolder(String username, String path);
 
     void delete(String username, String path);
+
+    void permDelete(String username, String path);
+
+    void restore(String username, String path);
+
+    FullAccount getAccountInfo(String username);
+    SpaceUsage getStorageInfo(String username);
 }

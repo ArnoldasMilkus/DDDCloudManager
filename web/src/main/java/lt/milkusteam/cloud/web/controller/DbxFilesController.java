@@ -2,6 +2,9 @@ package lt.milkusteam.cloud.web.controller;
 
 import com.dropbox.core.DbxSessionStore;
 import com.dropbox.core.DbxStandardSessionStore;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.FolderMetadata;
+import lt.milkusteam.cloud.core.model.Pair;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Created by gediminas on 4/17/16.
@@ -45,15 +49,37 @@ public class DbxFilesController {
             if (!dbxFileService.containsClient(username)) {
                 dbxFileService.addClient(username);
             }
-
-            model.addAttribute("files", dbxFileService.getFilesMetadata(username, path));
-            model.addAttribute("folders", dbxFileService.getFoldersMetadata(username, path));
+            Pair<List<FolderMetadata>, List<FileMetadata>> metadataPair =
+                    dbxFileService.getMetadataPair(username, path);
+            model.addAttribute("files", metadataPair.getRight());
+            model.addAttribute("folders", metadataPair.getLeft());
             isLinked = true;
         }
         model.addAttribute("dbxAuth", isLinked);
         model.addAttribute("currentPath", path);
 
         return "dbx-files";
+    }
+
+    @RequestMapping(value = "/trash")
+    public String showDeletedFiles(Model model, Principal principal,
+                            @RequestParam(name = "path", required = false) String path) {
+        if (path == null) {
+            path = "";
+        }
+        String username = principal.getName();
+        boolean isLinked = false;
+        if (dbxAuthService.isLinked(username)) {
+            if (!dbxFileService.containsClient(username)) {
+                dbxFileService.addClient(username);
+            }
+            model.addAttribute("files", dbxFileService.getAllDeletedMetadata(username));
+            isLinked = true;
+        }
+        model.addAttribute("dbxAuth", isLinked);
+        model.addAttribute("currentPath", path);
+
+        return "dbx-deleted-files";
     }
 
     @RequestMapping(value = "/auth-start", method = RequestMethod.POST)
@@ -115,8 +141,6 @@ public class DbxFilesController {
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("path") String path) {
-        System.out.println(" ********** DOWNLOAD = " + path);
-
         OutputStream stream = null;
         try {
             stream = response.getOutputStream();
@@ -131,8 +155,19 @@ public class DbxFilesController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String deleteFile(Principal principal, @RequestParam("path") String path) {
-        System.out.println(" ********** DELETE = " + path);
         dbxFileService.delete(principal.getName(), path);
+        return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
+    }
+
+    @RequestMapping(value = "/permdelete", method = RequestMethod.GET)
+    public String permDeleteFile(Principal principal, @RequestParam("path") String path) {
+        dbxFileService.permDelete(principal.getName(), path);
+        return "redirect:/dbx/trash";
+    }
+
+    @RequestMapping(value = "/restore", method = RequestMethod.GET)
+    public String restoreFile(Principal principal, @RequestParam("path") String path) {
+        dbxFileService.restore(principal.getName(), path);
         return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
     }
 }

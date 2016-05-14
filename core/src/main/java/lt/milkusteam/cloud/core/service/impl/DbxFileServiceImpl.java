@@ -6,8 +6,11 @@ import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxUploader;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.*;
+import com.dropbox.core.v2.users.FullAccount;
+import com.dropbox.core.v2.users.SpaceUsage;
 import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
+import lt.milkusteam.cloud.core.model.Pair;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +20,13 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by gediminas on 4/17/16.
  */
 @Service
 public class DbxFileServiceImpl implements DbxFileService {
-
-    public final static int CHUNK_SIZE = 104857600;
 
     private HashMap<String, DbxClientV2> clients = new HashMap<>();
 
@@ -37,16 +35,21 @@ public class DbxFileServiceImpl implements DbxFileService {
     @Autowired
     private DbxTokenDao dbxTokenDao;
 
+
     @Override
-    public List<FileMetadata> getFilesMetadata(String username, String path) {
-        List<FileMetadata> result = new ArrayList<>();
+    public Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) {
+        Pair<List<FolderMetadata>, List<FileMetadata>> result =
+                new Pair<>(new ArrayList<FolderMetadata>(), new ArrayList<FileMetadata>());
         try {
+            List<FolderMetadata> folderList = result.getLeft();
+            List<FileMetadata> fileList = result.getRight();
             ListFolderResult folderResult = clients.get(username).files().listFolder(path);
             List<Metadata> temp = folderResult.getEntries();
             for (Metadata data : temp) {
-                if (data instanceof FileMetadata) {
-                    result.add((FileMetadata) data);
-                    System.out.println(((FileMetadata) data).getMediaInfo());
+                if (data instanceof FolderMetadata) {
+                    folderList.add((FolderMetadata) data);
+                } else {
+                    fileList.add((FileMetadata) data);
                 }
             }
         } catch (DbxException e) {
@@ -56,16 +59,20 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public List<FolderMetadata> getFoldersMetadata(String username, String path) {
-        List<FolderMetadata> result = new ArrayList<>();
+    public List<DeletedMetadata> getAllDeletedMetadata(String username) {
+        List<DeletedMetadata> result = new ArrayList<>();
         try {
-            ListFolderResult folderResult = clients.get(username).files().listFolder(path);
-            List<Metadata> temp = folderResult.getEntries();
-            for (Metadata data : temp) {
-                if (data instanceof FolderMetadata) {
-                    result.add((FolderMetadata) data);
-                } else {
-                    break;
+            List<Metadata> allMetadata = new LinkedList<>();
+            allMetadata = clients.get(username)
+                    .files()
+                    .listFolderBuilder("")
+                    .withRecursive(true)
+                    .withIncludeDeleted(true)
+                    .start()
+                    .getEntries();
+            for (Metadata data : allMetadata) {
+                if (data instanceof DeletedMetadata) {
+                    result.add(0, (DeletedMetadata) data);
                 }
             }
         } catch (DbxException e) {
@@ -189,5 +196,53 @@ public class DbxFileServiceImpl implements DbxFileService {
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
         }
+    }
+
+    @Override
+    public void permDelete(String username, String path) {
+        DbxClientV2 client = clients.get(username);
+        try {
+            client.files().permanentlyDelete(path);
+            LOGGER.info(username + " permanently deleted file: " + path);
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void restore(String username, String path) {
+        DbxClientV2 client = clients.get(username);
+        try {
+            String rev = client.files().listRevisions(path).getEntries().get(0).getRev();
+            FileMetadata restoredFile = client.files().restore(path, rev);
+            LOGGER.info(username + " restored file: " + restoredFile);
+        } catch (DbxException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public FullAccount getAccountInfo(String username) {
+        DbxClientV2 client = clients.get(username);
+        FullAccount account = null;
+        try {
+            account = client.users().getCurrentAccount();
+            LOGGER.info(username + " account info retrieved: " + account.toString());
+        } catch (DbxException e) {
+            LOGGER.error(username + " account info retrieval failed!");
+        }
+        return account;
+    }
+    @Override
+    public SpaceUsage getStorageInfo(String username) {
+        DbxClientV2 client = clients.get(username);
+        SpaceUsage usage = null;
+        try {
+            client.users().getSpaceUsage();
+            LOGGER.info(username + " account info retrieved: " + usage.toString());
+        } catch (DbxException e) {
+            LOGGER.error(username + " account info retrieval failed!");
+        }
+        return usage;
     }
 }
