@@ -79,7 +79,6 @@ public class DbxFilesController {
             clearUserDbxData(username);
             return "redirect:/dbx/error";
         }
-        generateLinks(path);
         return "dbx-files";
     }
 

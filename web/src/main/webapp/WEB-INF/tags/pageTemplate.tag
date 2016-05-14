@@ -43,7 +43,7 @@
             $('.nav li a').each(function(){
                 var currentPage = stripTrailingSlash($(this).attr('href'));
 
-                if (activePage == currentPage) {
+                if ((activePage.indexOf (currentPage) != -1 && currentPage.length > 0) || activePage == currentPage) {
                     $(this).parent().addClass('active');
                 }
 
