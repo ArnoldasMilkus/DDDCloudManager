@@ -2,6 +2,7 @@ package lt.milkusteam.cloud.core.service.impl;
 
 import com.google.api.services.drive.model.File;
 import lt.milkusteam.cloud.core.GDriveAPI.GDrive;
+import lt.milkusteam.cloud.core.GDriveAPI.GDriveDownloader;
 import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploader;
 import lt.milkusteam.cloud.core.dao.GDriveTokenDAO;
 import lt.milkusteam.cloud.core.model.GDriveToken;
@@ -11,7 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -113,6 +117,11 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
         GDriveTokenDAO.delete(username);
         removeClient(username, ind);
         drive.revokeToken(token);
+    }
+
+    @Override
+    public void downloadToClient(HttpServletResponse response, String fileId, String username, int ind) {
+        new GDriveDownloader().downloadToClient(getDriveService(username, ind).getDrive(), response, fileId);
     }
 
 

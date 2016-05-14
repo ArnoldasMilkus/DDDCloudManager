@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.Principal;
 import java.util.Arrays;
 
@@ -139,5 +140,11 @@ public class GDriveFilesController {
             files.revokeToken(username, 0);
         }
         return "redirect:/GDriveFiles";
+    }
+
+    @RequestMapping(value = "/GDriveFiles/download", method = RequestMethod.GET)
+    public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("fileId") String fileId) {
+        String username = principal.getName();
+        files.downloadToClient(response, fileId, username, 0);
     }
 }

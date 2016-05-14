@@ -51,14 +51,16 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th><spring:message code="Grive.table.col1"/></th>
-                    <th><spring:message code="Grive.table.col2"/></th>
+                    <th><spring:message code="GDrive.table.col1"/></th>
+                    <th><spring:message code="GDrive.table.col2"/></th>
+                    <th><spring:message code="GDrive.table.col3"/></th>
+                    <th><spring:message code="GDrive.table.col4"/></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="file" items="${files}">
                     <tr>
-                        <td style="width:150px">
+                        <td style="width:auto">
                             <c:choose>
                                 <c:when test="${file.mimeType eq 'folder'}">
                                     <a href="GDriveFiles?rootId=${file.id}">${file.name}</a>
@@ -66,8 +68,24 @@
                                 <c:otherwise>${file.name}</c:otherwise>
                             </c:choose>
                         </td>
-                        <td style="width:200px">
+                        <td style="width:auto">
                                 ${file.mimeType}
+                        </td>
+                        <td style="width:auto">
+                            <c:choose>
+                                <c:when test="${file.mimeType ne 'folder'}">${file.size} KB</c:when>
+                            </c:choose>
+                        </td>
+                        <td style="width:auto">
+                            <c:choose>
+                                <c:when test="${file.mimeType ne 'folder'}"><a href="/GDriveFiles/download?fileId=${file.id}"><span
+                                        class="glyphicon glyphicon-download-alt"></span></a>
+                                    |
+                                </c:when>
+                            </c:choose>
+
+                            <!--a href="${deleteUrl}"><span
+                                    class="glyphicon glyphicon-trash"></span></a-->
                         </td>
                     </tr>
                 </c:forEach>

@@ -384,7 +384,7 @@ public class GDrive {
                 result = drive.files().list()
                         .setQ(build.toString())
                         .setSpaces("drive")
-                        .setFields("nextPageToken, files(name, id, parents, mimeType)")
+                        .setFields("nextPageToken, files(name, id, parents, mimeType, size)")
                         .setPageToken(pageToken)
                         .execute();
             } catch (IOException e) {
@@ -395,6 +395,9 @@ public class GDrive {
                         file.getName(), file.getId());*/
                 if (file.getMimeType().contains("folder")) {
                     file.setMimeType("folder");
+                }
+                if (file.getSize() != null) {
+                    file.setSize(file.getSize() / 1024);
                 }
                 list.add(file);
             }

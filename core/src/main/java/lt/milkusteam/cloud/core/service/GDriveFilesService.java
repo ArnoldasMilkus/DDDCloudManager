@@ -2,7 +2,9 @@ package lt.milkusteam.cloud.core.service;
 
 import com.google.api.services.drive.model.File;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -27,4 +29,6 @@ public interface GDriveFilesService {
     int addClient(String username);
 
     void revokeToken(String username, int ind);
+
+    void downloadToClient(HttpServletResponse response, String fileId, String username, int ind);
 }
