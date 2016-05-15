@@ -225,12 +225,15 @@ public class DbxFilesController {
 
     @RequestMapping(value = "/auth-finish")
     public String finishDbxAuth(Principal principal,
-                                @RequestParam("state") String state,
-                                @RequestParam("code") String code) {
-        dbxAuthService.finishAuth(principal.getName(), state, code);
-        dbxFileService.addClient(principal.getName());
-
-        return "redirect:/dbx/";
+                                @RequestParam(name = "state", required = false) String state,
+                                @RequestParam(name = "code", required=false) String code) {
+        if (state != null && !state.isEmpty() && code != null && !code.isEmpty()) {
+            dbxAuthService.finishAuth(principal.getName(), state, code);
+            dbxFileService.addClient(principal.getName());
+            return "redirect:/dbx/";
+        } else {
+            return "redirect:/settings";
+        }
     }
 
     @RequestMapping(value = "/auth-clear", method = RequestMethod.POST)
@@ -242,20 +245,6 @@ public class DbxFilesController {
     public void clearUserDbxData(String username) {
         dbxAuthService.undoAuth(username);
         dbxFileService.removeClient(username);
-    }
-
-    List<Pair<String, String>> generateLinks(String path) {
-        List<Pair<String, String>> result = new ArrayList<>();
-        String[] parts = path.split("/");
-        if (parts.length > 1) {
-            StringBuilder link = new StringBuilder();
-            for (int i = 1; i < parts.length; i++) {
-                link.append("/");
-                link.append(parts[i]);
-                result.add(new Pair<String, String>(parts[i], link.toString()));
-            }
-        }
-        return result;
     }
 
     @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)

@@ -49,4 +49,6 @@ public interface DbxFileService {
     String getStorageInfo(String username) throws InvalidAccessTokenException;
 
     void updateStorageInfo(String username) throws InvalidAccessTokenException;
+
+    String getAccountInfo(String username);
 }

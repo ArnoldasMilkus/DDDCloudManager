@@ -283,4 +283,17 @@ public class DbxFileServiceImpl implements DbxFileService {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public String getAccountInfo(String username) {
+        DbxClientV2 client = dbxClients.get(username);
+        String result = "";
+        try {
+            FullAccount acc = client.users().getCurrentAccount();
+            result = acc.getEmail();
+        } catch (DbxException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

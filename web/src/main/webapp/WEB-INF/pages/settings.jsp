@@ -8,7 +8,7 @@
     <script src="/resources/jquery/reloader.js"></script>
     <html>
 
-    <body >
+    <body>
     <script language="javascript">
         function unlinkGDriveAction() {
             var path = '/GDriveFiles/revokeToken';
@@ -18,6 +18,25 @@
     <div class="container">
         <sec:authentication var="user" property="principal"/>
         <h2>${user.username}</h2>
+            <c:choose>
+                <c:when test="${!empty dbxAccount}">
+                    <form name="authForm"
+                          action="<c:url value="/dbx/auth-clear" />" method='POST'>
+                        <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
+                        <label><spring:message code="settings.dbxAccount"/>: ${dbxAccount}</label><br/>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                </c:when>
+                <c:otherwise>
+                    <form name="authForm"
+                          action="<c:url value="/dbx/auth-start" />" method='POST'>
+                        <input type="submit" value="<spring:message code="dbxfiles.linkbutton"/>"/>
+                        <label><spring:message code="settings.noAccount"/></label>
+                        <input type="hidden"
+                               name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                </c:otherwise>
+            </c:choose>
         <button type="button" onclick="myFunction()">Change Backgroud image</button>
         <div>
             <p>Laikrodis</p>
@@ -40,27 +59,27 @@
         <script type="text/javascript">
 
             function myFunction() {
-                if(sessionStorage.getItem("lastname1")==1){
+                if (sessionStorage.getItem("lastname1") == 1) {
 
                     //if (typeof(Storage) !== "undefined") {
                     // Store
                     sessionStorage.removeItem("lastname1");
-                        localStorage.setItem("lastname",0);
-                    sessionStorage.setItem("lastname1",0);
-                        // Retrieve
-                        document.getElementById("result").innerHTML = "special";
+                    localStorage.setItem("lastname", 0);
+                    sessionStorage.setItem("lastname1", 0);
+                    // Retrieve
+                    document.getElementById("result").innerHTML = "special";
                     location.reload();
 
-                } else{
+                } else {
                     req = false;
                     change = false;
                     sessionStorage.removeItem("lastname1");
                     //if (typeof(Storage) !== "undefined") {
-                        // Store
+                    // Store
                     localStorage.setItem("lastname", 1);
                     sessionStorage.setItem("lastname1", 1);
-                        // Retrieve
-                        document.getElementById("result").innerHTML = "default";
+                    // Retrieve
+                    document.getElementById("result").innerHTML = "default";
                     location.reload();
 
                 }
@@ -69,8 +88,9 @@
 
         </script>
 
-        <input type='button' value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken" href="#" onclick="return unlinkGDriveAction()">
-        </div>
+        <input type='button' value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken" href="#"
+               onclick="return unlinkGDriveAction()">
+    </div>
     </body>
     </html>
 </customtags:pageTemplate>
