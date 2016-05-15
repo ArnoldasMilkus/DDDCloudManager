@@ -56,8 +56,8 @@
                 <c:url var="deleteUrl" value="/dbx/delete">
                     <c:param name="path" value="${file.pathLower}"/>
                 </c:url>
-                <c:url var="moveToGDUrl" value="/dbx/copy/gd">
-                    <c:param name="path" value="${file.pathLower}"/>
+                <c:url var="copyToGDUrl" value="/GDriveFiles/getId">
+                    <c:param name="dbxFilePath" value="${file.pathLower}"/>
                 </c:url>
                 <c:url var="downloadUrl" value="/dbx/download">
                     <c:param name="path" value="${file.pathLower}"/>
@@ -77,7 +77,7 @@
                                 class="glyphicon glyphicon-download-alt"></span></a>
                         <a title="<spring:message code="dbxfiles.removeButton"/>" href="${deleteUrl}"><span
                                 class="glyphicon glyphicon-trash"></span></a>
-                        <a title="<spring:message code="dbxfiles.removeButton"/>" href="${moveToGDUrl}"><span
+                        <a title="<spring:message code="dbxfiles.copyToGD"/>" href="${copyToGDUrl}"><span
                                 class="glyphicon glyphicon-cloud-upload"></span></a>
                     </td>
                 </tr>

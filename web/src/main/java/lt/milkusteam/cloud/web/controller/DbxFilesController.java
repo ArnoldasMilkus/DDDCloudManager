@@ -252,10 +252,16 @@ public class DbxFilesController {
     }
 
     @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)
-    public String copyFileToGDrive(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) {
+    public String copyFileToGDrive(Principal principal,
+                                   @RequestParam(name = "from") String from,
+                                   @RequestParam(name = "to", required = false) String to,
+                                   RedirectAttributes redirectAttributes) {
+        if (to == null || to.isEmpty()) {
+            to = "root";
+        }
         try {
-            InputStream is = dbxFileService.getInputStream(principal.getName(), path);
-            gdFilesService.uploadFile(is, "root", path.substring(path.lastIndexOf("/") + 1), principal.getName(), true);
+            InputStream is = dbxFileService.getInputStream(principal.getName(), from);
+            gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true);
             is.close();
         } catch (InvalidAccessTokenException e) {
             redirectAttributes.addFlashAttribute("error", 2);
