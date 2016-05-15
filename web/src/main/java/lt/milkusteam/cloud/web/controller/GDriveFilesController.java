@@ -1,5 +1,6 @@
 package lt.milkusteam.cloud.web.controller;
 
+import lt.milkusteam.cloud.core.service.DbxFileService;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class GDriveFilesController {
 
     @Autowired
     GDriveFilesService files;
+
+    @Autowired
+    DbxFileService dbxFileService;
 
     @Autowired
     GDriveOAuth2Service authorization;
@@ -60,17 +64,17 @@ public class GDriveFilesController {
                 files.addClient(username);
             }
             if (isTrashed) {
-                model.addAttribute("files", files.findAllInDirectory("", username, isTrashed));
+                model.addAttribute("files", files.findAllInDirectory("", username, isTrashed, 0));
                 model.addAttribute("curId", "root");
             } else if (folderId != null && !folderId.isEmpty()) {
-                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed));
+                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed, 0));
                 model.addAttribute("curId", folderId);
             } else if (childId != null && !childId.isEmpty()) {
-                folderId = files.getIfChild(childId, username);
-                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed));
+                folderId = files.getIfChild(childId, username, 0);
+                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed, 0));
                 model.addAttribute("curId", folderId);
             } else {
-                model.addAttribute("files", files.findAllInDirectory("root", username, isTrashed));
+                model.addAttribute("files", files.findAllInDirectory("root", username, isTrashed, 0));
                 model.addAttribute("curId", "root");
             }
             isLinked = true;
@@ -156,7 +160,7 @@ public class GDriveFilesController {
             parentId = "root";
         }
         if (isTrashed == false) {
-            parentId = files.getIfChild(fileId, username);
+            parentId = files.getIfChild(fileId, username, 0);
             isTrashed = !isTrashed;
         }
 
@@ -180,5 +184,20 @@ public class GDriveFilesController {
     @RequestMapping(value = "/GDriveFiles/getId", method = RequestMethod.GET)
     public String sendPathId(@RequestParam("dbxFilePath") String dbxFilePath) {
         return "redirect:/GDriveFiles?rootId=root&dbxFilePath="+dbxFilePath+"&isOnlyPathChoose=true";
+    }
+    @RequestMapping(value = "/GDriveFiles/workWithDBX", method = RequestMethod.GET)
+    public String getDBXPath(@RequestParam("from") String fileId,
+                             @RequestParam(name = "to", required = false) String dbxPath,
+                             Principal principal) {
+        String username = principal.getName();
+        if (dbxPath == null || dbxPath.isEmpty()) {
+            return "redirect:/dbx/copyfrom/gd?fileId="+fileId;
+        }
+        else {
+            InputStream input = files.returnStream(username, 0, fileId);
+            dbxFileService.upload(username, dbxPath, input);
+        }
+        String parentId = files.getIfChild(fileId, username, 0);
+        return "redirect:/GDriveFiles?rootId="+parentId;
     }
 }

@@ -169,23 +169,27 @@
                         </td>
                         <td style="width:auto">
                             <c:choose>
-                            <c:when test="${!isOnlyPathChoose}">
-                            <c:if test="${file.mimeType ne 'folder'}"><a title="<spring:message code="GDrive.downloadAction"/>" href="/GDriveFiles/download?fileId=${file.id}"><span
-                                    class="glyphicon glyphicon-download-alt"></span></a>
-                                |
-                            </c:if>
-                            <c:choose>
-                            <c:when test="${isTrashed}">
-                            <a title="<spring:message code="GDrive.restoreAction"/>" href="/GDriveFiles/delete?parentId=${curId}&fileId=${file.id}&isTrashed=${isTrashed}">
-                                <span class="glyphicon glyphicon-export"></span>
+                                <c:when test="${!isOnlyPathChoose}">
+                                    <c:if test="${file.mimeType ne 'folder'}"><a title="<spring:message code="GDrive.downloadAction"/>" href="/GDriveFiles/download?fileId=${file.id}"><span
+                                            class="glyphicon glyphicon-download-alt"></span></a>
+                                        |
+                                    </c:if>
+                                    <c:choose>
+                                    <c:when test="${isTrashed}">
+                                    <a title="<spring:message code="GDrive.restoreAction"/>" href="/GDriveFiles/delete?parentId=${curId}&fileId=${file.id}&isTrashed=${isTrashed}">
+                                        <span class="glyphicon glyphicon-export"></span></a>
+                                        </c:when>
+                                        <c:otherwise>
+                                        <a title="<spring:message code="GDrive.removeAction"/>" href="/GDriveFiles/delete?parentId=${curId}&fileId=${file.id}&isTrashed=${isTrashed}">
+                                            <span class="glyphicon glyphicon-trash"></span></a>
+                                            </c:otherwise>
+                                    </c:choose>
                                 </c:when>
-                                <c:otherwise>
-                                <a title="<spring:message code="GDrive.removeAction"/>" href="/GDriveFiles/delete?parentId=${curId}&fileId=${file.id}&isTrashed=${isTrashed}">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                    </c:otherwise>
-                                    </c:choose>
-                                    </c:when>
-                                    </c:choose>
+                            </c:choose>
+                            <c:if test="${file.mimeType ne 'folder'}">|
+                                <a title="<spring:message code="GDrive.sendToDropbox"/>" href="/GDriveFiles/workWithDBX?from=${file.id}">
+                                    <span class="glyphicon glyphicon-share"></span></a>
+                            </c:if>
                         </td>
                     </tr>
                 </c:forEach>
