@@ -46,7 +46,5 @@ public interface DbxFileService {
 
     void restore(String username, String path) throws InvalidAccessTokenException;
 
-    FullAccount getAccountInfo(String username) throws InvalidAccessTokenException;
-
-    SpaceUsage getStorageInfo(String username) throws InvalidAccessTokenException;
+    String getStorageInfo(String username) throws InvalidAccessTokenException;
 }

@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -76,6 +75,9 @@ public class DbxFilesController {
                         dbxFileService.getMetadataPair(username, path);
                 model.addAttribute("files", metadataPair.getRight());
                 model.addAttribute("folders", metadataPair.getLeft());
+                model.addAttribute("spaceUsage", dbxFileService.getStorageInfo(username));
+            } else {
+                return "redirect:/dbx/";
             }
             model.addAttribute("currentPath", path);
         } catch (InvalidAccessTokenException e) {
@@ -156,8 +158,10 @@ public class DbxFilesController {
         OutputStream stream = null;
         try {
             stream = response.getOutputStream();
-            response.setContentType("application/force-download");
-            response.setHeader("Content-Disposition", "attachment; filename=" + path.substring(path.lastIndexOf("/") + 1));
+            FileMetadata mdata = (FileMetadata)dbxFileService.getMetadata(principal.getName(), path);
+//            response.setContentType("application/force-download");
+            response.setContentType(determineContentType(path));
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + (path.substring(path.lastIndexOf("/") + 1) + "\""));
             dbxFileService.download(principal.getName(), path, stream);
             response.flushBuffer();
         } catch (InvalidAccessTokenException e) {
@@ -261,5 +265,38 @@ public class DbxFilesController {
             LOGGER.error(e.getMessage());
         }
         return "index";
+    }
+
+    public String determineContentType(String path) {
+        String result = null;
+        String ext = path.substring(path.lastIndexOf(".")+1);
+        switch (ext) {
+            case "pdf":
+                result = "application/pdf";
+                break;
+            case "mp3":
+                result = "audio/mpeg";
+                break;
+            case "mkv":
+                result = "video/x-matroska";
+                break;
+            case "avi":
+                result = "video/x-msvideo";
+                break;
+            case "mpeg":
+            case "mp4":
+            case "webm":
+                result = "video/" + ext;
+                break;
+            case "png":
+            case "jpeg":
+            case "bmp":
+            case "gif":
+                result = "image/" + ext;
+                break;
+            default:
+                result = "application/force-download";
+        }
+        return result;
     }
 }

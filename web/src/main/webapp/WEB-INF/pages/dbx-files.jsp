@@ -9,6 +9,7 @@
     <html>
     <body>
     <div class="container col-md-12">
+        <h3>${spaceUsage}</h3>
         <h3 style="background-color: whitesmoke">
             <a href="/dbx/files?path="><spring:message code="dbxfiles.home"/></a>
             <c:forTokens var="folder" items="${currentPath}" delims="/">
