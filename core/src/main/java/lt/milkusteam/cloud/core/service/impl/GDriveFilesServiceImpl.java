@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Vilintas on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 @Service
 public class GDriveFilesServiceImpl implements GDriveFilesService {
@@ -33,9 +33,6 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
 
     @Override
     public List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed) {
-        /*if (directoryId == null || directoryId.isEmpty()) {
-            directoryId = new String("root");
-        }*/
         return getDriveService(userName, 0).getListByParentId(directoryId, isTrashed);
     }
 

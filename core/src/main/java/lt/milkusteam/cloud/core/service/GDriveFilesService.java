@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Created by Vilintas on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public interface GDriveFilesService {
 

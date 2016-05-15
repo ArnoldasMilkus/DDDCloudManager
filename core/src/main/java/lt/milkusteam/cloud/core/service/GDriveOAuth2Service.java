@@ -1,13 +1,7 @@
 package lt.milkusteam.cloud.core.service;
 
-import com.google.api.services.drive.model.File;
-
-import java.io.InputStream;
-import java.util.List;
-import java.util.function.BooleanSupplier;
-
 /**
- * Created by Vilintas on 2016-05-12.
+ * Created by Vilintas Strielčiūnas on 2016-05-12.
  */
 public interface GDriveOAuth2Service {
 

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by Asus on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class GDriveUploader {
     public File simpleUpload(Drive service, File metadata, FileContent content, boolean useDirectUpload) {

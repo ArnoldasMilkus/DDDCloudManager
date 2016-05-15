@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Created by Vilintas on 2016-05-13.
+ * Created by Vilintas Strielčiūnas on 2016-05-13.
  */
 @Entity
 @Table(name = "GDrive_tokens")

@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.security.Principal;
 
 /**
- * Created by Vilintas 2016-04-20
+ * Created by Vilintas Strielčiūnas 2016-04-20
  */
 @Controller
 public class GDriveFilesController {

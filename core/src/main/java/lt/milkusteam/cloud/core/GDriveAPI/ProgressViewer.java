@@ -1,7 +1,7 @@
 package lt.milkusteam.cloud.core.GDriveAPI;
 
 /**
- * Created by Asus on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class ProgressViewer {
     static void header1(String name) {

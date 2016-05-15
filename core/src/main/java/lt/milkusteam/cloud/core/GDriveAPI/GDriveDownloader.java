@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Created by Asus on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class GDriveDownloader {
     public String simpleDownload(Drive service, HttpTransport httpTransport, String fileId, boolean useDirectDownload) {
