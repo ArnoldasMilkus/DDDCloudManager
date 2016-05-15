@@ -9,6 +9,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import lt.milkusteam.cloud.core.dao.GDriveTokenDAO;
 import lt.milkusteam.cloud.core.model.GDriveToken;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ import java.util.Arrays;
  */
 @Service
 public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GDriveOAuth2ServiceImpl.class);
 
     private final static String CLIENT_ID = "851556385458-s35qkeog0h3ph9pn7sbot0klvks3hpr5.apps.googleusercontent.com";
 
@@ -68,16 +72,16 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
             if (e.getDetails() != null) {
                 System.err.println("Error: " + e.getDetails().getError());
                 if (e.getDetails().getErrorDescription() != null) {
-                    System.err.println(e.getDetails().getErrorDescription());
+                    LOGGER.error(e.getDetails().getErrorDescription());
                 }
                 if (e.getDetails().getErrorUri() != null) {
-                    System.err.println(e.getDetails().getErrorUri());
+                    LOGGER.error(e.getDetails().getErrorUri());
                 }
             } else {
-                System.err.println(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 }

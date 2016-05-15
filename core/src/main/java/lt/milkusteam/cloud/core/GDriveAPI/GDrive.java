@@ -21,6 +21,8 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import lt.milkusteam.cloud.core.comparators.FilesSortComparator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GDrive {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GDrive.class);
     /** Application name. */
     private static final String APPLICATION_NAME =
             "DDD Cloud Manager";
@@ -48,8 +51,8 @@ public class GDrive {
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
             InputStream in = GDrive.class.getResourceAsStream("/client_secret.json");
             if (in == null) {
-                System.out.println("Missing client secret.");
-                System.out.println("Download and add it into resources/client_secret.json");
+                LOGGER.error("Missing client secret.");
+                LOGGER.error("Download and add it into resources/client_secret.json");
             }
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             CredentialRefreshListener list = new DataStoreCredentialRefreshListener(userId, DATA_STORE_FACTORY);
@@ -64,7 +67,7 @@ public class GDrive {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
         } catch (Throwable t) {
-            t.printStackTrace();
+            LOGGER.error(t.getMessage());
             System.exit(1);
         }
     }
@@ -93,7 +96,7 @@ public class GDrive {
                     .setApplicationName(APPLICATION_NAME)
                     .build();
         } catch (Throwable t) {
-            t.printStackTrace();
+            LOGGER.error(t.getMessage());
             System.exit(1);
         }
     }
@@ -121,10 +124,10 @@ public class GDrive {
                     .setFields("id")
                     .setFields("mimeType, parents")
                     .execute();
-            System.out.println("Folder ID: " + file.getId());
+            LOGGER.info("Folder ID: " + file.getId());
             return file.getId();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
         return "";
     }
@@ -142,7 +145,7 @@ public class GDrive {
                         .setPageToken(pageToken)
                         .execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
             for(File file: result.getFiles()) {
                 if (file.getName().equals(name) && file.getMimeType().equals(mimeType)) {
@@ -159,7 +162,7 @@ public class GDrive {
             fileMetadata.setTrashed(isTrashed);
             System.out.println("File is trashed " + drive.files().update(fileId, fileMetadata).execute().getTrashed());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 
