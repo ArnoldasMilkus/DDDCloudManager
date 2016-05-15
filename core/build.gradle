@@ -8,5 +8,11 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.38'
     compile 'javax.validation:validation-api:1.1.0.Final'
     compile 'com.zaxxer:HikariCP:2.4.5'
+
+    //Arnoldo mess
+    compile 'org.springframework.security:spring-security-web:4.0.4.RELEASE'
+    compile 'org.springframework.security:spring-security-taglibs:4.0.4.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.2.5.RELEASE'
+
     testCompile 'org.mockito:mockito-all:1.10.19'
 }
