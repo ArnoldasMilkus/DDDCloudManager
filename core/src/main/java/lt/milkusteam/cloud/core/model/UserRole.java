@@ -2,6 +2,8 @@ package lt.milkusteam.cloud.core.model;
 
 import javax.persistence.*;
 
+import java.util.Collection;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 /**
@@ -14,7 +16,6 @@ public class UserRole {
     private Integer userRoleId;
     private User user;
     private String role;
-
     public UserRole() {
     }
 
@@ -33,7 +34,6 @@ public class UserRole {
     public void setUserRoleId(Integer userRoleId) {
         this.userRoleId = userRoleId;
     }
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", nullable = false)

@@ -1,16 +1,23 @@
 package lt.milkusteam.cloud.core.service.impl;
 
 import lt.milkusteam.cloud.core.dao.UserDao;
-import lt.milkusteam.cloud.core.model.User;
-import lt.milkusteam.cloud.core.model.UserDTO;
+import lt.milkusteam.cloud.core.dao.VerificationTokenDao;
+import lt.milkusteam.cloud.core.dao.repository.UserRepository;
+import lt.milkusteam.cloud.core.model.*;
 import lt.milkusteam.cloud.core.service.UserService;
 import lt.milkusteam.cloud.core.validation.EmailExistsException;
 import lt.milkusteam.cloud.core.validation.UsernameExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,7 +28,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    private UserRepository repository;
+    //Collection<UserRole> userRole ;
 
+    @Autowired
+    private VerificationTokenDao verificationTokenDao;
     @Override
     public List<User> findAll() {
         return userDao.findAll();
@@ -56,7 +70,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(accountDto.getUsername());
         user.setPassword(encoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
-        user.setEnabled(true);
+        //user.setEnabled(true);////buvo
         return userDao.save(user);
     }
 
@@ -74,5 +88,77 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    //@Override
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+        boolean enabled = true;
+        boolean accountNonExpired = true;
+        boolean credentialsNonExpired = true;
+        boolean accountNonLocked = true;
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                throw new UsernameNotFoundException("No user found with username: " + email);
+            }
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword().toLowerCase(),
+                    user.isEnabled(),
+                    accountNonExpired,
+                    credentialsNonExpired,
+                    accountNonLocked,
+                    getAuthorities(2));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public User getUser(String verificationToken) {
+        User user = userDao.findByUsername(verificationTokenDao.findByToken(verificationToken).getUsername());
+        return user;
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return verificationTokenDao.findByToken(VerificationToken);
+    }
+    //use for registration via email for updating user's enable atribute
+    @Override
+    public void saveRegisteredUser(String username) {
+        User user =userDao.findByUsername(username);
+        user.setEnabled(true);
+        repository.save(user);
+    }
+
+    @Override
+    public void createVerificationToken(String username, String token) {
+        VerificationToken myToken = new VerificationToken(token, username);
+        verificationTokenDao.save(myToken);
+    }
+
+
+
+    private Collection<? extends GrantedAuthority>getAuthorities(Integer role){
+        List<GrantedAuthority> authList = getGrantedAuthorities(getRoles(role));
+        return authList;
+    }
+    private List<String> getRoles(Integer role) {
+        List<String> roles = new ArrayList<String>();
+        if (role.intValue() == 1) {
+            roles.add("ROLE_USER");
+            roles.add("ROLE_ADMIN");
+        } else if (role.intValue() == 2) {
+            roles.add("ROLE_USER");
+        }
+        return roles;
+    }
+    private static List<GrantedAuthority> getGrantedAuthorities (List<String> roles) {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        for (String role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+        return authorities;
     }
 }
