@@ -4,6 +4,8 @@ import com.dropbox.core.InvalidAccessTokenException;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +24,8 @@ import java.security.Principal;
  */
 @Controller
 public class GDriveFilesController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GDriveFilesController.class);
 
     @Autowired
     GDriveFilesService files;
@@ -109,7 +113,7 @@ public class GDriveFilesController {
                 input = file.getInputStream();
                 files.uploadFile(input, parentId, fileName, username, false);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
         }
 

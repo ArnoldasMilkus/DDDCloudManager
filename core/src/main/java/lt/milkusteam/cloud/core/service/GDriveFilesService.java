@@ -32,4 +32,6 @@ public interface GDriveFilesService {
     void newFolder(String username, int ind, String folderName, String parentId);
 
     InputStream returnStream(String username, int ind, String fileId);
+
+    String getName(String username, int ind, String fileId);
 }

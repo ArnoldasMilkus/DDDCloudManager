@@ -127,10 +127,19 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
         try {
             return drive.getDrive().files().get(fileId).executeMedia().getContent();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
         return null;
     }
 
-
+    @Override
+    public String getName(String username, int ind, String fileId) {
+        GDrive drive = getDriveService(username, ind);
+        try {
+            return drive.getDrive().files().get(fileId).setFields("name").execute().getName();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return null;
+    }
 }
