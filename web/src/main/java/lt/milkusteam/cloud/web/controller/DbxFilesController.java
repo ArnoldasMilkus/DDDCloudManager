@@ -260,6 +260,8 @@ public class DbxFilesController {
             to = "root";
         }
         try {
+            LOGGER.info("~~~TO = " + to);
+            LOGGER.info("~~~FROM = " + from);
             InputStream is = dbxFileService.getInputStream(principal.getName(), from);
             gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true);
             is.close();
@@ -270,7 +272,7 @@ public class DbxFilesController {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
-        return "index";
+        return "redirect:/GDriveFiles";
     }
 
     public String determineContentType(String path) {
