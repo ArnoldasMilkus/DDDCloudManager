@@ -39,11 +39,11 @@
             function sendPathToDBXAction() {
                 var id = $("#currentId").val();
                 var dbxFilePath = $("#dbxFilePath").val();
-                var path = '/GDriveUpload?from=';
+                var path = '/dbx/copy/gd?from=';
                 var pathEnd = '&to=';
-                path = path.concat(id);
-                path = path.concat(pathEnd);
                 path = path.concat(dbxFilePath);
+                path = path.concat(pathEnd);
+                path = path.concat(id);
                 window.location.href = path;
             }
         </script> <script language="javascript">

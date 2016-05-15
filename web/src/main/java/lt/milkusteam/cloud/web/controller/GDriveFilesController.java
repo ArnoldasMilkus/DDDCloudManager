@@ -36,7 +36,7 @@ public class GDriveFilesController {
                             @RequestParam(name = "isOnlyPathChoose", required = false) boolean isOnlyPathChoose,
                             @RequestParam(name = "dbxFilePath", required = false) String dbxFilePath,
                             Principal principal) {
-        int id = 0;
+        int ind = 0;
         String username = principal.getName();
         boolean isLinked = false;
         boolean isError = false;
@@ -56,7 +56,7 @@ public class GDriveFilesController {
             return "GDriveFiles";
         }
         if (authorization.isLinked(username)) {
-            if (!files.containsClient(username, 0)) {
+            if (!files.containsClient(username, ind)) {
                 files.addClient(username);
             }
             if (isTrashed) {
