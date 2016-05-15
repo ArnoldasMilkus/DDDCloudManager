@@ -6,7 +6,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import lt.milkusteam.cloud.core.GDriveAPI.GDrive;
 import lt.milkusteam.cloud.core.dao.GDriveTokenDAO;
 import lt.milkusteam.cloud.core.model.GDriveToken;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
@@ -17,7 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * Created by Vilintas on 2016-05-12
+ * Created by Vilintas Strielčiūnas on 2016-05-12
  */
 @Service
 public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {

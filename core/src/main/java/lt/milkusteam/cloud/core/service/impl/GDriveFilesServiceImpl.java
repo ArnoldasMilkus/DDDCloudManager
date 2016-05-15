@@ -13,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Vilintas on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 @Service
 public class GDriveFilesServiceImpl implements GDriveFilesService {
@@ -32,16 +33,13 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     private HashMap<String, List<GDrive>> driveMap = new HashMap<>();
 
     @Override
-    public List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed) {
-        /*if (directoryId == null || directoryId.isEmpty()) {
-            directoryId = new String("root");
-        }*/
-        return getDriveService(userName, 0).getListByParentId(directoryId, isTrashed);
+    public List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed, int ind) {
+        return getDriveService(userName, ind).getListByParentId(directoryId, isTrashed);
     }
 
     @Override
-    public String getIfChild(String childId, String userName) {
-        return getDriveService(userName, 0).getParentId(childId);
+    public String getIfChild(String childId, String userName, int ind) {
+        return getDriveService(userName, ind).getParentId(childId);
     }
 
     @Override
@@ -121,6 +119,17 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     public void newFolder(String username, int ind, String folderName, String parentId) {
         GDrive drive = getDriveService(username, ind);
         drive.createFolder(folderName, parentId);
+    }
+
+    @Override
+    public InputStream returnStream(String username, int ind, String fileId) {
+        GDrive drive = getDriveService(username, ind);
+        try {
+            return drive.getDrive().files().get(fileId).executeMedia().getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

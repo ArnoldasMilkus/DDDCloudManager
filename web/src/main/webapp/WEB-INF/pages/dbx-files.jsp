@@ -25,7 +25,7 @@
             <c:choose>
                 <c:when test="${!empty from}">
                     <form name="copyToForm"
-                          action="<c:url value="/dbx/auth-clear" />" method='POST'>
+                          action="<c:url value="/dbx/copyFrom/gd" />" method='POST'>
                         <input type="submit" value="<spring:message code="dbxfiles.copyToForm.copyHereButton"/>"/>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <input type="hidden" name="from" value="${from}"/>
@@ -48,6 +48,7 @@
                 <c:forEach var="folder" items="${folders}">
                     <c:url var="folderUrl" value="/dbx/files">
                         <c:param name="path" value="${folder.pathLower}"/>
+                        <c:param name="from" value="${from}"/>
                     </c:url>
                     <c:url var="deleteUrl" value="/dbx/delete">
                         <c:param name="path" value="${folder.pathLower}"/>

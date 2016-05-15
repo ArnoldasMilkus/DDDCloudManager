@@ -6,7 +6,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import java.io.IOException;
 
 /**
- * Created by Asus on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class GDriveUploadProgressListener implements MediaHttpUploaderProgressListener {
 

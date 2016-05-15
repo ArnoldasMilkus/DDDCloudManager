@@ -7,13 +7,13 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Created by Vilintas on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public interface GDriveFilesService {
 
-    List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed);
+    List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed, int ind);
 
-    String getIfChild(String childId, String userName);
+    String getIfChild(String childId, String userName, int ind);
 
     File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload);
 
@@ -30,4 +30,6 @@ public interface GDriveFilesService {
     void fixTrashed(String username, int ind, boolean trashed, String fileId);
 
     void newFolder(String username, int ind, String folderName, String parentId);
+
+    InputStream returnStream(String username, int ind, String fileId);
 }

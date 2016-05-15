@@ -267,8 +267,7 @@ public class DbxFilesController {
             to = "root";
         }
         try {
-            LOGGER.info("~~~TO = " + to);
-            LOGGER.info("~~~FROM = " + from);
+            LOGGER.info(principal.getName() + " copied file from Dropbox = " + from + " to Google Drive = " + to);
             InputStream is = dbxFileService.getInputStream(principal.getName(), from);
             gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true);
             is.close();
@@ -280,6 +279,28 @@ public class DbxFilesController {
             LOGGER.error(e.getMessage());
         }
         return "redirect:/GDriveFiles";
+    }
+    @RequestMapping(value = "/copyFrom/gd", method = RequestMethod.POST)
+    public String copyFileFromGDrive(Principal principal,
+                                   @RequestParam(name = "from") String from,
+                                   @RequestParam(name = "to", required = false) String to,
+                                   RedirectAttributes redirectAttributes) {
+        if (to == null) {
+            to = "";
+        }
+        try {
+            LOGGER.info(principal.getName() + " copied file from Google Drive = " + from + " to Dropbox = " + to);
+            InputStream is = gdFilesService.returnStream(principal.getName(), 0, from);
+            dbxFileService.uploadSmall(principal.getName(), to + "/abudabis.txt", is);
+            is.close();
+        } catch (InvalidAccessTokenException e) {
+            redirectAttributes.addFlashAttribute("error", 2);
+            clearUserDbxData(principal.getName());
+            return "redirect:/dbx/error";
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return "redirect:/dbx/files?path=" + to;
     }
 
     public String determineContentType(String path) {
