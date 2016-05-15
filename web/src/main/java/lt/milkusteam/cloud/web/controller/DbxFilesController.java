@@ -74,7 +74,7 @@ public class DbxFilesController {
             model.addAttribute("from", from);
         }
         try {
-            if (dbxFileService.containsClient(username)) {
+            if (dbxFileService.containsClient(username) || dbxFileService.addClient(username)) {
                 Pair<List<FolderMetadata>, List<FileMetadata>> metadataPair =
                         dbxFileService.getMetadataPair(username, path);
                 model.addAttribute("files", metadataPair.getRight());

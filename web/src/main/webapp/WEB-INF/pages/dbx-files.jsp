@@ -12,10 +12,10 @@
         <h2><spring:message code="dbxfiles.title"/><span class="pull-right">${spaceUsage}</span></h2>
         <fielset>
             <legend>
-                <a href="/dbx/files?path="><spring:message code="dbxfiles.home"/></a>
+                <a href="/dbx/files?path=&from=${from}"><spring:message code="dbxfiles.home"/></a>
                 <c:forTokens var="folder" items="${currentPath}" delims="/">
                     <c:set var="varPath" value="${varPath}/${folder}"/>
-                    > <a href="/dbx/files?path=${varPath}">${folder}</a>
+                    > <a href="/dbx/files?path=${varPath}&from=${from}">${folder}</a>
                 </c:forTokens>
                 <a class="pull-right" href="/dbx/trash"
                    title="<spring:message code="dbxfiles.deletedfiles.linktitle"/>">
@@ -64,8 +64,13 @@
                             --
                         </td>
                         <td style="width:auto">
-                            <a href="${deleteUrl}" title="<spring:message code="dbxfiles.removeButton"/>"><span
-                                    class="glyphicon glyphicon-trash"></span></a>
+                            <c:choose>
+                                <c:when test="${empty from}">
+                                    <a href="${deleteUrl}" title="<spring:message code="dbxfiles.removeButton"/>"><span
+                                            class="glyphicon glyphicon-trash"></span></a>
+                                </c:when>
+                                <c:otherwise></c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>
@@ -90,69 +95,76 @@
                                 ${file.size}
                         </td>
                         <td title="<spring:message code="dbxfiles.downloadButton"/>" style="width:auto">
-                            <a href="${downloadUrl}"><span
-                                    class="glyphicon glyphicon-download-alt"></span></a>
-                            <a title="<spring:message code="dbxfiles.removeButton"/>" href="${deleteUrl}"><span
-                                    class="glyphicon glyphicon-trash"></span></a>
-                            <a title="<spring:message code="dbxfiles.copyToGD"/>" href="${copyToGDUrl}"><span
-                                    class="glyphicon glyphicon-cloud-upload"></span></a>
+                            <c:choose>
+                                <c:when test="${empty from}">
+                                    <a href="${downloadUrl}"><span
+                                            class="glyphicon glyphicon-download-alt"></span></a>
+                                    <a title="<spring:message code="dbxfiles.removeButton"/>" href="${deleteUrl}"><span
+                                            class="glyphicon glyphicon-trash"></span></a>
+                                    <a title="<spring:message code="dbxfiles.copyToGD"/>" href="${copyToGDUrl}"><span
+                                            class="glyphicon glyphicon-share"></span></a>
+                                </c:when>
+                                <c:otherwise></c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-6">
-                        <c:url var="url" value="/dbx/upload">
-                            <c:param name="path" value="${currentPath}"/>
-                            <c:param name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                        </c:url>
-                        <form method="POST" enctype="multipart/form-data" action=${url}>
-                            <table style="background-color:whitesmoke">
-                                <tr>
-                                    <td><spring:message code="dbxfiles.uploadform.chosen"/></td>
-                                    <td><input type="file" name="file"/></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td><input type="submit"
-                                               value="<spring:message code="dbxfiles.uploadform.submit"/>"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                    </div>
-                    <div class="col-md-6">
-                        <form method="POST" action=
-                                <c:url value="/dbx/create"/>>
-                            <table style="background-color:whitesmoke">
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" name="name" value=""/></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td><input type="submit"
-                                               value="<spring:message code="dbxfiles.createfolder.submit"/>"/>
-                                    </td>
-                                </tr>
-                                <input type="hidden"
-                                       name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                <input type="hidden"
-                                       name="path" value="${currentPath}"/>
-                            </table>
-                        </form>
+            <c:if test="${empty from}">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <c:url var="url" value="/dbx/upload">
+                                <c:param name="path" value="${currentPath}"/>
+                                <c:param name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            </c:url>
+                            <form method="POST" enctype="multipart/form-data" action=${url}>
+                                <table style="background-color:whitesmoke">
+                                    <tr>
+                                        <td><spring:message code="dbxfiles.uploadform.chosen"/></td>
+                                        <td><input type="file" name="file"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="submit"
+                                                   value="<spring:message code="dbxfiles.uploadform.submit"/>"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <form method="POST" action=
+                                    <c:url value="/dbx/create"/>>
+                                <table style="background-color:whitesmoke">
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" name="name" value=""/></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="submit"
+                                                   value="<spring:message code="dbxfiles.createfolder.submit"/>"/>
+                                        </td>
+                                    </tr>
+                                    <input type="hidden"
+                                           name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                    <input type="hidden"
+                                           name="path" value="${currentPath}"/>
+                                </table>
+                            </form>
 
+                        </div>
                     </div>
                 </div>
-            </div>
-            <br/>
-            <form name="authForm"
-                  action="<c:url value="/dbx/auth-clear" />" method='POST'>
-                <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            </form>
+                <br/>
+                <form name="authForm"
+                      action="<c:url value="/dbx/auth-clear" />" method='POST'>
+                    <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+            </c:if>
         </fielset>
     </div>
 
