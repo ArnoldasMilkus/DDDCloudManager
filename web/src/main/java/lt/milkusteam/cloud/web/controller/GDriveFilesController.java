@@ -33,12 +33,16 @@ public class GDriveFilesController {
                             @RequestParam(name = "backId", required = false) String childId,
                             @RequestParam(name = "error", required = false) String error,
                             @RequestParam(name = "isTrashed", required = false) boolean isTrashed,
+                            @RequestParam(name = "isOnlyPathChoose", required = false) boolean isOnlyPathChoose,
+                            @RequestParam(name = "dbxFilePath", required = false) String dbxFilePath,
                             Principal principal) {
         int id = 0;
         String username = principal.getName();
         boolean isLinked = false;
         boolean isError = false;
         model.addAttribute("isTrashed", isTrashed);
+        model.addAttribute("isOnlyPathChoose", isOnlyPathChoose);
+        model.addAttribute("dbxFilePath", dbxFilePath);
         if (error != null && !error.isEmpty()) {
             if (error.contains("access_denied")) {
                 model.addAttribute("error", "GDrive.error.access_denied");
@@ -143,7 +147,7 @@ public class GDriveFilesController {
 
     @RequestMapping(value = "/GDriveFiles/delete", method = RequestMethod.GET)
     public String deleteFile(Principal principal, @RequestParam("fileId") String fileId,
-                           @RequestParam(name = "parentId", required = false) String parentId,
+                             @RequestParam(name = "parentId", required = false) String parentId,
                              @RequestParam(name = "isTrashed", required = false) boolean isTrashed) {
         isTrashed = !isTrashed;
         String username = principal.getName();
@@ -160,8 +164,8 @@ public class GDriveFilesController {
     }
     @RequestMapping(method = RequestMethod.POST, value = "/GDriveFiles/newFolder")
     public String newFolder(@RequestParam(name = "folderName", required = true) String folderName,
-                                   @RequestParam(name = "parentId", required = true) String parentId,
-                                   Principal principal) {
+                            @RequestParam(name = "parentId", required = true) String parentId,
+                            Principal principal) {
         String username = principal.getName();
         if (folderName == null || folderName.isEmpty()) {
             folderName = "New Folder";
@@ -172,5 +176,9 @@ public class GDriveFilesController {
         files.newFolder(username, 0, folderName, parentId);
 
         return "redirect:/GDriveFiles?rootId=" + parentId;
+    }
+    @RequestMapping(value = "/GDriveFiles/getId", method = RequestMethod.GET)
+    public String sendPathId(@RequestParam("dbxFilePath") String dbxFilePath) {
+        return "redirect:/GDriveFiles?rootId=root&dbxFilePath="+dbxFilePath+"&isOnlyPathChoose=true";
     }
 }
