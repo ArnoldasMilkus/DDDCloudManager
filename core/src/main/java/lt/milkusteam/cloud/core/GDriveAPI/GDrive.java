@@ -39,31 +39,16 @@ public class GDrive {
             "DDD Cloud Manager";
     private static final String MIME_FOLDER = "application/vnd.google-apps.folder";
     private static final String MIME_FILE = "application/vnd.google-apps.file";
-    private static final String MIME_PHOTO = "application/vnd.google-apps.photo";
 
     private   Drive drive;
     private Credential credential;
 
-    private java.io.File DATA_STORE_DIR; /*= new java.io.File(
-            System.getProperty("user.home"), ".credentials/drive-java-quickstart.json");*/
-
-    public GDrive(String userId, String driveID) {
-        DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/"+
-                userId +"/" + driveID );
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-//            DRIVE_SERVICE = getDriveService();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
-        }
-    }
+    private java.io.File DATA_STORE_DIR;
 
     public GDrive(String userId, String driveID, GoogleTokenResponse resp) {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_DIR = new java.io.File("", ".credentials/"+
+            DATA_STORE_DIR = new java.io.File(".credentials/"+
                     userId +"/" + driveID );
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
             InputStream in = GDrive.class.getResourceAsStream("/client_secret.json");
@@ -92,7 +77,7 @@ public class GDrive {
     public GDrive(String userId, String driveID, String token) {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_DIR = new java.io.File("", ".credentials/"+
+            DATA_STORE_DIR = new java.io.File(".credentials/"+
                     userId +"/" + driveID );
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
             InputStream in = GDrive.class.getResourceAsStream("/client_secret.json");
@@ -120,8 +105,6 @@ public class GDrive {
 
     public GDrive() {
     }
-
-    //"D:/Info/Gdrive/.credentials/drive-java-quickstart.json");
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -311,22 +294,25 @@ public class GDrive {
         return res;
     }
 
-    public String createFolder(String name, Drive service) {
+    public String createFolder(String name, String parentId) {
         File fileMetadata = new File();
+        List<String> parents = new ArrayList<>();
+        parents.add(parentId);
+        fileMetadata.setParents(parents);
         fileMetadata.setName(name);
         fileMetadata.setMimeType(MIME_FOLDER);
-
-        File file = null;
+        File file;
         try {
-            file = service.files().create(fileMetadata)
+            file = drive.files().create(fileMetadata)
                     .setFields("id")
-                    .setFields("mimeType")
+                    .setFields("mimeType, parents")
                     .execute();
+            System.out.println("Folder ID: " + file.getId());
+            return file.getId();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Folder ID: " + file.getId());
-        return file.getId();
+        return "";
     }
     public String findFileId(String name, String mimeType, Drive service) {
         if (mimeType.isEmpty()) {

@@ -3,6 +3,7 @@ package lt.milkusteam.cloud.web.controller;
 import com.dropbox.core.DbxSessionStore;
 import com.dropbox.core.DbxStandardSessionStore;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
+import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploadProgressListener;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,18 +100,16 @@ public class GDriveFilesController {
                                    Model model,
                                    Principal principal) {
         String username = principal.getName();
-        InputStream input = null;
+        InputStream input;
         String fileName = file.getOriginalFilename();
-        System.out.println(file.getOriginalFilename());
-        System.out.println(parentId);
         if (!parentId.isEmpty()) {
             model.addAttribute("parentId", parentId);
         }
-
         if (!file.isEmpty()) {
             try {
                 input = file.getInputStream();
-                files.uploadFile(input, parentId, fileName, username, true);
+                GDriveUploadProgressListener listener = new GDriveUploadProgressListener();
+                files.uploadFile(input, parentId, fileName, username, false, listener);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -169,5 +168,20 @@ public class GDriveFilesController {
         }
 
         return "redirect:/GDriveFiles?rootId=" + parentId + "&isTrashed=" + !isTrashed;
+    }
+    @RequestMapping(method = RequestMethod.POST, value = "/GDriveFiles/newFolder")
+    public String newFolder(@RequestParam(name = "folderName", required = true) String folderName,
+                                   @RequestParam(name = "parentId", required = true) String parentId,
+                                   Principal principal) {
+        String username = principal.getName();
+        if (folderName == null || folderName.isEmpty()) {
+            folderName = "New Folder";
+        }
+        if (parentId == null || parentId.isEmpty()) {
+            parentId = "root";
+        }
+        files.newFolder(username, 0, folderName, parentId);
+
+        return "redirect:/GDriveFiles?rootId=" + parentId;
     }
 }

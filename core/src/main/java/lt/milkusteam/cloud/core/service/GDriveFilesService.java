@@ -1,6 +1,7 @@
 package lt.milkusteam.cloud.core.service;
 
 import com.google.api.services.drive.model.File;
+import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploadProgressListener;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -14,13 +15,9 @@ public interface GDriveFilesService {
 
     List<File> findAllInDirectory(String directoryId, String userName, boolean isTrashed);
 
-    String addToPath(File folder);
-
-    String removeFromPathLast();
-
     String getIfChild(String childId, String userName);
 
-    File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload);
+    File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload, GDriveUploadProgressListener listener);
 
     boolean containsClient(String username, int ind);
 
@@ -33,4 +30,6 @@ public interface GDriveFilesService {
     void downloadToClient(HttpServletResponse response, String fileId, String username, int ind);
 
     void fixTrashed(String username, int ind, boolean trashed, String fileId);
+
+    void newFolder(String username, int ind, String folderName, String parentId);
 }

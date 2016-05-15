@@ -5,7 +5,7 @@
 <customtags:pageTemplate>
     <html>
     <head>
-        <input type="hidden" id="currenId" name="currenId" value="${curId}"/>
+        <input type="hidden" id="currentId" name="currentId" value="${curId}"/>
         <input type="hidden" id="isTrashed" name="currenId" value="${isTrashed}"/>
         <script language="javascript">
             function rootAction() {
@@ -14,7 +14,7 @@
         </script>
         <script language="javascript">
             function backAction() {
-                var id = $("#currenId").val();
+                var id = $("#currentId").val();
                 var path = '/GDriveFiles?backId=';
                 path = path.concat(id);
                 window.location.href = path;
@@ -22,7 +22,7 @@
         </script>
         <script language="javascript">
             function uploadAction() {
-                var id = $("#currenId").val();
+                var id = $("#currentId").val();
                 var path = '/GDriveUpload?parentId=';
                 path = path.concat(id);
                 window.location.href = path;
@@ -110,6 +110,16 @@
                 </c:forEach>
                 </tbody>
             </table>
+            <form name="newFolder"
+                  action="<c:url value="/GDriveFiles/newFolder" />" method='POST'>
+                <label><spring:message code="GDrive.newFolderText"/></label><input type="text" name="folderName" value=""/>
+                <input type="submit" style="height:30px; width:auto" value="<spring:message
+                        code="GDrive.newFolder"/>"/>
+
+                <input type="hidden"
+                       name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="hidden" name="parentId" value="${curId}"/>
+            </form>
         </c:if>
     </div>
     </body>

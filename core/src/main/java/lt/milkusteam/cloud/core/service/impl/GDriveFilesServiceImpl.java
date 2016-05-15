@@ -3,6 +3,7 @@ package lt.milkusteam.cloud.core.service.impl;
 import com.google.api.services.drive.model.File;
 import lt.milkusteam.cloud.core.GDriveAPI.GDrive;
 import lt.milkusteam.cloud.core.GDriveAPI.GDriveDownloader;
+import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploadProgressListener;
 import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploader;
 import lt.milkusteam.cloud.core.dao.GDriveTokenDAO;
 import lt.milkusteam.cloud.core.model.GDriveToken;
@@ -43,22 +44,12 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     }
 
     @Override
-    public String addToPath(File folder) {
-        return null;
-    }
-
-    @Override
-    public String removeFromPathLast() {
-        return null;
-    }
-
-    @Override
     public String getIfChild(String childId, String userName) {
         return getDriveService(userName, 0).getParentId(childId);
     }
 
     @Override
-    public File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload) {
+    public File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload, GDriveUploadProgressListener listener) {
         GDrive drive = getDriveService(userName, 0);
         GDriveUploader uploader = new GDriveUploader();
         File metaData = new File();
@@ -66,7 +57,7 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
         parents.add(parentId);
         metaData.setParents(parents);
         metaData.setName(fileName);
-        return uploader.simpleUploadStream(drive.getDrive(), metaData, inStream, useDirectUpload);
+        return uploader.simpleUploadStream(drive.getDrive(), metaData, inStream, useDirectUpload, listener);
     }
 
     private GDrive getDriveService(String userName, int ind) {
@@ -128,6 +119,12 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     public void fixTrashed(String username, int ind, boolean trashed, String fileId) {
         GDrive drive = getDriveService(username, ind);
         drive.setTrashed(fileId, trashed);
+    }
+
+    @Override
+    public void newFolder(String username, int ind, String folderName, String parentId) {
+        GDrive drive = getDriveService(username, ind);
+        drive.createFolder(folderName, parentId);
     }
 
 

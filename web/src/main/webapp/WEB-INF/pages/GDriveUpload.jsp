@@ -27,9 +27,7 @@
     </div>
 
     <div>
-        <ul>
-            <li th:each="file : ${files}" th:text="${file}"></li>
-        </ul>
+        <h4>${progressReport}</h4>
     </div>
     </body>
     </html>
