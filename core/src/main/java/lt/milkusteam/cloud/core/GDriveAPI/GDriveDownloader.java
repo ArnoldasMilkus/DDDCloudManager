@@ -22,6 +22,7 @@ public class GDriveDownloader {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             service.files().get(fileId).executeMediaAndDownloadTo(stream);
             response.flushBuffer();
+            stream.close();
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
         }

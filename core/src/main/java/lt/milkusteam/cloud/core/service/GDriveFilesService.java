@@ -15,7 +15,7 @@ public interface GDriveFilesService {
 
     String getIfChild(String childId, String userName, int ind);
 
-    File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload);
+    File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload, int ind);
 
     boolean containsClient(String username, int ind);
 

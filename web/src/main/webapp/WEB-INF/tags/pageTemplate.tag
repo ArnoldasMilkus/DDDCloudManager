@@ -76,9 +76,11 @@
                 <li>
                     <a href="/"><spring:message code="template.home"/></a>
                 </li>
-                <li>
+                <sec:authorize access="hasRole('ROLE_ADMIN')">
+                    <li>
                     <a href="/users/all"><spring:message code="template.users"/></a>
-                </li>
+                    </li>
+                </sec:authorize>
                 <c:if test="${!empty username}">
                     <li>
                         <a href="/settings"><spring:message code="template.settings"/></a>

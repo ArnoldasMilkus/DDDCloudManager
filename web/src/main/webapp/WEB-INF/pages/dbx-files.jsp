@@ -83,8 +83,10 @@
                     <c:url var="deleteUrl" value="/dbx/delete">
                         <c:param name="path" value="${file.pathLower}"/>
                     </c:url>
-                    <c:url var="copyToGDUrl" value="/GDriveFiles/getId">
-                        <c:param name="dbxFilePath" value="${file.pathDisplay}"/>
+                    <c:url var="copyToGDUrl" value="/GDriveFiles">
+                        <c:param name="from" value="${file.pathDisplay}"/>
+                        <c:param name="rootId" value="root"/>
+                        <c:param name="isOnlyPathChoose" value="true"/>
                     </c:url>
                     <c:url var="downloadUrl" value="/dbx/download">
                         <c:param name="path" value="${file.pathDisplay}"/>

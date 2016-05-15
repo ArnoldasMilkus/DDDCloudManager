@@ -1,6 +1,7 @@
 package lt.milkusteam.cloud.web.controller;
 
 import com.dropbox.core.InvalidAccessTokenException;
+import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,13 +30,16 @@ public class GDriveFilesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GDriveFilesController.class);
 
     @Autowired
-    GDriveFilesService files;
+    GDriveFilesService GDriveFilesService;
 
     @Autowired
     DbxFileService dbxFileService;
 
     @Autowired
-    GDriveOAuth2Service authorization;
+    DbxAuthService dbxAuthService;
+
+    @Autowired
+    GDriveOAuth2Service GDriveOAuthService;
 
     @RequestMapping(value = "/GDriveFiles", method = RequestMethod.GET)
     public String showFiles(Model model,
@@ -43,7 +48,7 @@ public class GDriveFilesController {
                             @RequestParam(name = "error", required = false) String error,
                             @RequestParam(name = "isTrashed", required = false) boolean isTrashed,
                             @RequestParam(name = "isOnlyPathChoose", required = false) boolean isOnlyPathChoose,
-                            @RequestParam(name = "dbxFilePath", required = false) String dbxFilePath,
+                            @RequestParam(name = "from", required = false) String dbxFilePath,
                             Principal principal) {
         int ind = 0;
         String username = principal.getName();
@@ -64,22 +69,22 @@ public class GDriveFilesController {
             model.addAttribute("driveAuth", isLinked);
             return "GDriveFiles";
         }
-        if (authorization.isLinked(username)) {
-            if (!files.containsClient(username, ind)) {
-                files.addClient(username);
+        if (GDriveOAuthService.isLinked(username)) {
+            if (!GDriveFilesService.containsClient(username, ind)) {
+                GDriveFilesService.addClient(username);
             }
             if (isTrashed) {
-                model.addAttribute("files", files.findAllInDirectory("", username, isTrashed, 0));
+                model.addAttribute("files", GDriveFilesService.findAllInDirectory("", username, isTrashed, 0));
                 model.addAttribute("curId", "root");
             } else if (folderId != null && !folderId.isEmpty()) {
-                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed, 0));
+                model.addAttribute("files", GDriveFilesService.findAllInDirectory(folderId, username, isTrashed, 0));
                 model.addAttribute("curId", folderId);
             } else if (childId != null && !childId.isEmpty()) {
-                folderId = files.getIfChild(childId, username, 0);
-                model.addAttribute("files", files.findAllInDirectory(folderId, username, isTrashed, 0));
+                folderId = GDriveFilesService.getIfChild(childId, username, 0);
+                model.addAttribute("files", GDriveFilesService.findAllInDirectory(folderId, username, isTrashed, 0));
                 model.addAttribute("curId", folderId);
             } else {
-                model.addAttribute("files", files.findAllInDirectory("root", username, isTrashed, 0));
+                model.addAttribute("files", GDriveFilesService.findAllInDirectory("root", username, isTrashed, 0));
                 model.addAttribute("curId", "root");
             }
             isLinked = true;
@@ -103,7 +108,7 @@ public class GDriveFilesController {
                                    Model model,
                                    Principal principal) {
         String username = principal.getName();
-        InputStream input;
+        InputStream input = null;
         String fileName = file.getOriginalFilename();
         if (!parentId.isEmpty()) {
             model.addAttribute("parentId", parentId);
@@ -111,18 +116,24 @@ public class GDriveFilesController {
         if (!file.isEmpty()) {
             try {
                 input = file.getInputStream();
-                files.uploadFile(input, parentId, fileName, username, false);
+                GDriveFilesService.uploadFile(input, parentId, fileName, username, false, 0);
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
         }
-
+        if (input != null) {
+            try {
+                input.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
         return "redirect:/GDriveFiles?rootId=" + parentId;
     }
     @RequestMapping(method = RequestMethod.GET, value = "/GDriveFiles/startAuth")
     public String calcAuthUrl(Principal principal) {
-        String authorizationURL = authorization.getActivationURL();
-        return "redirect:" + authorizationURL;
+        String GDriveOAuthServiceURL = GDriveOAuthService.getActivationURL();
+        return "redirect:" + GDriveOAuthServiceURL;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/GDriveFiles/finishAuth")
@@ -135,15 +146,15 @@ public class GDriveFilesController {
         if (code.isEmpty()) {
             return "redirect:/GDriveFiles?error=error";
         }
-        authorization.requestRefreshToken(principal.getName(), code);
+        GDriveOAuthService.requestRefreshToken(principal.getName(), code);
         return "redirect:/GDriveFiles";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/GDriveFiles/revokeToken")
     public String revokeToken(Principal principal){
         String username = principal.getName();
-        if (authorization.isLinked(username)) {
-            files.revokeToken(username, 0);
+        if (GDriveOAuthService.isLinked(username)) {
+            GDriveFilesService.revokeToken(username, 0);
         }
         return "redirect:/GDriveFiles";
     }
@@ -151,7 +162,7 @@ public class GDriveFilesController {
     @RequestMapping(value = "/GDriveFiles/download", method = RequestMethod.GET)
     public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("fileId") String fileId) {
         String username = principal.getName();
-        files.downloadToClient(response, fileId, username, 0);
+        GDriveFilesService.downloadToClient(response, fileId, username, 0);
     }
 
     @RequestMapping(value = "/GDriveFiles/delete", method = RequestMethod.GET)
@@ -160,12 +171,12 @@ public class GDriveFilesController {
                              @RequestParam(name = "isTrashed", required = false) boolean isTrashed) {
         isTrashed = !isTrashed;
         String username = principal.getName();
-        files.fixTrashed(username, 0, isTrashed, fileId);
+        GDriveFilesService.fixTrashed(username, 0, isTrashed, fileId);
         if (parentId == null || parentId.isEmpty()) {
             parentId = "root";
         }
         if (isTrashed == false) {
-            parentId = files.getIfChild(fileId, username, 0);
+            parentId = GDriveFilesService.getIfChild(fileId, username, 0);
             isTrashed = !isTrashed;
         }
 
@@ -182,12 +193,31 @@ public class GDriveFilesController {
         if (parentId == null || parentId.isEmpty()) {
             parentId = "root";
         }
-        files.newFolder(username, 0, folderName, parentId);
+        GDriveFilesService.newFolder(username, 0, folderName, parentId);
 
         return "redirect:/GDriveFiles?rootId=" + parentId;
     }
-    @RequestMapping(value = "/GDriveFiles/getId", method = RequestMethod.GET)
-    public String sendPathId(@RequestParam("dbxFilePath") String dbxFilePath) {
-        return "redirect:/GDriveFiles?rootId=root&dbxFilePath="+dbxFilePath+"&isOnlyPathChoose=true";
+    @RequestMapping(value = "/GDriveFiles/copyFromDropbox", method = RequestMethod.GET)
+    public String copyFileToGDrive(Principal principal,
+                                   @RequestParam(name = "from") String from,
+                                   @RequestParam(name = "to", required = false) String to,
+                                   RedirectAttributes redirectAttributes) {
+        if (to == null || to.isEmpty()) {
+            to = "root";
+        }
+        try {
+            LOGGER.info(principal.getName() + " copied file from Dropbox = " + from + " to Google Drive = " + to);
+            InputStream is = dbxFileService.getInputStream(principal.getName(), from);
+            GDriveFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true, 0);
+            is.close();
+        } catch (InvalidAccessTokenException e) {
+            redirectAttributes.addFlashAttribute("error", 2);
+            dbxAuthService.undoAuth(principal.getName());
+            dbxFileService.removeClient(principal.getName());
+            return "redirect:/dbx/error";
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return "redirect:/GDriveFiles?rootId=" + to;
     }
 }

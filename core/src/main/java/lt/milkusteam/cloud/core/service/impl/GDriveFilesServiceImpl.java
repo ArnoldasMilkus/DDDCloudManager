@@ -43,8 +43,8 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     }
 
     @Override
-    public File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload) {
-        GDrive drive = getDriveService(userName, 0);
+    public File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload, int ind) {
+        GDrive drive = getDriveService(userName, ind);
         GDriveUploader uploader = new GDriveUploader();
         File metaData = new File();
         List<String> parents = new ArrayList<>();

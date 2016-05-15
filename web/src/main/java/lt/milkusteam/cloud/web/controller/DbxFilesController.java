@@ -258,7 +258,7 @@ public class DbxFilesController {
         return result;
     }
 
-    @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)
+   /* @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)
     public String copyFileToGDrive(Principal principal,
                                    @RequestParam(name = "from") String from,
                                    @RequestParam(name = "to", required = false) String to,
@@ -269,7 +269,7 @@ public class DbxFilesController {
         try {
             LOGGER.info(principal.getName() + " copied file from Dropbox = " + from + " to Google Drive = " + to);
             InputStream is = dbxFileService.getInputStream(principal.getName(), from);
-            gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true);
+            gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true, 0);
             is.close();
         } catch (InvalidAccessTokenException e) {
             redirectAttributes.addFlashAttribute("error", 2);
@@ -279,7 +279,7 @@ public class DbxFilesController {
             LOGGER.error(e.getMessage());
         }
         return "redirect:/GDriveFiles";
-    }
+    }*/
     @RequestMapping(value = "/copyFrom/gd", method = RequestMethod.POST)
     public String copyFileFromGDrive(Principal principal,
                                    @RequestParam(name = "from") String from,

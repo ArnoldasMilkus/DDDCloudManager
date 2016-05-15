@@ -39,7 +39,7 @@
             function sendPathToDBXAction() {
                 var id = $("#currentId").val();
                 var dbxFilePath = $("#dbxFilePath").val();
-                var path = '/dbx/copy/gd?from=';
+                var path = '/GDriveFiles/copyFromDropbox?from=';
                 var pathEnd = '&to=';
                 path = path.concat(dbxFilePath);
                 path = path.concat(pathEnd);
@@ -48,7 +48,7 @@
             }
         </script> <script language="javascript">
         function rootChooseAction() {
-            var path = '/GDriveFiles?rootId=root&dbxFilePath=';
+            var path = '/GDriveFiles?rootId=root&from=';
             var dbxFilePath = $("#dbxFilePath").val();
             var pathEnd = '&isOnlyPathChoose=true';
             path = path.concat(dbxFilePath);
@@ -61,7 +61,7 @@
                 window.location.href = path;var id = $("#currentId").val();
                 var path = '/GDriveFiles?backId=';
                 var id = $("#currentId").val();
-                var pathMiddle = '&dbxFilePath=';
+                var pathMiddle = '&from=';
                 var dbxFilePath = $("#dbxFilePath").val();
                 var pathEnd = '&isOnlyPathChoose=true';
                 path = path.concat(id);
@@ -151,7 +151,7 @@
                                 <c:when test="${file.mimeType eq 'folder' && isTrashed eq 'false'}">
                                     <c:choose>
                                         <c:when test="${isOnlyPathChoose}">
-                                            <a href="GDriveFiles?rootId=${file.id}&dbxFilePath=${dbxFilePath}&isOnlyPathChoose=true">${file.name}</a>
+                                            <a href="GDriveFiles?rootId=${file.id}&from=${dbxFilePath}&isOnlyPathChoose=true">${file.name}</a>
                                         </c:when>
                                         <c:otherwise><a href="GDriveFiles?rootId=${file.id}">${file.name}</a></c:otherwise>
                                     </c:choose>
@@ -172,7 +172,6 @@
                                 <c:when test="${!isOnlyPathChoose}">
                                     <c:if test="${file.mimeType ne 'folder'}"><a title="<spring:message code="GDrive.downloadAction"/>" href="/GDriveFiles/download?fileId=${file.id}"><span
                                             class="glyphicon glyphicon-download-alt"></span></a>
-                                        |
                                     </c:if>
                                     <c:choose>
                                     <c:when test="${isTrashed}">
@@ -186,7 +185,7 @@
                                     </c:choose>
                                 </c:when>
                             </c:choose>
-                            <c:if test="${file.mimeType ne 'folder'}">|
+                            <c:if test="${file.mimeType ne 'folder' && !isOnlyPathChoose}">
                                 <a title="<spring:message code="GDrive.sendToDropbox"/>" href="/dbx/files?from=${file.id}">
                                     <span class="glyphicon glyphicon-share"></span></a>
                             </c:if>
