@@ -3,7 +3,6 @@ package lt.milkusteam.cloud.core.service.impl;
 import com.google.api.services.drive.model.File;
 import lt.milkusteam.cloud.core.GDriveAPI.GDrive;
 import lt.milkusteam.cloud.core.GDriveAPI.GDriveDownloader;
-import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploadProgressListener;
 import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploader;
 import lt.milkusteam.cloud.core.dao.GDriveTokenDAO;
 import lt.milkusteam.cloud.core.model.GDriveToken;
@@ -14,11 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,7 +45,7 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     }
 
     @Override
-    public File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload, GDriveUploadProgressListener listener) {
+    public File uploadFile(InputStream inStream, String parentId, String fileName, String userName, boolean useDirectUpload) {
         GDrive drive = getDriveService(userName, 0);
         GDriveUploader uploader = new GDriveUploader();
         File metaData = new File();
@@ -57,7 +53,7 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
         parents.add(parentId);
         metaData.setParents(parents);
         metaData.setName(fileName);
-        return uploader.simpleUploadStream(drive.getDrive(), metaData, inStream, useDirectUpload, listener);
+        return uploader.simpleUploadStream(drive.getDrive(), metaData, inStream, useDirectUpload);
     }
 
     private GDrive getDriveService(String userName, int ind) {

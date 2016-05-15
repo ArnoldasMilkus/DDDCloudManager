@@ -46,6 +46,7 @@ public class GDriveDownloader {
             OutputStream stream = response.getOutputStream();
             response.setContentType(service.files().get(fileId).execute().getMimeType());
             String fileName = service.files().get(fileId).execute().getName();
+            response.setContentLength(service.files().get(fileId).setFields("size").execute().getSize().intValue());
             response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             service.files().get(fileId).executeMediaAndDownloadTo(stream);
             response.flushBuffer();

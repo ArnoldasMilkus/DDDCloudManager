@@ -4,7 +4,6 @@ import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 
 /**
  * Created by Asus on 2016-04-20.
@@ -24,7 +23,7 @@ public class GDriveUploadProgressListener implements MediaHttpUploaderProgressLi
                 break;
             case MEDIA_IN_PROGRESS:
                 ProgressViewer.header2("Upload is In Progress: "
-                        + NumberFormat.getPercentInstance().format(uploader.getNumBytesUploaded()));
+                        + uploader.getNumBytesUploaded() + " bytes");
                 break;
             case MEDIA_COMPLETE:
                 ProgressViewer.header2("Upload is Complete!");

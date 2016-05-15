@@ -28,13 +28,13 @@ public class GDriveUploader {
         return null;
     }
 
-    public File simpleUploadStream(Drive service, File metadata, InputStream inStream, boolean useDirectUpload, GDriveUploadProgressListener listener) {
+    public File simpleUploadStream(Drive service, File metadata, InputStream inStream, boolean useDirectUpload) {
         try {
             InputStreamContent astr = new InputStreamContent("", inStream);
             Drive.Files.Create create = service.files().create(metadata, astr);
             MediaHttpUploader uploader = create.getMediaHttpUploader();
             uploader.setDirectUploadEnabled(useDirectUpload);
-            uploader.setProgressListener(listener);
+            uploader.setProgressListener(new GDriveUploadProgressListener());
             return create.execute();
         } catch (IOException e) {
             e.printStackTrace();
