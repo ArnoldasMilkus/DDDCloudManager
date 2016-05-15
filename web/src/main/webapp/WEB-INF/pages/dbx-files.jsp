@@ -79,10 +79,10 @@
                         <c:param name="path" value="${file.pathLower}"/>
                     </c:url>
                     <c:url var="copyToGDUrl" value="/GDriveFiles/getId">
-                        <c:param name="dbxFilePath" value="${file.pathLower}"/>
+                        <c:param name="dbxFilePath" value="${file.pathDisplay}"/>
                     </c:url>
                     <c:url var="downloadUrl" value="/dbx/download">
-                        <c:param name="path" value="${file.pathLower}"/>
+                        <c:param name="path" value="${file.pathDisplay}"/>
                     </c:url>
                     <tr>
                         <td style="width:auto">

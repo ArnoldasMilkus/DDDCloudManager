@@ -190,24 +190,4 @@ public class GDriveFilesController {
     public String sendPathId(@RequestParam("dbxFilePath") String dbxFilePath) {
         return "redirect:/GDriveFiles?rootId=root&dbxFilePath="+dbxFilePath+"&isOnlyPathChoose=true";
     }
-    @RequestMapping(value = "/GDriveFiles/workWithDBX", method = RequestMethod.GET)
-    public String getDBXPath(@RequestParam("from") String fileId,
-                             @RequestParam(name = "to", required = false) String dbxPath,
-                             Principal principal) {
-        String username = principal.getName();
-        if (dbxPath == null || dbxPath.isEmpty()) {
-            return "redirect:/dbx/files?from="+fileId;
-        }
-        else {
-            InputStream input = files.returnStream(username, 0, fileId);
-            try {
-                dbxFileService.uploadSmall(username, dbxPath, input);
-            } catch (InvalidAccessTokenException e) {
-                // LOG THIS
-                e.printStackTrace();
-            }
-        }
-        String parentId = files.getIfChild(fileId, username, 0);
-        return "redirect:/GDriveFiles?rootId="+parentId;
-    }
 }

@@ -142,4 +142,15 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
         }
         return null;
     }
+
+    @Override
+    public long getSize(String username, int ind, String fileId) {
+        GDrive drive = getDriveService(username, ind);
+        try {
+            return drive.getDrive().files().get(fileId).setFields("size").execute().getSize();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return 0;
+    }
 }

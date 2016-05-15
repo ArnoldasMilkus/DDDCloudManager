@@ -187,7 +187,7 @@
                                 </c:when>
                             </c:choose>
                             <c:if test="${file.mimeType ne 'folder'}">|
-                                <a title="<spring:message code="GDrive.sendToDropbox"/>" href="/GDriveFiles/workWithDBX?from=${file.id}">
+                                <a title="<spring:message code="GDrive.sendToDropbox"/>" href="/dbx/files?from=${file.id}">
                                     <span class="glyphicon glyphicon-share"></span></a>
                             </c:if>
                         </td>

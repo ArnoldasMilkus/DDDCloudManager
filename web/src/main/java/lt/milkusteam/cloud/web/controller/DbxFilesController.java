@@ -285,13 +285,20 @@ public class DbxFilesController {
                                    @RequestParam(name = "from") String from,
                                    @RequestParam(name = "to", required = false) String to,
                                    RedirectAttributes redirectAttributes) {
+        String username = principal.getName();
         if (to == null) {
             to = "";
         }
         try {
             LOGGER.info(principal.getName() + " copied file from Google Drive = " + from + " to Dropbox = " + to);
             InputStream is = gdFilesService.returnStream(principal.getName(), 0, from);
-            dbxFileService.uploadSmall(principal.getName(), to + "/abudabis.txt", is);
+            String name = gdFilesService.getName(username, 0, from);
+            long size = gdFilesService.getSize(username, 0, from);
+            if (size < dbxFileService.CHUNK_SIZE) {
+                dbxFileService.uploadSmall(username, to + "/" + name, is);
+            } else {
+                dbxFileService.uploadBig(username, to + "/" + name, is, size);
+            }
             is.close();
         } catch (InvalidAccessTokenException e) {
             redirectAttributes.addFlashAttribute("error", 2);
