@@ -1,9 +1,5 @@
 package lt.milkusteam.cloud.web.controller;
 
-import com.dropbox.core.DbxSessionStore;
-import com.dropbox.core.DbxStandardSessionStore;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
-import lt.milkusteam.cloud.core.GDriveAPI.GDriveUploadProgressListener;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.Principal;
-import java.util.Arrays;
 
 /**
  * Created by Vilintas 2016-04-20
@@ -108,8 +98,7 @@ public class GDriveFilesController {
         if (!file.isEmpty()) {
             try {
                 input = file.getInputStream();
-                GDriveUploadProgressListener listener = new GDriveUploadProgressListener();
-                files.uploadFile(input, parentId, fileName, username, false, listener);
+                files.uploadFile(input, parentId, fileName, username, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
