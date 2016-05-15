@@ -268,4 +268,19 @@ public class DbxFileServiceImpl implements DbxFileService {
     public String getStorageInfo(String username) throws InvalidAccessTokenException {
         return dbxSpaceUsage.get(username);
     }
+
+    @Override
+    public void updateStorageInfo(String username) throws InvalidAccessTokenException {
+        DbxClientV2 client = dbxClients.get(username);
+        try {
+            dbxSpaceUsage.put(username, String.format("%.2f / %.2f GB",
+                    (client.users().getSpaceUsage().getUsed() / (double) (1024 * 1024 * 1024)),
+                    (client.users().getSpaceUsage().getAllocation().getIndividualValue().getAllocated() / (double) (1024 * 1024 * 1024))));
+        } catch (InvalidAccessTokenException e) {
+            LOGGER.error("Invalid " + username + " dropbox access token.");
+            throw e;
+        } catch (DbxException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -64,10 +64,14 @@ public class DbxFilesController {
     @RequestMapping(value = "/files")
     public String showFiles(Model model, Principal principal,
                             @RequestParam(name = "path", required = false) String path,
+                            @RequestParam(name = "from", required = false) String from,
                             RedirectAttributes redirectAttributes) {
         String username = principal.getName();
         if (path == null) {
             path = "";
+        }
+        if (from != null && !from.isEmpty()) {
+            model.addAttribute("from", from);
         }
         try {
             if (dbxFileService.containsClient(username)) {
@@ -127,6 +131,7 @@ public class DbxFilesController {
             } else {
                 dbxFileService.uploadSmall(principal.getName(), path + "/" + file.getOriginalFilename(), file.getInputStream());
             }
+            dbxFileService.updateStorageInfo(principal.getName());
         } catch (InvalidAccessTokenException e) {
             redirectAttributes.addFlashAttribute("error", 2);
             clearUserDbxData(principal.getName());
@@ -180,6 +185,7 @@ public class DbxFilesController {
     public String deleteFile(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) {
         try {
             dbxFileService.delete(principal.getName(), path);
+            dbxFileService.updateStorageInfo(principal.getName());
         } catch (InvalidAccessTokenException e) {
             redirectAttributes.addFlashAttribute("error", 2);
             clearUserDbxData(principal.getName());
@@ -192,6 +198,7 @@ public class DbxFilesController {
     public String restoreFile(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) {
         try {
             dbxFileService.restore(principal.getName(), path);
+            dbxFileService.updateStorageInfo(principal.getName());
         } catch (InvalidAccessTokenException e) {
             redirectAttributes.addFlashAttribute("error", 2);
             clearUserDbxData(principal.getName());

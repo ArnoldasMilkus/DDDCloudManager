@@ -9,15 +9,15 @@
     <html>
     <body>
     <div class="container col-md-12">
-        <h3 style="background-color: whitesmoke">
-            <a href="/dbx/files?path="><spring:message code="dbxfiles.home"/></a>
-            <c:forTokens var="folder" items="${currentPath}" delims="/">
-                <c:set var="varPath" value="${varPath}/${folder}"/>
-                > <a href="/dbx/files?path=${varPath}">${folder}</a>
-            </c:forTokens>
-            > <a href="/dbx/trash"><spring:message code="dbxfiles.deletedfiles"/></a>
-        </h3>
-
+        <h2><spring:message code="dbxfiles.deletedfiles"/><span class="pull-right">${spaceUsage}</span></h2>
+        <fielset>
+            <legend>
+                <a href="/dbx/files?path="><spring:message code="dbxfiles.home"/></a>
+                <c:forTokens var="folder" items="${currentPath}" delims="/">
+                    <c:set var="varPath" value="${varPath}/${folder}"/>
+                    > <a href="/dbx/files?path=${varPath}">${folder}</a>
+                </c:forTokens>
+            </legend>
         <table class="table table-bordered" style="background-color:whitesmoke">
             <thead>
             <tr>
