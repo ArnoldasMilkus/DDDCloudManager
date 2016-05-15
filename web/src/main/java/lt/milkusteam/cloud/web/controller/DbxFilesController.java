@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -163,8 +162,6 @@ public class DbxFilesController {
         OutputStream stream = null;
         try {
             stream = response.getOutputStream();
-            FileMetadata mdata = (FileMetadata)dbxFileService.getMetadata(principal.getName(), path);
-//            response.setContentType("application/force-download");
             response.setContentType(determineContentType(path));
             response.setHeader("Content-Disposition", "attachment; filename=\"" + (path.substring(path.lastIndexOf("/") + 1) + "\""));
             dbxFileService.download(principal.getName(), path, stream);
@@ -225,12 +222,15 @@ public class DbxFilesController {
 
     @RequestMapping(value = "/auth-finish")
     public String finishDbxAuth(Principal principal,
-                                @RequestParam("state") String state,
-                                @RequestParam("code") String code) {
-        dbxAuthService.finishAuth(principal.getName(), state, code);
-        dbxFileService.addClient(principal.getName());
-
-        return "redirect:/dbx/";
+                                @RequestParam(name = "state", required = false) String state,
+                                @RequestParam(name = "code", required=false) String code) {
+        if (state != null && !state.isEmpty() && code != null && !code.isEmpty()) {
+            dbxAuthService.finishAuth(principal.getName(), state, code);
+            dbxFileService.addClient(principal.getName());
+            return "redirect:/dbx/";
+        } else {
+            return "redirect:/settings";
+        }
     }
 
     @RequestMapping(value = "/auth-clear", method = RequestMethod.POST)
@@ -244,42 +244,6 @@ public class DbxFilesController {
         dbxFileService.removeClient(username);
     }
 
-    List<Pair<String, String>> generateLinks(String path) {
-        List<Pair<String, String>> result = new ArrayList<>();
-        String[] parts = path.split("/");
-        if (parts.length > 1) {
-            StringBuilder link = new StringBuilder();
-            for (int i = 1; i < parts.length; i++) {
-                link.append("/");
-                link.append(parts[i]);
-                result.add(new Pair<String, String>(parts[i], link.toString()));
-            }
-        }
-        return result;
-    }
-
-   /* @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)
-    public String copyFileToGDrive(Principal principal,
-                                   @RequestParam(name = "from") String from,
-                                   @RequestParam(name = "to", required = false) String to,
-                                   RedirectAttributes redirectAttributes) {
-        if (to == null || to.isEmpty()) {
-            to = "root";
-        }
-        try {
-            LOGGER.info(principal.getName() + " copied file from Dropbox = " + from + " to Google Drive = " + to);
-            InputStream is = dbxFileService.getInputStream(principal.getName(), from);
-            gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true, 0);
-            is.close();
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return "redirect:/GDriveFiles";
-    }*/
     @RequestMapping(value = "/copyFrom/gd", method = RequestMethod.POST)
     public String copyFileFromGDrive(Principal principal,
                                    @RequestParam(name = "from") String from,

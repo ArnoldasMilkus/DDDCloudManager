@@ -43,6 +43,11 @@
             <input type="hidden"
                    name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
+            <c:if test="${param.error != null}">
+            <div class="alert alert-danger">
+                    ${SPRING_SECURITY_LAST_EXCEPTION}
+            </div>
+            </c:if>
     </body>
     </html>
 </customtags:pageTemplate>

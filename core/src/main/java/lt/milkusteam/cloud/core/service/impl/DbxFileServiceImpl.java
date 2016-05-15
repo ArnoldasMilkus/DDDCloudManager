@@ -1,10 +1,12 @@
 package lt.milkusteam.cloud.core.service.impl;
 
-import com.dropbox.core.*;
+import com.dropbox.core.DbxDownloader;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.users.FullAccount;
-import com.dropbox.core.v2.users.SpaceUsage;
 import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.model.Pair;
@@ -282,5 +284,18 @@ public class DbxFileServiceImpl implements DbxFileService {
         } catch (DbxException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getAccountInfo(String username) {
+        DbxClientV2 client = dbxClients.get(username);
+        String result = "";
+        try {
+            FullAccount acc = client.users().getCurrentAccount();
+            result = acc.getEmail();
+        } catch (DbxException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
