@@ -21,7 +21,6 @@ dependencies {
 //    for upload function
     compile 'com.liferay.org.apache.commons.fileupload:com.liferay.org.apache.commons.fileupload:6.2.0.1'
     compile 'commons-io:commons-io:2.4'
-    compile 'mail-1.4'
     testCompile project(path: ':core', configuration: 'tests')
     testCompile 'org.springframework.security:spring-security-test:4.0.4.RELEASE'
 }
