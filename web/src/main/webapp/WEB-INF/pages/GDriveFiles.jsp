@@ -136,6 +136,21 @@
             </c:if>
             <table class="table table-striped">
                 <thead>
+<%--=======--%>
+        <%--<h2><spring:message code="gdrivefiles.table.name"/></h2>--%>
+        <%--<input type='button' value="<spring:message code="gdrivefiles.root"/>" name="Root" href="#" onclick="return rootAction()">--%>
+        <%--<input type='button' value="<spring:message code="gdrivefiles.back"/>" name="Back" href="#" onclick="return backAction()">--%>
+        <%--<input type='button' value="<spring:message code="gdrivefiles.upload"/>" name="Upload here" href="#" onclick="return uploadAction()">--%>
+        <%--<table class="table table-striped">--%>
+            <%--<thead>--%>
+            <%--<tr>--%>
+                <%--<th><spring:message code="gdrivefiles.filename"/></th>--%>
+                <%--<th><spring:message code="gdrivefiles.type"/></th>--%>
+            <%--</tr>--%>
+            <%--</thead>--%>
+            <%--<tbody>--%>
+            <%--<c:forEach var="file" items="${files}">--%>
+<%-->>>>>>> designv2--%>
                 <tr>
                     <th><spring:message code="GDrive.table.col1"/></th>
                     <th><spring:message code="GDrive.table.col2"/></th>

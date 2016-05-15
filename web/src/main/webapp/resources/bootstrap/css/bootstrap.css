@@ -12,14 +12,8 @@ html {
 body {
   background: url(/resources/cloud.png);
   background-position: center top;
-  background-size: 100% auto;
+  background-size: cover;
   margin: 0;
-}
-.kazkas{
-  background: url(/resources/cloudgreen.png);
-}
-.senas{
-  background: url(/resources/cloud.png);
 }
 article,
 aside,

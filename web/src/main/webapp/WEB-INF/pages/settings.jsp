@@ -2,94 +2,102 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="customtags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <customtags:pageTemplate>
     <script src="/resources/jquery/reloader.js"></script>
     <html>
-
-    <body>
     <script language="javascript">
         function unlinkGDriveAction() {
             var path = '/GDriveFiles/revokeToken';
             window.location.href = path;
         }
     </script>
-    <div class="container">
-        <sec:authentication var="user" property="principal"/>
-        <h2>${user.username}</h2>
-            <c:choose>
-                <c:when test="${!empty dbxAccount}">
-                    <form name="authForm"
-                          action="<c:url value="/dbx/auth-clear" />" method='POST'>
-                        <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
-                        <label><spring:message code="settings.dbxAccount"/>: ${dbxAccount}</label><br/>
-                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    </form>
-                </c:when>
-                <c:otherwise>
-                    <form name="authForm"
-                          action="<c:url value="/dbx/auth-start" />" method='POST'>
-                        <input type="submit" value="<spring:message code="dbxfiles.linkbutton"/>"/>
-                        <label><spring:message code="settings.noAccount"/></label>
-                        <input type="hidden"
-                               name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    </form>
-                </c:otherwise>
-            </c:choose>
-        <button type="button" onclick="myFunction()">Change Backgroud image</button>
-        <div>
-            <p>Laikrodis</p>
-            <p id="clock"></p>
-        </div>
-        <p></p>
-        <div id="result"></div>
-        <script>
 
-        </script>
-        <script>
-            var myVar = setInterval(myTimer, 1000);
+    <style>
+        #backgrounds img:hover {
+            border: 2px solid #6D3ECD;
+            box-shadow: 0 0 10px #333;
+            -webkit-box-shadow: 0 0 10px #333;
+            -moz-box-shadow: 0 0 10px #333;
+            -o-box-shadow: 0 0 10px #333;
+            -ms-box-shadow: 0 0 10px #333;
+        }
+        #fonts label:hover {
+            border: 2px solid #333;
+        }
+    </style>
 
-            function myTimer() {
-                var d = new Date();
-                document.getElementById("clock").innerHTML = d.toLocaleTimeString();
-            }
-        </script>
+    <script type="text/javascript">
+        function backgroundChange(imageNumber) {
+            sessionStorage.removeItem("backgroundIndex");
+            sessionStorage.setItem("backgroundIndex", imageNumber);
+            location.reload();
+        }
+    </script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
+        function fontChange(fontNumber) {
+            sessionStorage.removeItem("fontSize");
+            sessionStorage.setItem("fontSize", fontNumber);
+            location.reload();
+        }
+    </script>
 
-            function myFunction() {
-                if (sessionStorage.getItem("lastname1") == 1) {
+    <script>
+        function mark(el) {
+            el.style.border = "10px solid #2C2C2C";
+        }
+    </script>
 
-                    //if (typeof(Storage) !== "undefined") {
-                    // Store
-                    sessionStorage.removeItem("lastname1");
-                    localStorage.setItem("lastname", 0);
-                    sessionStorage.setItem("lastname1", 0);
-                    // Retrieve
-                    document.getElementById("result").innerHTML = "special";
-                    location.reload();
+    <body>
+    <sec:authentication var="user" property="principal"/>
+    <div class="container col-md-12 pull-left">
+        <input type='button' style="margin-top: 40px" value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken"
+               href="#" onclick="return unlinkGDriveAction()">
+    </div>
+        <div class="container col-md-12">
+        <c:choose>
+            <c:when test="${!empty dbxAccount}">
+                <form name="authForm"
+                      action="<c:url value="/dbx/auth-clear" />" method='POST'>
+                    <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
+                    <label><spring:message code="settings.dbxAccount"/>: ${dbxAccount}</label><br/>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+            </c:when>
+            <c:otherwise>
+                <form name="authForm"
+                      action="<c:url value="/dbx/auth-start" />" method='POST'>
+                    <input type="submit" value="<spring:message code="dbxfiles.linkbutton"/>"/>
+                    <label><spring:message code="settings.noAccount"/></label>
+                    <input type="hidden"
+                           name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+            </c:otherwise>
+        </c:choose>
+    </div>
 
-                } else {
-                    req = false;
-                    change = false;
-                    sessionStorage.removeItem("lastname1");
-                    //if (typeof(Storage) !== "undefined") {
-                    // Store
-                    localStorage.setItem("lastname", 1);
-                    sessionStorage.setItem("lastname1", 1);
-                    // Retrieve
-                    document.getElementById("result").innerHTML = "default";
-                    location.reload();
+    <h2 style="margin-top: 100pt">Here you can change website's background</h2>
+    <div>
+        <img src="/resources/cloud.png" height="300" width="300" style="margin:0 50px 20px"
+             onclick="backgroundChange(null);onclick=mark(this)">
+        <img src="/resources/cloudgreen.png" height="300" width="300" style="margin:0 50px 20px"
+             onclick="backgroundChange(0);onclick=mark(this)">
+        <img src="/resources/nightcloud.jpg" height="300" width="300" style="margin:0 50px 20px"
+             onclick="backgroundChange(1);onclick=mark(this)">
+        <img src="/resources/stormcloud.jpg" height="300" width="300" style="margin:0 50px 20px"
+             onclick="backgroundChange(2);onclick=mark(this)">
+    </div>
 
-                }
-
-            }
-
-        </script>
-
-        <input type='button' value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken" href="#"
-               onclick="return unlinkGDriveAction()">
+    <div id="fonts">
+        <span style="white-space: nowrap; font-size: 16pt; font-weight: bold">Font size change:</span>
+        <label style="font-size: 12pt;" onclick="fontChange(null)">12pt</label>
+        <label style="font-size: 14pt;" onclick="fontChange(14)">14pt</label>
+        <label style="font-size: 16pt;" onclick="fontChange(16)">16pt</label>
+        <label style="font-size: 18pt;" onclick="fontChange(18)">18pt</label>
+        <label style="font-size: 20pt;" onclick="fontChange(20)">20pt</label>
+        <label style="font-size: 24pt;" onclick="fontChange(22)">22pt</label>
+        <label style="font-size: 24pt;" onclick="fontChange(24)">24pt</label>
     </div>
     </body>
     </html>

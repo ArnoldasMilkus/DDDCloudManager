@@ -37,17 +37,19 @@
                     <td><input type="password" name="password"/></td>
                 </tr>
             </table>
-            <input type="submit" style="height:30px; width:245px" value=
-                "<spring:message code="login.submit"/>"/>
-
+            <input type="submit" style="height:30px; width:278px; font-weight:bold; color:#337AB7" value="<spring:message code="login.submit"/>"/>
             <input type="hidden"
                    name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
             <c:if test="${param.error != null}">
             <div class="alert alert-danger">
-                    ${SPRING_SECURITY_LAST_EXCEPTION}
+                    <spring:message code="login.accountNotVerified"></spring:message>
             </div>
             </c:if>
+            <div class="container" style="max-width: 1000px">
+                <br>
+                <a href="/registration"><spring:message code="login.registration"/></a>
+            </div>
     </body>
     </html>
 </customtags:pageTemplate>

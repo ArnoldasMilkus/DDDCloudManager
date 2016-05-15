@@ -6,9 +6,6 @@
 <customtags:pageTemplate>
     <html>
     <body>
-    <div th:if="${message}">
-        <h2 th:text="${message}"/>
-    </div>
 
     <div>
         <form method="POST" enctype="multipart/form-data" action="/GDriveUpload?${_csrf.parameterName}=${_csrf.token}">
