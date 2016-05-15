@@ -1,6 +1,7 @@
 package lt.milkusteam.cloud.web.controller;
 
 import lt.milkusteam.cloud.core.service.DbxFileService;
+import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +19,19 @@ public class SettingsController {
     @Autowired
     DbxFileService dbxFileService;
 
+    @Autowired
+    GDriveOAuth2Service gDriveOAuth2Service;
+
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     public String showSettings(Model model, Principal principal) {
-        if (dbxFileService.containsClient(principal.getName()) || dbxFileService.addClient(principal.getName())) {
-            String dbxAccountDetails = dbxFileService.getAccountInfo(principal.getName());
+        String userName = principal.getName();
+        if (dbxFileService.containsClient(userName) || dbxFileService.addClient(userName)) {
+            String dbxAccountDetails = dbxFileService.getAccountInfo(userName);
             model.addAttribute("dbxAccount", dbxAccountDetails);
+        }
+        if (gDriveOAuth2Service.isLinked(userName)) {
+            String gDriveAccountDetails = userName;
+            model.addAttribute("gDriveAccount", gDriveAccountDetails);
         }
         return "settings";
     }

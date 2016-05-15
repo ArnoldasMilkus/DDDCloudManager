@@ -51,6 +51,32 @@
         });
     </script>
 
+    <script language="javascript">
+        function languageAction(kin) {
+            function stripTrailingSlash(str) {
+                if(str.substr(-1) == '/') {
+                    str = str.slice(0, str.length-1);
+                    return str;
+                }
+                return str;
+            }
+            var path = stripTrailingSlash(window.location.href);
+            if (path.indexOf("lang=en")>=0) {
+                path = path.replace("lang=en", kin);
+                window.location.href = path;
+            }
+            else if (path.indexOf("lang=lt")>=0) {
+                path = path.replace("lang=lt", kin);
+                window.location.href = path;
+            }
+            else if (path.indexOf("?")>=0) {
+                window.location.href = path.concat("&").concat(kin);
+            } else {
+                window.location.href = path.concat("?").concat(kin);
+            }
+        }
+    </script>
+
     <script>
         var myVar = setInterval(myTimer, 1000);
 
@@ -86,9 +112,8 @@
                 <font color="#6D3ECD">${username}</font></label>
     </c:if>
     <li class="pull-right">
-        <label><a href="?lang=en"><img src="/resources/uk_flag.png"></a></label>
-        <label><a href="?lang=lt"><img src="/resources/lt_flag.png" style="margin-right:10px"></a></label>
-    </li>
+        <a href="#" onclick="languageAction('lang=en')"><img src="/resources/uk_flag.png"></a>
+        <a href="#" onclick="languageAction('lang=lt')" style="margin-right: 10px"><img src="/resources/lt_flag.png"></a>
 </ol>
 <div class="container-fluid">
     <div class="row">

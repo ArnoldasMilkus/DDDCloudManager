@@ -49,6 +49,7 @@ public class GDriveFilesController {
                             @RequestParam(name = "isTrashed", required = false) boolean isTrashed,
                             @RequestParam(name = "isOnlyPathChoose", required = false) boolean isOnlyPathChoose,
                             @RequestParam(name = "from", required = false) String dbxFilePath,
+                            @RequestParam(name = "isUploading", required = false) boolean isUploading,
                             Principal principal) {
         int ind = 0;
         String username = principal.getName();
@@ -57,6 +58,7 @@ public class GDriveFilesController {
         model.addAttribute("isTrashed", isTrashed);
         model.addAttribute("isOnlyPathChoose", isOnlyPathChoose);
         model.addAttribute("dbxFilePath", dbxFilePath);
+        model.addAttribute("isUploading", isUploading);
         if (error != null && !error.isEmpty()) {
             if (error.contains("access_denied")) {
                 model.addAttribute("error", "GDrive.error.access_denied");
@@ -91,15 +93,6 @@ public class GDriveFilesController {
         }
         model.addAttribute("driveAuth", isLinked);
         return "GDriveFiles";
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/GDriveUpload")
-    public String provideUploadInfo(Model model,
-                                    @RequestParam(name = "parentId", required = true) String parentId) {
-        if (!parentId.isEmpty()) {
-            model.addAttribute("parentId", parentId);
-        }
-        return "GDriveUpload";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/GDriveUpload")
@@ -155,6 +148,7 @@ public class GDriveFilesController {
         String username = principal.getName();
         if (GDriveOAuthService.isLinked(username)) {
             GDriveFilesService.revokeToken(username, 0);
+            return "redirect:/settings";
         }
         return "redirect:/GDriveFiles";
     }

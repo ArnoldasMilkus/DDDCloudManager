@@ -19,6 +19,9 @@
         <div class="col-md-2">
             <img src="/resources/dropbox.png" alt="Dropbox" width="100" height="100"/>
         </div>
+        <div class="col-md-2">
+            <img src="/resources/onedrive.png" alt="One Drive" width="100" height="100"/>
+        </div>
     </div>
     <div class="container col-md-13">
         <h2><spring:message code="about.table.title"/></h2>

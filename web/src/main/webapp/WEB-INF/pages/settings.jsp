@@ -52,15 +52,26 @@
     <body>
     <sec:authentication var="user" property="principal"/>
     <div class="container col-md-12 pull-left">
-        <input type='button' style="margin-top: 40px" value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken"
-               href="#" onclick="return unlinkGDriveAction()">
+        <c:choose>
+            <c:when test="${!empty gDriveAccount}">
+                <input type='button' style="margin-top: 40px; width: 250px" value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken"
+                       href="#" onclick="return unlinkGDriveAction()">
+                <label><spring:message code="settings.gDriveAccount"/>: ${gDriveAccount}</label>
+            </c:when>
+            <c:otherwise>
+                <input type='button' style="margin-top: 40px" value="<spring:message code="GDrive.linkButtonName"/>" name="revokeGDriveToken"
+                       href="#" onclick="return unlinkGDriveAction()">
+                <label><spring:message code="settings.noGDriveAccount"/></label>
+            </c:otherwise>
+        </c:choose>
+
     </div>
         <div class="container col-md-12">
         <c:choose>
             <c:when test="${!empty dbxAccount}">
                 <form name="authForm"
                       action="<c:url value="/dbx/auth-clear" />" method='POST'>
-                    <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
+                    <input type="submit" style="width: 250px" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
                     <label><spring:message code="settings.dbxAccount"/>: ${dbxAccount}</label><br/>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 </form>
@@ -77,7 +88,7 @@
         </c:choose>
     </div>
 
-    <h2 style="margin-top: 100pt">Here you can change website's background</h2>
+    <h2 style="margin-top: 100pt"><spring:message code="settings.background"/></h2>
     <div>
         <img src="/resources/cloud.png" height="300" width="300" style="margin:0 50px 20px"
              onclick="backgroundChange(null);onclick=mark(this)">
@@ -90,7 +101,7 @@
     </div>
 
     <div id="fonts">
-        <span style="white-space: nowrap; font-size: 16pt; font-weight: bold">Font size change:</span>
+        <span style="white-space: nowrap; font-size: 16pt; font-weight: bold"><spring:message code="settings.font.size"/>: </span>
         <label style="font-size: 12pt;" onclick="fontChange(null)">12pt</label>
         <label style="font-size: 14pt;" onclick="fontChange(14)">14pt</label>
         <label style="font-size: 16pt;" onclick="fontChange(16)">16pt</label>

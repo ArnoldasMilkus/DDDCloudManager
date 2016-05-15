@@ -14,7 +14,7 @@ function reloader() {
     }
     else if(sessionStorage.getItem("backgroundIndex") == 2) {
         body.style.backgroundImage = 'url(/resources/stormcloud.jpg)';
-        body.style.color = '#666699';
+        body.style.color = '#ffcc00';
     }
     else {
         body.style.backgroundImage = 'url(/resources/cloud.png)';

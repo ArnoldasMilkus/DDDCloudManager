@@ -172,7 +172,7 @@ public class GDrive {
         build.append("trashed=" +isTrashed + " and '");
         build.append(parentId);
         build.append("' in parents");
-        if (parentId.isEmpty()) {
+        if (parentId == null || parentId.isEmpty()) {
             build.setLength(0);
             build.append("trashed="+isTrashed);
         }
@@ -205,7 +205,7 @@ public class GDrive {
     }
 
     public String getParentId(String fileId) {
-        String parentId = null;
+        String parentId = "root";
         List<String> list = null;
         try {
             list = drive.files().get(fileId).setFields("parents").execute().getParents();
