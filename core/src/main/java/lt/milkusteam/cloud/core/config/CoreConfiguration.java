@@ -1,5 +1,6 @@
 package lt.milkusteam.cloud.core.config;
 
+import com.dropbox.core.v2.DbxClientV2;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
@@ -15,6 +16,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -86,5 +89,4 @@ public class CoreConfiguration {
 
         return entityManagerFactoryBean;
     }
-
 }

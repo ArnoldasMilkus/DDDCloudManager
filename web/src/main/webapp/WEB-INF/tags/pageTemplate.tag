@@ -43,10 +43,9 @@
             $('.nav li a').each(function(){
                 var currentPage = stripTrailingSlash($(this).attr('href'));
 
-                if (activePage == currentPage) {
+                if ((activePage.indexOf (currentPage) != -1 && currentPage.length > 0) || activePage == currentPage) {
                     $(this).parent().addClass('active');
                 }
-
             });
         });
     </script>
@@ -85,7 +84,7 @@
                         <a href="/settings"><spring:message code="template.settings"/></a>
                     </li>
                     <li>
-                        <a href="/dbx/files"><spring:message code="template.dropbox"/></a>
+                        <a href="/dbx/"><spring:message code="template.dropbox"/></a>
                     </li>
                 </c:if>
                 <c:if test="${!empty username}">

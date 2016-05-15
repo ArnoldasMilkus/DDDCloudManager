@@ -5,7 +5,7 @@ import com.google.api.services.drive.model.File;
 import java.util.Comparator;
 
 /**
- * Created by Vilintas on 2016-04-20.
+ * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class FilesSortComparator implements Comparator<File> {
     @Override
