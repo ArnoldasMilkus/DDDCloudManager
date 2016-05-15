@@ -11,6 +11,8 @@ import java.text.NumberFormat;
  */
 public class GDriveUploadProgressListener implements MediaHttpUploaderProgressListener {
 
+    private long allSize;
+
     @Override
     public void progressChanged(MediaHttpUploader uploader) throws IOException {
         switch (uploader.getUploadState()) {
@@ -22,7 +24,7 @@ public class GDriveUploadProgressListener implements MediaHttpUploaderProgressLi
                 break;
             case MEDIA_IN_PROGRESS:
                 ProgressViewer.header2("Upload is In Progress: "
-                        + NumberFormat.getPercentInstance().format(uploader.getProgress()));
+                        + NumberFormat.getPercentInstance().format(uploader.getNumBytesUploaded()));
                 break;
             case MEDIA_COMPLETE:
                 ProgressViewer.header2("Upload is Complete!");

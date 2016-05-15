@@ -46,7 +46,12 @@ public class RegistrationController {
                                             BindingResult result, WebRequest request, Errors errors) {
         User registered = new User();
 
-
+        if(accountDto.getMatchingPassword() == "" || accountDto.getUsername() == "" || accountDto.getEmail() == "" ||
+                accountDto.getFirstName()== "" || accountDto.getLastName() == "" || accountDto.getPassword() ==""){
+            ObjectError objectError = new ObjectError("error", "Visi laukai turi būti užpildyti ");
+            result.addError(objectError);
+            return new ModelAndView("registration", "user", accountDto);
+        }
         if (!accountDto.getMatchingPassword().equals(accountDto.getPassword())) {
 
             ObjectError objectError = new ObjectError("error", "passswords don't match");

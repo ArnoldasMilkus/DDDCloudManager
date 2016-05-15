@@ -6,6 +6,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,23 +41,16 @@ public class GDriveDownloader {
         }
         return path;
     }
-    /*public String downloadToClient(Drive service, HttpTransport httpTransport, String fileId, boolean useDirectDownload) {
-        HttpServletResponse response = new HttpServletResponseWrapper().setHeader("Content-Disposition", "attachment; filename=datafile.xls");
-        response.setContentType("application/vnd.ms-excel");
-        OutputStream outStream = response.getOutputStream();
-
-        byte[] buf = new byte[4096];
-        int len = -1;
-
-//Write the file contents to the servlet response
-//Using a buffer of 4kb (configurable). This can be
-//optimized based on web server and app server
-//properties
-        while ((len = inStream.read(buf)) != -1) {
-            outStream.write(buf, 0, len);
+    public void downloadToClient(Drive service, HttpServletResponse response, String fileId) {
+        try {
+            OutputStream stream = response.getOutputStream();
+            response.setContentType(service.files().get(fileId).execute().getMimeType());
+            String fileName = service.files().get(fileId).execute().getName();
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            service.files().get(fileId).executeMediaAndDownloadTo(stream);
+            response.flushBuffer();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-
-        outStream.flush();
-        outStream.close();
-    }*/
+    }
 }

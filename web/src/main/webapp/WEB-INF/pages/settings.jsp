@@ -9,7 +9,12 @@
     <html>
 
     <body >
-
+    <script language="javascript">
+        function unlinkGDriveAction() {
+            var path = '/GDriveFiles/revokeToken';
+            window.location.href = path;
+        }
+    </script>
     <div class="container">
         <sec:authentication var="user" property="principal"/>
         <h2>${user.username}</h2>
@@ -18,7 +23,7 @@
             <p>Laikrodis</p>
             <p id="clock"></p>
         </div>
-        <p>Change background or not :</p>
+        <p></p>
         <div id="result"></div>
         <script>
 
@@ -63,7 +68,9 @@
             }
 
         </script>
-    </div>
+
+        <input type='button' value="<spring:message code="GDrive.revokeButtonName"/>" name="revokeGDriveToken" href="#" onclick="return unlinkGDriveAction()">
+        </div>
     </body>
     </html>
 </customtags:pageTemplate>
