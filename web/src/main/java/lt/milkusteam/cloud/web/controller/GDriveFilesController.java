@@ -204,12 +204,10 @@ public class GDriveFilesController {
                 LOGGER.error("Input stream can't be null");
                 throw new NullPointerException("Input stream can't be null");
             }
-            dbxFileService.upload(username, dbxPath, input);
             try {
                 dbxFileService.uploadSmall(username, dbxPath, input);
             } catch (InvalidAccessTokenException e) {
-                // LOG THIS
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
         }
         String parentId = files.getIfChild(fileId, username, 0);

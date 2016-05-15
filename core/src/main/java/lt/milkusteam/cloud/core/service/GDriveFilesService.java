@@ -34,4 +34,6 @@ public interface GDriveFilesService {
     InputStream returnStream(String username, int ind, String fileId);
 
     String getName(String username, int ind, String fileId);
+
+    long getSize(String username, int ind, String fileId);
 }
