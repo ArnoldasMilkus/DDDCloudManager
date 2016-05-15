@@ -40,7 +40,7 @@
                     </td>
                     <td style="width:auto">
                         <a href="${restoreUrl}" title="<spring:message code="dbxfiles.restoreButton"/>"><span
-                                class="glyphicon glyphicon-repeat"></span></a>
+                                class="glyphicon glyphicon-export"></span></a>
                     </td>
                 </tr>
             </c:forEach>
