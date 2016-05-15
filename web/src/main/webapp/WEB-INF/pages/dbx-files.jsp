@@ -9,7 +9,12 @@
     <html>
     <body>
     <div class="container col-md-12">
+        <c:if test="${empty from}">
         <h2><spring:message code="dbxfiles.title"/><span class="pull-right">${spaceUsage}</span></h2>
+        </c:if>
+        <c:if test="${!empty from}">
+            <h2><spring:message code="dbxfiles.copytitle"/><span class="pull-right">${spaceUsage}</span></h2>
+        </c:if>
         <fielset>
             <legend>
                 <a href="/dbx/files?path=&from=${from}"><spring:message code="dbxfiles.home"/></a>
