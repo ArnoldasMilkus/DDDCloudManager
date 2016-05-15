@@ -30,15 +30,15 @@
     </head>
     <body>
     <div class="container col-md-12">
-        <h2><spring:message code="users.table.title"/></h2>
-        <input type='button' value="Root" name="Root" href="#" onclick="return rootAction()">
-        <input type='button' value="Back" name="Back" href="#" onclick="return backAction()">
-        <input type='button' value="Upload here" name="Upload here" href="#" onclick="return uploadAction()">
+        <h2><spring:message code="gdrivefiles.table.name"/></h2>
+        <input type='button' value="<spring:message code="gdrivefiles.root"/>" name="Root" href="#" onclick="return rootAction()">
+        <input type='button' value="<spring:message code="gdrivefiles.back"/>" name="Back" href="#" onclick="return backAction()">
+        <input type='button' value="<spring:message code="gdrivefiles.upload"/>" name="Upload here" href="#" onclick="return uploadAction()">
         <table class="table table-striped">
             <thead>
             <tr>
-                <th><spring:message code="users.table.col1"/></th>
-                <th><spring:message code="users.table.col2"/></th>
+                <th><spring:message code="gdrivefiles.filename"/></th>
+                <th><spring:message code="gdrivefiles.type"/></th>
             </tr>
             </thead>
             <tbody>

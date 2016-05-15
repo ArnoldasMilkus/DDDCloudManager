@@ -28,6 +28,7 @@
         <c:set var="username" value="${user.username}"/>
     </sec:authorize>
 
+
     <script type="text/javascript">
         $(function(){
             function stripTrailingSlash(str) {
@@ -50,28 +51,53 @@
             });
         });
     </script>
+
+    <script>
+        var myVar = setInterval(myTimer, 1000);
+
+        function myTimer() {
+            var d = new Date();
+            document.getElementById("clock").innerHTML = d.toLocaleTimeString();
+        }
+    </script>
+
+    <style>
+        ol {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: auto;
+            display: inline-block;
+            overflow:hidden;
+            position:fixed;
+            background-color: #2C2C2C;
+        }
+        #clock {
+            color: white;
+        }
+    </style>
 </head>
 
-<body onload="myFunction1()">
+<body onload="reloader()">
+<ol style="z-index: 1">
+    <label id="clock" style="margin:5px 525px 0 20px"></label>
+    <c:if test="${!empty username}">
+            <label><font color="#337AB7"><spring:message code="template.logged"/>: </font>
+                <font color="#6D3ECD">${username}</font></label>
+    </c:if>
+    <li class="pull-right">
+        <label><a href="?lang=en"><img src="/resources/uk_flag.png"></a></label>
+        <label><a href="?lang=lt"><img src="/resources/lt_flag.png" style="margin-right:10px"></a></label>
+    </li>
+</ol>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-2">
         </div>
         <div class="col-md-8">
-            <div class="page-header">
-                <%--<input type='button' Onclick="document.body.style.cssText+=';background: url(/resources/dropbox.png);'" />--%>
-                <%--<form method="get" action="/error404">--%>
-                    <%--<button type="submit">ccc</button>--%>
-                <%--</form>--%>
-                <%--<h1 style="font-family:'Comic Sans MS';">
-                        <spring:message code="template.header"/>
-                </h1>--%>
+            <div class="page-header" style="z-index: -1">
                 <img src="/resources/DDD%20Cloud%20Manager%20logo.png" alt="Logotype" width="400" height="150"/>
-                    <ul align="right">
-                    <c:if test="${!empty username}">
-                            <label><font color="#1e90ff"><spring:message code="template.logged"/>: </font>${username}</label>
-                    </c:if>
-                </ul>
             </div>
             <ul class="nav nav-pills">
                 <li>
@@ -96,19 +122,6 @@
                 <li>
                     <a href="/about"><spring:message code="template.about"/></a>
                 </li>
-                <li class="dropdown pull-right">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">
-                        <spring:message code="template.button.language"/>
-                        <strong class="caret"></strong></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="?lang=en"><img src="/resources/uk_flag.png"> <spring:message code="template.language.en"/></a>
-                        </li>
-                        <li>
-                            <a href="?lang=lt"><img src="/resources/lt_flag.png"> <spring:message code="template.language.lt"/></a>
-                        </li>
-                    </ul>
-                </li>
                 <li class="pull-right">
                     <c:choose>
                         <c:when test="${!empty username}">
@@ -116,14 +129,7 @@
                         </c:when>
                         <c:otherwise>
                             <ul >
-                                <li>
-                                    <a href="/login"><spring:message code="template.login"/></a>
-                                </li>
-
-                                <li>
-                                    <a href="/registration"><spring:message code="template.registration"/></a>
-                                </li>
-
+                                <a href="/login"><b><spring:message code="template.login"/></b></a>
                             </ul>
                         </c:otherwise>
                     </c:choose>

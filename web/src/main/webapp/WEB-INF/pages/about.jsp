@@ -14,9 +14,6 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            <img src="/resources/onedrive.png" alt="One Drive" width="100" height="100"/>
-        </div>
-        <div class="col-md-2">
             <img src="/resources/googledrive.png" alt="Google Drive" width="126" height="100"/>
         </div>
         <div class="col-md-2">

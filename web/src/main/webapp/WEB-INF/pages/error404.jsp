@@ -1,12 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!--A Design by W3layouts
-Author: W3layout
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
-Modified by Tomas Brusokas 2016.04.20
--->
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -15,7 +8,7 @@ Modified by Tomas Brusokas 2016.04.20
     <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
     <style type="text/css">
         body{
-            background:url(/resources/err_bg.jpg) ;
+            background:url(/resources/cloud.png) ;
         }
         .wrap{
             margin:0 auto;
@@ -84,25 +77,6 @@ Modified by Tomas Brusokas 2016.04.20
             text-shadow:1px 1px 3px rgba(155, 142, 50, 0.98);
             border: 1px solid rgba(155, 142, 50, 0.98);
             text-decoration: none;
-        }
-        .orange:hover {
-            background: #dec829;
-            background: -moz-linear-gradient(top,  #dec829 1%, #fdde02 100%);
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#dec829), color-stop(100%,#fdde02));
-            background: -webkit-linear-gradient(top,  #dec829 1%,#fdde02 100%);
-            background: -o-linear-gradient(top,  #dec829 1%,#fdde02 100%);
-            background: -ms-linear-gradient(top,  #dec829 1%,#fdde02 100%);
-            background: linear-gradient(to bottom,  #dec829 1%,#fdde02 100%);
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dec829', endColorstr='#fdde02',GradientType=0 );
-        }
-        .footer{
-            color:white;
-            position:absolute;
-            right:10px;
-            bottom:10px;
-        }
-        .footer a{
-            color:yellow;
         }
     </style>
 </head>

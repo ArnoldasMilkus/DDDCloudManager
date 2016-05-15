@@ -6,20 +6,20 @@
 <customtags:pageTemplate>
     <html>
     <body>
-    <div th:if="${message}">
-        <h2 th:text="${message}"/>
-    </div>
+    <%--<div th:if="${message}">--%>
+        <%--<h2 th:text="${message}"/>--%>
+    <%--</div>--%>
 
     <div>
         <form method="POST" enctype="multipart/form-data" action="/GDriveUpload?${_csrf.parameterName}=${_csrf.token}">
             <table>
                 <tr>
-                    <td>File to upload:</td>
+                    <td><spring:message code="gddriveupload.browse"/></td>
                     <td><input type="file" name="file"/></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="submit" value="Upload"/></td>
+                    <td><input type="submit" value="<spring:message code="gdriveupload.upload"/>"/></td>
                 </tr>
             </table>
             <input type="hidden" name="parentId" value="${parentId}"/>
@@ -27,9 +27,7 @@
     </div>
 
     <div>
-        <ul>
-            <li th:each="file : ${files}" th:text="${file}"></li>
-        </ul>
+        <h4>${progressReport}</h4>
     </div>
     </body>
     </html>
