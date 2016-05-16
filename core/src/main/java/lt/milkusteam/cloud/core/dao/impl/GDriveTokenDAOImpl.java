@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class GDriveTokenDAOImpl implements GDriveTokenDAO {
+
     @Autowired
     private GDriveTokenRepository gDriveTokenRep;
 

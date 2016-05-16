@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
  */
 
 public class UserDTO {
+
     @NotNull
     @Size(min = 1)
     private String username;
@@ -26,6 +27,8 @@ public class UserDTO {
     @Size(min = 1)
     private String email;
 
+    private Integer role;
+
     public String getEmail() {
         return email;
     }
@@ -33,8 +36,6 @@ public class UserDTO {
     public void setEmail(final String email) {
         this.email = email;
     }
-
-    private Integer role;
 
     public Integer getRole() {
         return role;

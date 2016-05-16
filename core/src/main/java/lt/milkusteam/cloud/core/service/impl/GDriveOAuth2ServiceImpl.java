@@ -47,11 +47,6 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
     }
 
     @Override
-    public void unlinkUser(String username) {
-        gDriveTokenDAO.delete(username);
-    }
-
-    @Override
     public String requestRefreshToken(String username, String code) {
         Properties properties = GDrive.getProperties();
         try {

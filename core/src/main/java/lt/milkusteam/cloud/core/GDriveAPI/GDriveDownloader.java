@@ -12,7 +12,9 @@ import java.io.OutputStream;
  * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class GDriveDownloader {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GDrive.class);
+
     public void downloadToClient(Drive service, HttpServletResponse response, String fileId) {
         try {
             OutputStream stream = response.getOutputStream();

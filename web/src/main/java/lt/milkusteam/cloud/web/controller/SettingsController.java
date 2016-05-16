@@ -18,13 +18,13 @@ import java.security.Principal;
 public class SettingsController {
 
     @Autowired
-    DbxFileService dbxFileService;
+    private DbxFileService dbxFileService;
 
     @Autowired
-    GDriveOAuth2Service gDriveOAuth2Service;
+    private GDriveOAuth2Service gDriveOAuth2Service;
 
     @Autowired
-    GDriveFilesService gDriveFilesService;
+    private GDriveFilesService gDriveFilesService;
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     public String showSettings(Model model, Principal principal) {

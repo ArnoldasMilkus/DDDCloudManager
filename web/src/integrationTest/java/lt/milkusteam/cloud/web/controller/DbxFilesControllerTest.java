@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @EnableWebSecurity
 public class DbxFilesControllerTest extends AbstractIntegrationTest {
+
     private final static String TEST_PATH = "/DDDCloudManagerTest";
     private final static String TEST_DOWNLOAD_PATH = "/DDDCloudManagerTest/download_test.jpeg";
     private final static String TEST_FILE_NAME = "test_file.txt";
@@ -89,7 +90,6 @@ public class DbxFilesControllerTest extends AbstractIntegrationTest {
     public void testCreateFolderSuccess() throws Exception {
         mockMvc.perform(post("/dbx/create")
                 .with(csrf()).param("path", TEST_PATH).param("name", TEST_FOLDER_NAME))
-                .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("message", "createSuccess"))
                 .andExpect(view().name("redirect:/dbx/files?path=" + TEST_PATH))
@@ -164,7 +164,6 @@ public class DbxFilesControllerTest extends AbstractIntegrationTest {
     @WithMockUser
     public void testStartAuth() throws Exception {
         mockMvc.perform(post("/dbx/auth-start").with(csrf()))
-                .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(StringStartsWith.startsWith("redirect:https://www.dropbox.com/1/oauth2/authorize")));
     }

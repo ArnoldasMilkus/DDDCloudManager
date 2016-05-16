@@ -16,6 +16,7 @@ public class UserRole {
     private Integer userRoleId;
     private User user;
     private String role;
+
     public UserRole() {
     }
 

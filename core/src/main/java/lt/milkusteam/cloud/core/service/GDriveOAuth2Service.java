@@ -6,7 +6,8 @@ package lt.milkusteam.cloud.core.service;
 public interface GDriveOAuth2Service {
 
     boolean isLinked(String username);
+
     String getActivationURL();
-    void unlinkUser(String username);
+
     String requestRefreshToken(String username, String code);
 }

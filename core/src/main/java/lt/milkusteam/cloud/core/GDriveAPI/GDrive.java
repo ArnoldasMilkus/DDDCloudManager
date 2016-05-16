@@ -37,6 +37,7 @@ import java.util.Properties;
 
 
 public class GDrive {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GDrive.class);
     private static final String APPLICATION_NAME = "DDD Cloud Manager";
     private static final String MIME_FOLDER = "application/vnd.google-apps.folder";

@@ -10,6 +10,7 @@ import java.util.Comparator;
 public class FilesSortComparator implements Comparator<File> {
 
     private static final String FOLDER = "folder";
+
     @Override
     public int compare(File o1, File o2) {
         boolean pf = o1.getMimeType().equals(FOLDER);

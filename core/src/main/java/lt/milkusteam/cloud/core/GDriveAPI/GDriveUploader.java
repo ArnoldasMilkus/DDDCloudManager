@@ -14,6 +14,7 @@ import java.io.InputStream;
  * Created by Vilintas Strielčiūnas on 2016-04-20.
  */
 public class GDriveUploader {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GDrive.class);
 
     public File simpleUploadStream(Drive service, File metadata, InputStream inStream, boolean useDirectUpload) {
