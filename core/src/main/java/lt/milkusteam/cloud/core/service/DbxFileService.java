@@ -9,7 +9,9 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 import com.dropbox.core.v2.users.SpaceUsage;
 import lt.milkusteam.cloud.core.model.Pair;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -18,13 +20,10 @@ import java.util.List;
  * Created by gediminas on 4/17/16.
  */
 public interface DbxFileService {
-    int CHUNK_SIZE = 104857600;
 
     Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) throws InvalidAccessTokenException;
 
     List<DeletedMetadata> getAllDeletedMetadata(String username) throws InvalidAccessTokenException;
-
-    Metadata getMetadata(String username, String path) throws InvalidAccessTokenException;
 
     boolean containsClient(String username);
 
@@ -32,9 +31,9 @@ public interface DbxFileService {
 
     boolean addClient(String username);
 
-    void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException;
+    void upload(String username, String dirPath, MultipartFile file) throws InvalidAccessTokenException, IOException;
 
-    void uploadBig(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException;
+    void upload(String username, String fullPath, InputStream inputStream, long size) throws InvalidAccessTokenException;
 
     void download(String username, String path, OutputStream outputStream) throws InvalidAccessTokenException;
 

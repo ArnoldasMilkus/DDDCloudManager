@@ -29,7 +29,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = "lt.milkusteam.cloud.core")
 @EnableJpaRepositories(basePackages = "lt.milkusteam.cloud.core.dao.repository")
 @EnableTransactionManagement
-@PropertySource("classpath:database.properties")
+@PropertySource({"classpath:database.properties", "classpath:dropbox-app.properties"})
 public class CoreConfiguration {
 
     @Value("${db.server}")

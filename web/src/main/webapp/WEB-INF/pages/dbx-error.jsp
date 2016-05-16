@@ -11,17 +11,7 @@
     <div class="container col-md-12">
             <%-- If user hasn't linked to his dropbox account --%>
         <h3>
-            <c:choose>
-                <c:when test="${error == 1}">
-                    <spring:message code="dbxerror.1"/>
-                </c:when>
-                <c:when test="${error == 2}">
-                    <spring:message code="dbxerror.2"/>
-                </c:when>
-                <c:otherwise>
-                    <spring:message code="dbxerror.0"/>
-                </c:otherwise>
-            </c:choose>
+            <spring:message code="dbxerror.${error}"/>
         </h3>
         <form name="authForm"
               action="<c:url value="/dbx/auth-start" />" method='POST'>

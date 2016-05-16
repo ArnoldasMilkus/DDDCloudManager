@@ -12,6 +12,4 @@ public interface DbxAuthService {
     void finishAuth(String username, String state, String code);
 
     void undoAuth(String username);
-
-    boolean isLinked(String username);
 }

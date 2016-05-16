@@ -10,7 +10,7 @@
     <body>
     <div class="container col-md-12">
         <c:if test="${empty from}">
-        <h2><spring:message code="dbxfiles.title"/><span class="pull-right">${spaceUsage}</span></h2>
+            <h2><spring:message code="dbxfiles.title"/><span class="pull-right">${spaceUsage}</span></h2>
         </c:if>
         <c:if test="${!empty from}">
             <h2><spring:message code="dbxfiles.copytitle"/><span class="pull-right">${spaceUsage}</span></h2>
@@ -41,7 +41,7 @@
             </c:choose>
 
             <c:if test="${empty from}">
-                <div class="container-fluid">
+                <div class="container-fluid row">
                     <div class="row">
                         <div class="col-md-4">
                             <c:url var="url" value="/dbx/upload">
@@ -84,8 +84,11 @@
                         </div>
                     </div>
                 </div>
-                <br/>
             </c:if>
+            <c:if test="${!empty message}">
+                <div><spring:message code="dbxfiles.messages.${message}"/></div>
+            </c:if>
+            <br/>
             <table class="table table-bordered" style="background-color:whitesmoke">
                 <thead>
                 <tr>
@@ -164,14 +167,8 @@
                 </c:forEach>
                 </tbody>
             </table>
-            <form name="authForm"
-                  action="<c:url value="/dbx/auth-clear" />" method='POST'>
-                <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            </form>
         </fielset>
     </div>
-
     </body>
     </html>
 </customtags:pageTemplate>
