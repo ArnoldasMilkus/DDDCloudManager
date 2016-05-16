@@ -85,6 +85,7 @@ public class GDrive {
                     .build();
         } catch (GeneralSecurityException e) {
             LOGGER.error(e.getMessage());
+            return null;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
@@ -162,6 +163,9 @@ public class GDrive {
                         .execute();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
+            }
+            if (result == null) {
+                return null;
             }
             for(File file: result.getFiles()) {
                 if (file.getMimeType().contains(REPLACE_FOLDER_TYPE_TO)) {

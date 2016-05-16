@@ -51,7 +51,7 @@ public class GDriveFilesController {
                             @RequestParam(name = "from", required = false) String dbxFilePath,
                             @RequestParam(name = "isUploading", required = false) boolean isUploading,
                             Principal principal) {
-        int ind = 0;
+        int ind = 0, check;
         String username = principal.getName();
         boolean isLinked = false;
         boolean isError = false;
@@ -60,12 +60,8 @@ public class GDriveFilesController {
         model.addAttribute("dbxFilePath", dbxFilePath);
         model.addAttribute("isUploading", isUploading);
         if (error != null && !error.isEmpty()) {
-            if (error.contains("access_denied")) {
-                model.addAttribute("error", "GDrive.error.access_denied");
-            }
-            else {
-                model.addAttribute("error", "GDrive.error.unknown");
-            }
+            model.addAttribute("error", "GDrive.error." + error);
+
             isError = true;
             model.addAttribute("isError", isError);
             model.addAttribute("driveAuth", isLinked);
@@ -73,7 +69,15 @@ public class GDriveFilesController {
         }
         if (gDriveOAuthService.isLinked(username)) {
             if (!gDriveFilesService.containsClient(username, ind)) {
-                gDriveFilesService.addClient(username);
+                check = gDriveFilesService.addClient(username);
+                if (check < 0){
+                    model.addAttribute("driveAuth", false);
+                    return "redirect:/GDriveFiles/revokeToken";
+                }
+            }
+            else if (gDriveFilesService.getEmail(username, ind) == null) {
+                model.addAttribute("driveAuth", false);
+                return "redirect:/GDriveFiles/revokeToken";
             }
             if (isTrashed) {
                 model.addAttribute("files", gDriveFilesService.findAllInDirectory("", username, isTrashed, 0));
@@ -133,13 +137,17 @@ public class GDriveFilesController {
     public String askForToken(Principal principal,
                               @RequestParam(name = "error", required = false) String error,
                               @RequestParam(name = "code", required = false) String code){
+        String errorCode = "";
         if (error != null && !error.isEmpty()) {
             return "redirect:/GDriveFiles?error=" + error;
         }
         if (code.isEmpty()) {
             return "redirect:/GDriveFiles?error=error";
         }
-        gDriveOAuthService.requestRefreshToken(principal.getName(), code);
+        errorCode = gDriveOAuthService.requestRefreshToken(principal.getName(), code);
+        if (!errorCode.isEmpty()) {
+            return "redirect:/GDriveFiles?error=" + errorCode;
+        }
         return "redirect:/GDriveFiles";
     }
 
@@ -202,6 +210,10 @@ public class GDriveFilesController {
         try {
             LOGGER.info(principal.getName() + " copied file from Dropbox = " + from + " to Google Drive = " + to);
             InputStream is = dbxFileService.getInputStream(principal.getName(), from);
+            if (is == null) {
+                LOGGER.error("Input stream is null");
+                return "redirect:/GDriveFiles?error=multiTabs";
+            }
             gDriveFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true, 0);
             is.close();
         } catch (InvalidAccessTokenException e) {

@@ -56,11 +56,15 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     }
 
     private GDrive getDriveService(String userName, int ind) {
+        int check;
         if (driveMap == null) {
             driveMap = new HashMap<>();
         }
         if (driveMap.get(userName) == null || driveMap.get(userName).isEmpty()) {
-            addClient(userName);
+            check = addClient(userName);
+            if (check < 0) {
+                return null;
+            }
         }
         return driveMap.get(userName).get(ind);
     }
@@ -84,8 +88,12 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
 
     @Override
     public int addClient(String username) {
+        String email = null;
         GDriveToken token = gDriveTokenDAO.findByUsername(username);
         GDrive client = new GDrive().initGDrive(token.getUsername(), "0", new GoogleTokenResponse().setRefreshToken(token.getToken()));
+        if (client == null) {
+            return -1;
+        }
         List<GDrive> list = driveMap.get(username);
         if (list == null) {
             list = new ArrayList<>();
@@ -102,33 +110,44 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
         String token = gDriveTokenDAO.findByUsername(username).getToken();
         gDriveTokenDAO.delete(username);
         removeClient(username, ind);
-        drive.revokeToken(token);
+        if (drive != null) {
+            drive.revokeToken(token);
+        }
     }
 
     @Override
     public void downloadToClient(HttpServletResponse response, String fileId, String username, int ind) {
-        new GDriveDownloader().downloadToClient(getDriveService(username, ind).getDrive(), response, fileId);
+        GDrive drive = getDriveService(username, ind);
+        if (drive != null) {
+            new GDriveDownloader().downloadToClient(getDriveService(username, ind).getDrive(), response, fileId);
+        }
     }
 
     @Override
     public void fixTrashed(String username, int ind, boolean trashed, String fileId) {
         GDrive drive = getDriveService(username, ind);
-        drive.setTrashed(fileId, trashed);
+        if (drive != null) {
+            drive.setTrashed(fileId, trashed);
+        }
     }
 
     @Override
     public void newFolder(String username, int ind, String folderName, String parentId) {
         GDrive drive = getDriveService(username, ind);
-        drive.createFolder(folderName, parentId);
+        if (drive != null) {
+            drive.createFolder(folderName, parentId);
+        }
     }
 
     @Override
     public InputStream returnStream(String username, int ind, String fileId) {
         GDrive drive = getDriveService(username, ind);
-        try {
-            return drive.getDrive().files().get(fileId).executeMedia().getContent();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+        if (drive != null) {
+            try {
+                return drive.getDrive().files().get(fileId).executeMedia().getContent();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
         }
         return null;
     }
@@ -136,10 +155,12 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     @Override
     public String getName(String username, int ind, String fileId) {
         GDrive drive = getDriveService(username, ind);
-        try {
-            return drive.getDrive().files().get(fileId).setFields("name").execute().getName();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+        if (drive != null) {
+            try {
+                return drive.getDrive().files().get(fileId).setFields("name").execute().getName();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
         }
         return null;
     }
@@ -147,11 +168,26 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     @Override
     public long getSize(String username, int ind, String fileId) {
         GDrive drive = getDriveService(username, ind);
-        try {
-            return drive.getDrive().files().get(fileId).setFields("size").execute().getSize();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+        if (drive != null) {
+            try {
+                return drive.getDrive().files().get(fileId).setFields("size").execute().getSize();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
         }
         return 0;
+    }
+
+    @Override
+    public String getEmail(String username, int ind) {
+        GDrive drive = getDriveService(username, ind);
+        if (drive != null) {
+            try {
+                return drive.getDrive().about().get().setFields("user").execute().getUser().getEmailAddress();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+        return null;
     }
 }

@@ -52,7 +52,7 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
     }
 
     @Override
-    public void requestRefreshToken(String username, String code) {
+    public String requestRefreshToken(String username, String code) {
         Properties properties = GDrive.getProperties();
         try {
             GoogleTokenResponse response =
@@ -63,6 +63,9 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
             if (response.getRefreshToken() != null && !response.getRefreshToken().isEmpty()) {
                 GDriveToken token = new GDriveToken(username, response.getRefreshToken());
                 gDriveTokenDAO.save(token);
+            }
+            else {
+                return "notUnlinked";
             }
         } catch (TokenResponseException e) {
             if (e.getDetails() != null) {
@@ -79,5 +82,6 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
+        return "";
     }
 }
