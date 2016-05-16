@@ -71,11 +71,6 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         return interceptor;
     }
 
-//    @Bean
-//    public RequestContextListener requestContextListener() {
-//        return new RequestContextListener();
-//    }
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());

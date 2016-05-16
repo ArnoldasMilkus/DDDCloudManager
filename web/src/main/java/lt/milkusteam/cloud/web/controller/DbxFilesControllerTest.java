@@ -38,9 +38,9 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/dbx")
-public class DbxFilesController {
+public class DbxFilesControllerTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbxFilesController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbxFilesControllerTest.class);
 
     @Autowired
     private DbxFileService dbxFileService;
