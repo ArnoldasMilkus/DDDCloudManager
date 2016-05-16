@@ -23,8 +23,6 @@ public interface DbxFileService {
 
     List<DeletedMetadata> getAllDeletedMetadata(String username) throws InvalidAccessTokenException;
 
-    Metadata getMetadata(String username, String path) throws InvalidAccessTokenException;
-
     boolean containsClient(String username);
 
     void removeClient(String username);

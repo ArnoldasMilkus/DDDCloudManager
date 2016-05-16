@@ -165,11 +165,6 @@
                 </c:forEach>
                 </tbody>
             </table>
-            <form name="authForm"
-                  action="<c:url value="/dbx/auth-clear" />" method='POST'>
-                <input type="submit" value="<spring:message code="dbxfiles.unlinkbutton"/>"/>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            </form>
         </fielset>
     </div>
 

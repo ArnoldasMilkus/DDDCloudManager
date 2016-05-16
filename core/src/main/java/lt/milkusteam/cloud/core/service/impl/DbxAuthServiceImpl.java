@@ -28,13 +28,11 @@ public class DbxAuthServiceImpl implements DbxAuthService {
     @Value("${dbx.key}")
     private String key;
 
-    @Value("${dbx.identifier}")
+    @Value("${dbx.secret}")
     private String secret;
 
     @Value("${dbx.redirect-uri}")
     private String redirect_uri;
-
-    private final DbxAppInfo app_info = new DbxAppInfo(key, secret);
 
     @Autowired
     private DbxTokenDao dbxTokenDao;
@@ -43,6 +41,8 @@ public class DbxAuthServiceImpl implements DbxAuthService {
 
     @Override
     public String startAuth(String username, DbxSessionStore store) {
+        LOGGER.info("startAuth() username={}", username);
+        DbxAppInfo app_info = new DbxAppInfo(key, secret);
         DbxRequestConfig config = new DbxRequestConfig(identifier, Locale.getDefault().toString());
         DbxWebAuth auth = new DbxWebAuth(config, app_info, redirect_uri, store);
         activeWebAuths.put(username, auth);
@@ -51,6 +51,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
 
     @Override
     public void finishAuth(String username, String state, String code) {
+        LOGGER.info("finishAuth() username={} state={} code={}", username, state, code);
         DbxWebAuth webAuth = activeWebAuths.get(username);
         if (webAuth != null) {
             Map<String, String[]> params = new HashMap<>();
@@ -74,6 +75,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
 
     @Override
     public void undoAuth(String username) {
+        LOGGER.info("undoAuth() username={}", username);
         dbxTokenDao.delete(username);
     }
 }
