@@ -244,7 +244,7 @@ public class DbxFilesController {
     }
 
     @ExceptionHandler(DbxNotLinkedException.class)
-    public String handleNotLinkedException(Principal principal, Model model, Exception e) {
+    public String handleNotLinkedException(Model model, Exception e) {
         LOGGER.error(e.getMessage());
         model.addAttribute("error", 1);
         return "dbx-error";
