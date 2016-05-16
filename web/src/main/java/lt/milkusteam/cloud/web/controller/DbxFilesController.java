@@ -6,15 +6,18 @@ import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.v2.files.DeletedMetadata;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
+import lt.milkusteam.cloud.core.model.DbxNotLinkedException;
 import lt.milkusteam.cloud.core.model.Pair;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
+import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,79 +44,61 @@ public class DbxFilesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DbxFilesController.class);
 
     @Autowired
-    DbxFileService dbxFileService;
+    private DbxFileService dbxFileService;
 
     @Autowired
-    DbxAuthService dbxAuthService;
+    private DbxAuthService dbxAuthService;
 
     @Autowired
-    GDriveFilesService gdFilesService;
+    private GDriveFilesService gdFilesService;
 
     @RequestMapping(value = "/")
-    public String checkDbxAuthentication(Principal principal, RedirectAttributes redirectAttributes) {
+    public String checkDbxAuthentication(Principal principal, Model model) {
         String username = principal.getName();
         if (dbxFileService.containsClient(username) || dbxFileService.addClient(username)) {
             return "redirect:/dbx/files";
         } else {
-            redirectAttributes.addFlashAttribute("error", 1);
-            return "redirect:/dbx/error";
+            model.addAttribute("error", 1);
+            return "dbx-error";
         }
     }
 
     @RequestMapping(value = "/files")
     public String showFiles(Model model, Principal principal,
                             @RequestParam(name = "path", required = false) String path,
-                            @RequestParam(name = "from", required = false) String from,
-                            RedirectAttributes redirectAttributes) {
+                            @RequestParam(name = "from", required = false) String from)
+            throws InvalidAccessTokenException {
         String username = principal.getName();
+        if (!dbxFileService.containsClient(username) && !dbxFileService.addClient(username)) {
+            throw new DbxNotLinkedException(username + " tried to access /dbx/files without linked dropbox account.");
+        }
         if (path == null) {
             path = "";
         }
-        if (from != null && !from.isEmpty()) {
-            model.addAttribute("from", from);
-        }
-        try {
-            if (dbxFileService.containsClient(username) || dbxFileService.addClient(username)) {
-                Pair<List<FolderMetadata>, List<FileMetadata>> metadataPair =
-                        dbxFileService.getMetadataPair(username, path);
-                model.addAttribute("files", metadataPair.getRight());
-                model.addAttribute("folders", metadataPair.getLeft());
-                model.addAttribute("spaceUsage", dbxFileService.getStorageInfo(username));
-            } else {
-                return "redirect:/dbx/";
-            }
-            model.addAttribute("currentPath", path);
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(username);
-            return "redirect:/dbx/error";
-        }
+        model.addAttribute("from", from);
+        Pair<List<FolderMetadata>, List<FileMetadata>> metadataPair =
+                dbxFileService.getMetadataPair(username, path);
+        model.addAttribute("files", metadataPair.getRight());
+        model.addAttribute("folders", metadataPair.getLeft());
+        model.addAttribute("spaceUsage", dbxFileService.getStorageInfo(username));
+        model.addAttribute("currentPath", path);
         return "dbx-files";
     }
 
     @RequestMapping(value = "/trash")
     public String showDeletedFiles(Model model, Principal principal,
-                                   @RequestParam(name = "path", required = false) String path,
-                                   RedirectAttributes redirectAttributes) {
-        if (path == null) {
-            path = "";
-        }
+                                   @RequestParam(name = "path", required = false) String path)
+            throws InvalidAccessTokenException, DbxNotLinkedException {
         String username = principal.getName();
+        if (!dbxFileService.containsClient(username)) {
+            throw new DbxNotLinkedException(username + " tried to access /dbx/trash without linked dropbox account.");
+        }
         if (path == null) {
             path = "";
         }
-        try {
-            if (dbxFileService.containsClient(username)) {
-                List<DeletedMetadata> metadataList =
-                        dbxFileService.getAllDeletedMetadata(username);
-                model.addAttribute("files", metadataList);
-            }
-            model.addAttribute("currentPath", path);
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(username);
-            return "redirect:/dbx/error";
-        }
+        List<DeletedMetadata> metadataList = dbxFileService.getAllDeletedMetadata(username);
+        model.addAttribute("files", metadataList);
+        model.addAttribute("currentPath", path);
         return "dbx-deleted-files";
     }
 
@@ -123,87 +107,48 @@ public class DbxFilesController {
     public String uploadFile(Principal principal,
                              @RequestParam("path") String path,
                              @RequestParam("file") MultipartFile file,
-                             RedirectAttributes redirectAttributes) {
-        try {
-            if (file.getSize() > dbxFileService.CHUNK_SIZE) {
-                dbxFileService.uploadBig(principal.getName(), path + "/" + file.getOriginalFilename(),
-                        file.getInputStream(), file.getSize());
-            } else {
-                dbxFileService.uploadSmall(principal.getName(), path + "/" + file.getOriginalFilename(), file.getInputStream());
-            }
-            dbxFileService.updateStorageInfo(principal.getName());
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
+                             RedirectAttributes redirectAttributes) throws InvalidAccessTokenException, IOException {
+        dbxFileService.upload(principal.getName(), path + "/" + file.getOriginalFilename(),
+                file.getInputStream(), file.getSize());
+        dbxFileService.updateStorageInfo(principal.getName());
+        redirectAttributes.addFlashAttribute("message", "uploadSuccess");
         return "redirect:/dbx/files?path=" + path;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String createFolder(Principal principal,
                                @RequestParam("path") String path,
-                               @RequestParam("name") String name,
-                               RedirectAttributes redirectAttributes) {
+                               @RequestParam("name") String name) throws InvalidAccessTokenException {
 
-        try {
-            dbxFileService.createFolder(principal.getName(), path + "/" + name);
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        }
+        dbxFileService.createFolder(principal.getName(), path + "/" + name);
         return "redirect:/dbx/files?path=" + path;
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("path") String path) {
+    public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("path") String path)
+            throws InvalidAccessTokenException, IOException {
         OutputStream stream = null;
-        try {
-            stream = response.getOutputStream();
-            FileMetadata mdata = (FileMetadata)dbxFileService.getMetadata(principal.getName(), path);
-//            response.setContentType("application/force-download");
-            response.setContentType(determineContentType(path));
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + (path.substring(path.lastIndexOf("/") + 1) + "\""));
-            dbxFileService.download(principal.getName(), path, stream);
-            response.flushBuffer();
-        } catch (InvalidAccessTokenException e) {
-            try {
-                response.sendRedirect("/dbx/error");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            LOGGER.error(e.getMessage());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        stream = response.getOutputStream();
+        response.setContentType(determineContentType(path));
+        response.setHeader("Content-Disposition",
+                "attachment; filename=\"" + (path.substring(path.lastIndexOf("/") + 1) + "\""));
+        dbxFileService.download(principal.getName(), path, stream);
+        response.flushBuffer();
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public String deleteFile(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) {
-        try {
-            dbxFileService.delete(principal.getName(), path);
-            dbxFileService.updateStorageInfo(principal.getName());
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        }
+    public String deleteFile(Principal principal, @RequestParam("path") String path,
+                             RedirectAttributes redirectAttributes) throws InvalidAccessTokenException {
+        dbxFileService.delete(principal.getName(), path);
+        dbxFileService.updateStorageInfo(principal.getName());
+        redirectAttributes.addFlashAttribute("message", "removeSuccess");
         return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
     }
 
     @RequestMapping(value = "/restore", method = RequestMethod.GET)
-    public String restoreFile(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) {
-        try {
-            dbxFileService.restore(principal.getName(), path);
-            dbxFileService.updateStorageInfo(principal.getName());
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        }
+    public String restoreFile(Principal principal, @RequestParam("path") String path) throws InvalidAccessTokenException {
+        dbxFileService.restore(principal.getName(), path);
+        dbxFileService.updateStorageInfo(principal.getName());
         return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
     }
 
@@ -217,7 +162,7 @@ public class DbxFilesController {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
 
-        DbxSessionStore store = new DbxStandardSessionStore(session, "somethingsomething");
+        DbxSessionStore store = new DbxStandardSessionStore(session, "key");
         String authUrl = dbxAuthService.startAuth(principal.getName(), store);
 
         return "redirect:" + authUrl;
@@ -226,7 +171,7 @@ public class DbxFilesController {
     @RequestMapping(value = "/auth-finish")
     public String finishDbxAuth(Principal principal,
                                 @RequestParam(name = "state", required = false) String state,
-                                @RequestParam(name = "code", required=false) String code) {
+                                @RequestParam(name = "code", required = false) String code) {
         if (state != null && !state.isEmpty() && code != null && !code.isEmpty()) {
             dbxAuthService.finishAuth(principal.getName(), state, code);
             dbxFileService.addClient(principal.getName());
@@ -247,61 +192,28 @@ public class DbxFilesController {
         dbxFileService.removeClient(username);
     }
 
-    @RequestMapping(value = "/copy/gd", method = RequestMethod.GET)
-    public String copyFileToGDrive(Principal principal,
-                                   @RequestParam(name = "from") String from,
-                                   @RequestParam(name = "to", required = false) String to,
-                                   RedirectAttributes redirectAttributes) {
-        if (to == null || to.isEmpty()) {
-            to = "root";
-        }
-        try {
-            LOGGER.info(principal.getName() + " copied file from Dropbox = " + from + " to Google Drive = " + to);
-            InputStream is = dbxFileService.getInputStream(principal.getName(), from);
-            gdFilesService.uploadFile(is, to, from.substring(from.lastIndexOf("/") + 1), principal.getName(), true);
-            is.close();
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return "redirect:/GDriveFiles";
-    }
     @RequestMapping(value = "/copyFrom/gd", method = RequestMethod.POST)
     public String copyFileFromGDrive(Principal principal,
-                                   @RequestParam(name = "from") String from,
-                                   @RequestParam(name = "to", required = false) String to,
-                                   RedirectAttributes redirectAttributes) {
+                                     @RequestParam(name = "from") String from,
+                                     @RequestParam(name = "to", required = false) String to,
+                                     RedirectAttributes redirectAttributes) throws InvalidAccessTokenException, IOException {
         String username = principal.getName();
         if (to == null) {
             to = "";
         }
-        try {
-            LOGGER.info(principal.getName() + " copied file from Google Drive = " + from + " to Dropbox = " + to);
-            InputStream is = gdFilesService.returnStream(principal.getName(), 0, from);
-            String name = gdFilesService.getName(username, 0, from);
-            long size = gdFilesService.getSize(username, 0, from);
-            if (size < dbxFileService.CHUNK_SIZE) {
-                dbxFileService.uploadSmall(username, to + "/" + name, is);
-            } else {
-                dbxFileService.uploadBig(username, to + "/" + name, is, size);
-            }
-            is.close();
-        } catch (InvalidAccessTokenException e) {
-            redirectAttributes.addFlashAttribute("error", 2);
-            clearUserDbxData(principal.getName());
-            return "redirect:/dbx/error";
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
+        InputStream is = gdFilesService.returnStream(principal.getName(), 0, from);
+        String filename = gdFilesService.getName(username, 0, from);
+        long size = gdFilesService.getSize(username, 0, from);
+        dbxFileService.upload(username, to + "/" + filename, is, size);
+        is.close();
+        LOGGER.info("{} copied file from Google Drive({}) to Dropbox({})", username, from, to);
+        redirectAttributes.addFlashAttribute("message", "copyFromGDSuccess");
         return "redirect:/dbx/files?path=" + to;
     }
 
-    public String determineContentType(String path) {
-        String result = null;
-        String ext = path.substring(path.lastIndexOf(".")+1);
+    private String determineContentType(String path) {
+        String result;
+        String ext = path.substring(path.lastIndexOf(".") + 1);
         switch (ext) {
             case "pdf":
                 result = "application/pdf";
@@ -330,5 +242,27 @@ public class DbxFilesController {
                 result = "application/force-download";
         }
         return result;
+    }
+
+    @ExceptionHandler(InvalidAccessTokenException.class)
+    public String handleInvalidTokenException(Principal principal, Model model, InvalidAccessTokenException e) {
+        LOGGER.error(e.getMessage());
+        clearUserDbxData(principal.getName());
+        model.addAttribute("error", 2);
+        return "dbx-error";
+    }
+
+    @ExceptionHandler(DbxNotLinkedException.class)
+    public String handleNotLinkedException(Principal principal, Model model, Exception e) {
+        LOGGER.error(e.getMessage());
+        model.addAttribute("error", 1);
+        return "dbx-error";
+    }
+
+    @ExceptionHandler(IOException.class)
+    public String handleIOException(Model model, Exception e) {
+        LOGGER.error(e.getMessage());
+        model.addAttribute("error", 0);
+        return "dbx-error";
     }
 }

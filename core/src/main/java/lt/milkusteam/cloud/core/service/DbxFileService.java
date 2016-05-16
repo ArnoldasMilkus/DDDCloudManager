@@ -18,7 +18,6 @@ import java.util.List;
  * Created by gediminas on 4/17/16.
  */
 public interface DbxFileService {
-    int CHUNK_SIZE = 104857600;
 
     Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) throws InvalidAccessTokenException;
 
@@ -32,9 +31,7 @@ public interface DbxFileService {
 
     boolean addClient(String username);
 
-    void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException;
-
-    void uploadBig(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException;
+    void upload(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException;
 
     void download(String username, String path, OutputStream outputStream) throws InvalidAccessTokenException;
 

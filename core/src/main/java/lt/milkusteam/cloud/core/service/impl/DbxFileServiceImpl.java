@@ -25,14 +25,16 @@ import java.util.*;
 @Service
 public class DbxFileServiceImpl implements DbxFileService {
 
-    private Map<String, DbxClientV2> dbxClients = new HashMap<>();
-    private Map<String, String> dbxSpaceUsage = new HashMap<>();
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DbxFileServiceImpl.class);
+
+    private static final long CHUNK_SIZE = 104857600;
+
+    private Map<String, DbxClientV2> dbxClients = new HashMap<>();
+
+    private Map<String, String> dbxSpaceUsage = new HashMap<>();
 
     @Autowired
     private DbxTokenDao dbxTokenDao;
-
 
     @Override
     public Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) throws InvalidAccessTokenException {
@@ -134,7 +136,15 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException {
+    public void upload(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException {
+        if (size < CHUNK_SIZE) {
+            uploadSmall(username, path, inputStream);
+        } else {
+            uploadBig(username, path, inputStream, size);
+        }
+    }
+
+    private void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException {
         DbxClientV2 client = dbxClients.get(username);
         try {
             long starttime = System.currentTimeMillis();
@@ -151,8 +161,7 @@ public class DbxFileServiceImpl implements DbxFileService {
         }
     }
 
-    @Override
-    public void uploadBig(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException {
+    private void uploadBig(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException {
         DbxClientV2 client = dbxClients.get(username);
         try {
             long starttime = System.currentTimeMillis();
