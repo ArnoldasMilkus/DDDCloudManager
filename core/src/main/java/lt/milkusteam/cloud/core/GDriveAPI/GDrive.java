@@ -98,7 +98,7 @@ public class GDrive {
         try {
             properties = PropertiesLoaderUtils.loadProperties(resource);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 
