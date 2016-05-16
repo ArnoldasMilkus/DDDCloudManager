@@ -10,8 +10,6 @@ import java.io.IOException;
  */
 public class GDriveUploadProgressListener implements MediaHttpUploaderProgressListener {
 
-    private long allSize;
-
     @Override
     public void progressChanged(MediaHttpUploader uploader) throws IOException {
         switch (uploader.getUploadState()) {

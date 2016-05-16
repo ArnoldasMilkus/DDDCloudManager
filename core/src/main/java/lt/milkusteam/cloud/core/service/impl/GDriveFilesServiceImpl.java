@@ -1,5 +1,6 @@
 package lt.milkusteam.cloud.core.service.impl;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.services.drive.model.File;
 import lt.milkusteam.cloud.core.GDriveAPI.GDrive;
 import lt.milkusteam.cloud.core.GDriveAPI.GDriveDownloader;
@@ -28,7 +29,7 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GDriveFilesServiceImpl.class);
 
     @Autowired
-    private GDriveTokenDAO GDriveTokenDAO;
+    private GDriveTokenDAO gDriveTokenDAO;
 
     private HashMap<String, List<GDrive>> driveMap = new HashMap<>();
 
@@ -83,8 +84,8 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
 
     @Override
     public int addClient(String username) {
-        GDriveToken token = GDriveTokenDAO.findByUsername(username);
-        GDrive client = new GDrive(token.getUsername(), "0", token.getToken());
+        GDriveToken token = gDriveTokenDAO.findByUsername(username);
+        GDrive client = new GDrive().initGDrive(token.getUsername(), "0", new GoogleTokenResponse().setRefreshToken(token.getToken()));
         List<GDrive> list = driveMap.get(username);
         if (list == null) {
             list = new ArrayList<>();
@@ -98,8 +99,8 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     @Override
     public void revokeToken(String username, int ind) {
         GDrive drive = getDriveService(username, ind);
-        String token = GDriveTokenDAO.findByUsername(username).getToken();
-        GDriveTokenDAO.delete(username);
+        String token = gDriveTokenDAO.findByUsername(username).getToken();
+        gDriveTokenDAO.delete(username);
         removeClient(username, ind);
         drive.revokeToken(token);
     }

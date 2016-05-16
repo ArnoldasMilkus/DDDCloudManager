@@ -12,20 +12,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GDriveTokenDAOImpl implements GDriveTokenDAO {
     @Autowired
-    private GDriveTokenRepository GDriveTokenRep;
+    private GDriveTokenRepository gDriveTokenRep;
 
     @Override
     public GDriveToken findByUsername(String username) {
-        return GDriveTokenRep.findByUsername(username);
+        return gDriveTokenRep.findByUsername(username);
     }
 
     @Override
     public void save(GDriveToken token) {
-        GDriveTokenRep.save(token);
+        gDriveTokenRep.save(token);
     }
 
     @Override
     public void delete(String username) {
-        GDriveTokenRep.delete(username);
+        gDriveTokenRep.delete(username);
     }
 }
