@@ -17,14 +17,8 @@ public interface UserService {
 
     User findByUsername(String username);
 
-    User findByEmail(String email);
-
     User registerNewUserAccount(UserDTO accountDto)
             throws EmailExistsException, UsernameExistsException;
-
-
-
-    User getUser(String verificationToken);
 
     void saveRegisteredUser(String username);
 

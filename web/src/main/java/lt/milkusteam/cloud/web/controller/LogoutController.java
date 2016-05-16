@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class LogoutController {
 
-
     @RequestMapping(value = "/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

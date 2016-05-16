@@ -36,4 +36,6 @@ public interface GDriveFilesService {
     String getName(String username, int ind, String fileId);
 
     long getSize(String username, int ind, String fileId);
+
+    String getEmail(String username, int ind);
 }

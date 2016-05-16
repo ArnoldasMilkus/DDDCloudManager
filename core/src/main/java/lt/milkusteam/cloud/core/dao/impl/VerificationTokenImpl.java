@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class VerificationTokenImpl implements VerificationTokenDao {
 
-
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
     @Override

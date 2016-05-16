@@ -10,5 +10,6 @@ public interface VerificationTokenDao  {
     VerificationToken findByToken(String token);
 
     VerificationToken findByUsername(String username);
+
     void save(VerificationToken verificationToken);
 }

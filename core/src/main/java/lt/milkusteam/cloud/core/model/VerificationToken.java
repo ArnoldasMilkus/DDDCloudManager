@@ -12,7 +12,6 @@ public class VerificationToken {
 
     private static final int EXPIRATION = 60 * 24;
 
-
     private String token;
     private  String username;
     private Date expiryDate;

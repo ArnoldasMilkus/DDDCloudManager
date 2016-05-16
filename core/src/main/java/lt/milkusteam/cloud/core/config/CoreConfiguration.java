@@ -82,9 +82,6 @@ public class CoreConfiguration {
         jpaProperties.put("hibernate.format_sql", true);
         jpaProperties.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
         jpaProperties.put("hibernate.show_sql", true);
-        //        jpaProperties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-        //        jpaProperties.put("hibernate.cache.use_query_cache", true);
-        //        jpaProperties.put("hibernate.cache.use_second_level_cache", true);
         jpaProperties.put("hibernate.id.new_generator_mappings", false);
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);

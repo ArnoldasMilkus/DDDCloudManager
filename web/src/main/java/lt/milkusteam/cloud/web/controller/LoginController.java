@@ -18,11 +18,9 @@ public class LoginController {
     public String showLoginPage(Model model,
                                 @RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "logout", required = false) String logout) {
-
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             return "redirect:/";
         }
-
         if (error != null) {
             model.addAttribute("error", "Invalid username or password!");
         }

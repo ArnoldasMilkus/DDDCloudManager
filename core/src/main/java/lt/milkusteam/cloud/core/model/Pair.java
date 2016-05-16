@@ -4,6 +4,7 @@ package lt.milkusteam.cloud.core.model;
  * Created by gediminas on 5/13/16.
  */
 public class Pair<T1, T2> {
+
     private T1 left;
     private T2 right;
 

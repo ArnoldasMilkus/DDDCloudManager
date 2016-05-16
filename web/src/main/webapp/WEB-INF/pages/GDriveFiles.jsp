@@ -12,13 +12,12 @@
                   action="<c:url value="/GDriveFiles/startAuth" />" method='GET'>
                 <input type="submit" style="margin-top:10pt; height:30px; width:auto" value="<spring:message
                         code="GDrive.linkButtonName"/>"/>
-                <c:if test="${isError eq true}">
-                    <h2><spring:message code="${error}"/></h2>
-                </c:if>
-
                 <input type="hidden"
                        name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
+        </c:if>
+        <c:if test="${isError eq true}">
+            <h2><spring:message code="${error}"/></h2>
         </c:if>
         <c:if test="${driveAuth eq true && isUploading ne true}">
             <c:choose>

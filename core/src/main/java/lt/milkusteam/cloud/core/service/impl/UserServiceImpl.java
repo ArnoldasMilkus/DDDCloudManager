@@ -28,11 +28,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     private UserRepository repository;
-    //Collection<UserRole> userRole ;
 
     @Autowired
     private VerificationTokenDao verificationTokenDao;
@@ -44,11 +45,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) {
         return userDao.findByUsername(username);
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        return userDao.findByEmail(email);
     }
 
     @Transactional
@@ -70,7 +66,6 @@ public class UserServiceImpl implements UserService {
         user.setUsername(accountDto.getUsername());
         user.setPassword(encoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
-        //user.setEnabled(true);////buvo
         return userDao.save(user);
     }
 
@@ -90,40 +85,11 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-    //@Override
-    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-        boolean enabled = true;
-        boolean accountNonExpired = true;
-        boolean credentialsNonExpired = true;
-        boolean accountNonLocked = true;
-        try {
-            User user = userRepository.findByEmail(email);
-            if (user == null) {
-                throw new UsernameNotFoundException("No user found with username: " + email);
-            }
-            return new org.springframework.security.core.userdetails.User(
-                    user.getEmail(),
-                    user.getPassword().toLowerCase(),
-                    user.isEnabled(),
-                    accountNonExpired,
-                    credentialsNonExpired,
-                    accountNonLocked,
-                    getAuthorities(2));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public User getUser(String verificationToken) {
-        User user = userDao.findByUsername(verificationTokenDao.findByToken(verificationToken).getUsername());
-        return user;
-    }
-
     @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return verificationTokenDao.findByToken(VerificationToken);
     }
+
     //use for registration via email for updating user's enable atribute
     @Override
     public void saveRegisteredUser(String username) {
@@ -138,12 +104,11 @@ public class UserServiceImpl implements UserService {
         verificationTokenDao.save(myToken);
     }
 
-
-
     private Collection<? extends GrantedAuthority>getAuthorities(Integer role){
         List<GrantedAuthority> authList = getGrantedAuthorities(getRoles(role));
         return authList;
     }
+
     private List<String> getRoles(Integer role) {
         List<String> roles = new ArrayList<String>();
         if (role.intValue() == 1) {
@@ -154,6 +119,7 @@ public class UserServiceImpl implements UserService {
         }
         return roles;
     }
+
     private static List<GrantedAuthority> getGrantedAuthorities (List<String> roles) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         for (String role : roles) {

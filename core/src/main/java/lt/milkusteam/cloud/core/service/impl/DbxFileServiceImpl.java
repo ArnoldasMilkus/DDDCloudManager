@@ -29,11 +29,9 @@ import java.util.*;
 public class DbxFileServiceImpl implements DbxFileService {
 
     private static final long CHUNK_SIZE = 104857600;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DbxFileServiceImpl.class);
 
     private Map<String, DbxClientV2> dbxClients = new HashMap<>();
-
     private Map<String, String> dbxSpaceUsage = new HashMap<>();
 
     @Autowired
