@@ -1,6 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +28,6 @@
     <sec:authorize access="isAuthenticated()">
         <c:set var="username" value="${user.username}"/>
     </sec:authorize>
-
 
     <script type="text/javascript">
         $(function(){
@@ -85,23 +85,6 @@
             document.getElementById("clock").innerHTML = d.toLocaleTimeString();
         }
     </script>
-
-    <style>
-        ol {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: auto;
-            display: inline-block;
-            overflow:hidden;
-            position:fixed;
-            background-color: #2C2C2C;
-        }
-        #clock {
-            color: white;
-        }
-    </style>
 </head>
 
 <body onload="reloader()">

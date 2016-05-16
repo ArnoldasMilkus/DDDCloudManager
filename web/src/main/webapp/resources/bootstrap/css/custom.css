@@ -1,0 +1,51 @@
+/*
+ * Here lays css attributes of all pages
+ * created by Tomas Brusokas
+*/
+/* GDriveFiles.jsp */
+#topGlyphs .glyphicon {
+    font-size: 50px;
+    margin-right: 20px;
+}
+/* login.jsp */
+#login-form {
+    width: 400px;
+    padding: 20px;
+    margin: 100px auto;
+}
+/* registration.jsp */
+#registrationForm td {
+    padding:0 15px 0 15px;
+}
+#registrationForm button {
+    margin-top: 30px;
+    color: #337AB7;
+    font-weight: bold;
+}
+/* settings.jsp */
+#backgrounds img:hover {
+    border: 2px solid #6D3ECD;
+    box-shadow: 0 0 10px #333;
+    -webkit-box-shadow: 0 0 10px #333;
+    -moz-box-shadow: 0 0 10px #333;
+    -o-box-shadow: 0 0 10px #333;
+    -ms-box-shadow: 0 0 10px #333;
+}
+#fonts label:hover {
+    border: 2px solid #333;
+}
+/* pageTemplate.tag */
+ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+    display: inline-block;
+    overflow:hidden;
+    position:fixed;
+    background-color: #2C2C2C;
+}
+#clock {
+    color: white;
+}

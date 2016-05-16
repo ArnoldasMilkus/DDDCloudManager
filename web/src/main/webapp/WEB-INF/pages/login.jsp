@@ -2,18 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="customtags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
 <customtags:pageTemplate>
     <html>
-    <head>
-        <style>
-            #login-form {
-                width: 300px;
-                padding: 20px;
-                margin: 100px auto;
-            }
-        </style>
-    </head>
-
     <body>
     <div id="login-form">
 

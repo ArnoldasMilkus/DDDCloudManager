@@ -4,19 +4,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="customtags" tagdir="/WEB-INF/tags" %>
 <%@ page session="false" %>
+<link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
 <customtags:pageTemplate>
-    <style type="text/css">
-        td
-        {
-            padding:0 15px 0 15px;
-        }
-        button
-        {
-            margin-top:30px;
-            background-color: #4c74ff;
-            font-weight: bold;
-        }
-    </style>
     <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
@@ -26,7 +15,7 @@
     <H1 align="center">
         <spring:message code="register.title"></spring:message>
     </H1>
-    <form:form modelAttribute="user" method="POST" enctype="utf8">
+    <form:form modelAttribute="user" method="POST" enctype="utf8" id="registrationForm">
         <br>
         <table align="center">
             <tr>
@@ -45,7 +34,7 @@
                 <form:errors path="lastName" element="div"/>
             </tr>
             <tr>
-                <td><label><spring:message code="register.elmail"></spring:message></label></td>
+                <td><label><spring:message code="register.email"></spring:message></label></td>
                 <td><form:input path="email" value=""/></td>
                 <form:errors path="email" element="div"/>
             </tr>
@@ -64,9 +53,6 @@
             <spring:message code="register.submit"></spring:message>
         </button></center>
     </form:form>
-    <%--<a href="<c:url value="login.jsp" />">
-        <spring:message code="register.loginLink"></spring:message>
-    </a>--%>
     </body>
     </html>
 </customtags:pageTemplate>

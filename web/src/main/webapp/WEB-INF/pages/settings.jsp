@@ -3,6 +3,7 @@
 <%@ taglib prefix="customtags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
 <customtags:pageTemplate>
     <script src="/resources/jquery/reloader.js"></script>
     <html>
@@ -12,20 +13,6 @@
             window.location.href = path;
         }
     </script>
-
-    <style>
-        #backgrounds img:hover {
-            border: 2px solid #6D3ECD;
-            box-shadow: 0 0 10px #333;
-            -webkit-box-shadow: 0 0 10px #333;
-            -moz-box-shadow: 0 0 10px #333;
-            -o-box-shadow: 0 0 10px #333;
-            -ms-box-shadow: 0 0 10px #333;
-        }
-        #fonts label:hover {
-            border: 2px solid #333;
-        }
-    </style>
 
     <script type="text/javascript">
         function backgroundChange(imageNumber) {
@@ -59,7 +46,7 @@
                 <label><spring:message code="settings.gDriveAccount"/>: ${gDriveAccount}</label>
             </c:when>
             <c:otherwise>
-                <input type='button' style="margin-top: 40px" value="<spring:message code="GDrive.linkButtonName"/>" name="revokeGDriveToken"
+                <input type='button' style="margin-top: 40px; width: 250px" value="<spring:message code="GDrive.linkButtonName"/>" name="revokeGDriveToken"
                        href="#" onclick="return unlinkGDriveAction()">
                 <label><spring:message code="settings.noGDriveAccount"/></label>
             </c:otherwise>
@@ -79,7 +66,7 @@
             <c:otherwise>
                 <form name="authForm"
                       action="<c:url value="/dbx/auth-start" />" method='POST'>
-                    <input type="submit" value="<spring:message code="dbxfiles.linkbutton"/>"/>
+                    <input type="submit" style="width: 250px" value="<spring:message code="dbxfiles.linkbutton"/>"/>
                     <label><spring:message code="settings.noAccount"/></label>
                     <input type="hidden"
                            name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -89,7 +76,7 @@
     </div>
 
     <h2 style="margin-top: 100pt"><spring:message code="settings.background"/></h2>
-    <div>
+    <div id="backgrounds">
         <img src="/resources/cloud.png" height="300" width="300" style="margin:0 50px 20px"
              onclick="backgroundChange(null);onclick=mark(this)">
         <img src="/resources/cloudgreen.png" height="300" width="300" style="margin:0 50px 20px"

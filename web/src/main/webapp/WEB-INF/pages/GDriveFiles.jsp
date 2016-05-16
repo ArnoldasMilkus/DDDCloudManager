@@ -2,22 +2,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="customtags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
 <customtags:pageTemplate>
     <html>
-    <head>
-        <style>
-            #topGlyphs .glyphicon {
-                font-size: 50px;
-                margin-right: 20px;
-            }
-        </style>
-    </head>
     <body>
     <div class="container col-md-12">
         <c:if test="${driveAuth eq false}">
             <form name="authForm"
                   action="<c:url value="/GDriveFiles/startAuth" />" method='GET'>
-                <input type="submit" style="height:30px; width:auto" value="<spring:message
+                <input type="submit" style="margin-top:10pt; height:30px; width:auto" value="<spring:message
                         code="GDrive.linkButtonName"/>"/>
                 <c:if test="${isError eq true}">
                     <h2><spring:message code="${error}"/></h2>
