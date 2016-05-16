@@ -40,7 +40,7 @@ public class DbxFileServiceImpl implements DbxFileService {
     private DbxTokenDao dbxTokenDao;
 
     @Override
-    public Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) throws InvalidAccessTokenException {
+    public Pair<List<FolderMetadata>, List<FileMetadata>> getMetadataPair(String username, String path) throws DbxException {
         LOGGER.info("getMetadataPair() username={} dirPath={}", username, path);
         Pair<List<FolderMetadata>, List<FileMetadata>> result =
                 new Pair<>(new ArrayList<FolderMetadata>(), new ArrayList<FileMetadata>());
@@ -56,17 +56,15 @@ public class DbxFileServiceImpl implements DbxFileService {
                     fileList.add((FileMetadata) data);
                 }
             }
-        } catch (InvalidAccessTokenException e) {
-            LOGGER.error("Invalid " + username + " dropbox access token.");
-            throw e;
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
+            throw e;
         }
         return result;
     }
 
     @Override
-    public List<DeletedMetadata> getAllDeletedMetadata(String username) throws InvalidAccessTokenException {
+    public List<DeletedMetadata> getAllDeletedMetadata(String username) throws DbxException {
         LOGGER.info("getAllDeletedMetadata() username={}", username);
         List<DeletedMetadata> result = new ArrayList<>();
         try {
@@ -82,11 +80,9 @@ public class DbxFileServiceImpl implements DbxFileService {
                     result.add(0, (DeletedMetadata) data);
                 }
             }
-        } catch (InvalidAccessTokenException e) {
-            LOGGER.error("Invalid " + username + " dropbox access token.");
-            throw e;
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
+            throw e;
         }
         return result;
     }
@@ -128,12 +124,12 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public void upload(String username, String dirPath, MultipartFile file) throws InvalidAccessTokenException, IOException {
+    public void upload(String username, String dirPath, MultipartFile file) throws DbxException, IOException {
         upload(username, dirPath + "/" + file.getOriginalFilename(), file.getInputStream(), file.getSize());
     }
 
     @Override
-    public void upload(String username, String fullPath, InputStream inputStream, long size) throws InvalidAccessTokenException {
+    public void upload(String username, String fullPath, InputStream inputStream, long size) throws DbxException {
         LOGGER.info("upload() username={} fullPath={} size={}", username, fullPath, size);
         if (size < CHUNK_SIZE) {
             uploadSmall(username, fullPath, inputStream);
@@ -142,7 +138,7 @@ public class DbxFileServiceImpl implements DbxFileService {
         }
     }
 
-    private void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException {
+    private void uploadSmall(String username, String path, InputStream inputStream) throws DbxException {
         LOGGER.info("uploadSmall() username={} dirPath={}", username, path);
         DbxClientV2 client = dbxClients.get(username);
         try {
@@ -151,15 +147,15 @@ public class DbxFileServiceImpl implements DbxFileService {
             long endTime = System.currentTimeMillis();
             LOGGER.info("uploadSmall() finished in {}s username={} dirPath={}\n\tfile={}",
                     ((endTime-startTime)/1000), username, path, uploadedFile.toString());
-        } catch (InvalidAccessTokenException e) {
+        } catch (DbxException e) {
             LOGGER.error(e.getMessage());
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
     }
 
-    private void uploadBig(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException {
+    private void uploadBig(String username, String path, InputStream inputStream, long size) throws DbxException {
         LOGGER.info("uploadBig() username={} dirPath={} size={}", username, path, size);
         DbxClientV2 client = dbxClients.get(username);
         try {
@@ -186,25 +182,25 @@ public class DbxFileServiceImpl implements DbxFileService {
             long endTime = System.currentTimeMillis();
             LOGGER.info("uploadBig() finished in {}s username={} dirPath={} size={}\n\tfile={}",
                     ((endTime-startTime)/1000), username, path, size, uploadedFile.toString());
-        } catch (InvalidAccessTokenException e) {
+        } catch (DbxException e) {
             LOGGER.error(e.getMessage());
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
     }
 
     @Override
-    public void download(String username, String path, OutputStream outputStream) throws InvalidAccessTokenException {
+    public void download(String username, String path, OutputStream outputStream) throws DbxException {
         LOGGER.info("download() username={} dirPath={}", username, path);
         DbxClientV2 client = dbxClients.get(username);
         try {
             DbxDownloader downloader = client.files().download(path);
             downloader.download(outputStream);
-        } catch (InvalidAccessTokenException e) {
+        } catch (DbxException e) {
             LOGGER.error(e.getMessage());
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
     }
@@ -227,71 +223,61 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     @Override
-    public void createFolder(String username, String path) throws InvalidAccessTokenException {
-        LOGGER.info("createFolder() username={} dirPath={}", username, path);
+    public void createFolder(String username, String path) throws DbxException {
+        LOGGER.info("createFolder() username={} path={}", username, path);
         DbxClientV2 client = dbxClients.get(username);
         try {
-            client.files().createFolder(path);
             FolderMetadata createdFolder = client.files().createFolder(path);
             LOGGER.info(username + " created folder: " + createdFolder + ".");
-        } catch (InvalidAccessTokenException e) {
-            LOGGER.error(e.getMessage());
-            throw e;
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
+            throw e;
         }
     }
 
     @Override
-    public void delete(String username, String path) throws InvalidAccessTokenException {
-        LOGGER.info("delete() username={} dirPath={}", username, path);
+    public void delete(String username, String path) throws DbxException {
+        LOGGER.info("delete() username={} path={}", username, path);
         DbxClientV2 client = dbxClients.get(username);
         try {
             Metadata deletedFile = client.files().delete(path);
-        } catch (InvalidAccessTokenException e) {
-            LOGGER.error(e.getMessage());
-            throw e;
+            LOGGER.info("delete() success user={} file={}", username, deletedFile);
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
+            throw e;
         }
     }
 
     @Override
-    public void restore(String username, String path) throws InvalidAccessTokenException {
+    public void restore(String username, String path) throws DbxException {
         LOGGER.info("restore() username={} dirPath={}", username, path);
         DbxClientV2 client = dbxClients.get(username);
         try {
             String rev = client.files().listRevisions(path).getEntries().get(0).getRev();
             FileMetadata restoredFile = client.files().restore(path, rev);
             LOGGER.info(username + " restored file: " + restoredFile);
-        } catch (InvalidAccessTokenException e) {
-            LOGGER.error("Invalid " + username + " dropbox access token.");
-            throw e;
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
+            throw e;
         }
     }
 
     @Override
-    public String getStorageInfo(String username) throws InvalidAccessTokenException {
+    public String getStorageInfo(String username) throws DbxException {
         return dbxSpaceUsage.get(username);
     }
 
     @Override
-    public void updateStorageInfo(String username) throws InvalidAccessTokenException {
+    public void updateStorageInfo(String username) throws DbxException {
         LOGGER.info("updateStorageInfo() username=", username);
         DbxClientV2 client = dbxClients.get(username);
         try {
             dbxSpaceUsage.put(username, String.format("%.2f / %.2f GB",
                     (client.users().getSpaceUsage().getUsed() / (double) (1024 * 1024 * 1024)),
                     (client.users().getSpaceUsage().getAllocation().getIndividualValue().getAllocated() / (double) (1024 * 1024 * 1024))));
-        } catch (InvalidAccessTokenException e) {
-            LOGGER.error(e.getMessage());
-            throw e;
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
-        } catch (NullPointerException e) {
-            System.out.println("eh...");
+            throw e;
         }
     }
 

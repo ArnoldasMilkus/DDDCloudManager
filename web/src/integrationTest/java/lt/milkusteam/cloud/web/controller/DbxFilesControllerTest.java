@@ -1,6 +1,7 @@
 package lt.milkusteam.cloud.web.controller;
 
 import lt.milkusteam.cloud.web.AbstractIntegrationTest;
+import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -22,7 +23,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableWebSecurity
 public class DbxFilesControllerTest extends AbstractIntegrationTest {
     private final static String TEST_PATH = "/DDDCloudManagerTest";
+    private final static String TEST_DOWNLOAD_PATH = "/DDDCloudManagerTest/download_test.jpeg";
     private final static String TEST_FILE_NAME = "test_file.txt";
+    private final static String TEST_NONEXISTANT_FILE_NAME = "surely_this_file_does_not_exist.txt";
     private final static String TEST_FOLDER_NAME = "test_folder";
     private final static String TEST_USERNAME = "test";
 
@@ -78,22 +81,39 @@ public class DbxFilesControllerTest extends AbstractIntegrationTest {
                 .andExpect(flash().attribute("message", "uploadSuccess"))
                 .andExpect(view().name("redirect:/dbx/files?path=" + TEST_PATH))
                 .andExpect(redirectedUrl("/dbx/files?path=" + TEST_PATH));
+        mockMvc.perform(get("/dbx/delete").param("path", TEST_PATH + "/" + TEST_FILE_NAME));
     }
 
     @Test
     @WithMockUser(TEST_USERNAME)
-    public void testCreateFolder() throws Exception {
+    public void testCreateFolderSuccess() throws Exception {
         mockMvc.perform(post("/dbx/create")
                 .with(csrf()).param("path", TEST_PATH).param("name", TEST_FOLDER_NAME))
+                .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("message", "createSuccess"))
                 .andExpect(view().name("redirect:/dbx/files?path=" + TEST_PATH))
                 .andExpect(redirectedUrl("/dbx/files?path=" + TEST_PATH));
+        mockMvc.perform(get("/dbx/delete").param("path", TEST_PATH + "/" + TEST_FOLDER_NAME));
     }
 
     @Test
     @WithMockUser(TEST_USERNAME)
-    public void testDelete() throws Exception {
+    public void testCreateFolderFail() throws Exception {
+        mockMvc.perform(post("/dbx/create")
+                .with(csrf()).param("path", TEST_PATH).param("name", TEST_FOLDER_NAME));
+        mockMvc.perform(post("/dbx/create")
+                .with(csrf()).param("path", TEST_PATH).param("name", TEST_FOLDER_NAME))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", 0))
+                .andExpect(view().name("dbx-error"))
+                .andExpect(forwardedUrl("/WEB-INF/pages/dbx-error.jsp"));
+        mockMvc.perform(get("/dbx/delete").param("path", TEST_PATH + "/" + TEST_FOLDER_NAME));
+    }
+
+    @Test
+    @WithMockUser(TEST_USERNAME)
+    public void testDeleteSuccess() throws Exception {
         // creating a file to delete
         mockMvc.perform(post("/dbx/create").with(csrf()).param("path", TEST_PATH).param("name", TEST_FILE_NAME));
         mockMvc.perform(get("/dbx/delete")
@@ -106,22 +126,66 @@ public class DbxFilesControllerTest extends AbstractIntegrationTest {
 
     @Test
     @WithMockUser(TEST_USERNAME)
-    public void testRestore() throws Exception {
-        // creating a file
+    public void testDeleteFail() throws Exception {
+        mockMvc.perform(get("/dbx/delete")
+                .param("path", TEST_PATH + "/" + TEST_NONEXISTANT_FILE_NAME))
+                .andExpect(model().attribute("error", 0))
+                .andExpect(view().name("dbx-error"))
+                .andExpect(forwardedUrl("/WEB-INF/pages/dbx-error.jsp"));
+    }
+
+    @Test
+    @WithMockUser(TEST_USERNAME)
+    public void testRestoreSuccess() throws Exception {
         mockMvc.perform(post("/dbx/create").with(csrf()).param("path", TEST_PATH).param("name", TEST_FILE_NAME));
-        // deleting a file
-        mockMvc.perform(get("/dbx/create").param("path", TEST_PATH + "/" + TEST_FILE_NAME));
-        // restoring a file
+        mockMvc.perform(get("/dbx/delete").param("path", TEST_PATH + "/" + TEST_FILE_NAME));
         mockMvc.perform(get("/dbx/restore")
                 .param("path", TEST_PATH + "/" + TEST_FILE_NAME))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("message", "restoreSuccess"))
                 .andExpect(view().name("redirect:/dbx/files?path=" + TEST_PATH))
                 .andExpect(redirectedUrl("/dbx/files?path=" + TEST_PATH));
-        // deleting a file
-        mockMvc.perform(get("/dbx/create").param("path", TEST_PATH + "/" + TEST_FILE_NAME));
+        mockMvc.perform(get("/dbx/delete").param("path", TEST_PATH + "/" + TEST_FILE_NAME));
     }
 
+    @Test
+    @WithMockUser(TEST_USERNAME)
+    public void testRestoreFail() throws Exception {
+        mockMvc.perform(get("/dbx/restore")
+                .param("path", TEST_PATH + "/" + TEST_NONEXISTANT_FILE_NAME))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", 0))
+                .andExpect(view().name("dbx-error"))
+                .andExpect(forwardedUrl("/WEB-INF/pages/dbx-error.jsp"));
+        mockMvc.perform(get("/dbx/delete").param("path", TEST_PATH + "/" + TEST_FOLDER_NAME));
+    }
+
+    @Test
+    @WithMockUser
+    public void testStartAuth() throws Exception {
+        mockMvc.perform(post("/dbx/auth-start").with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name(StringStartsWith.startsWith("redirect:https://www.dropbox.com/1/oauth2/authorize")));
+    }
+
+    @Test
+    @WithMockUser(TEST_USERNAME)
+    public void testDownloadSuccess() throws Exception {
+        mockMvc.perform(get("/dbx/download").param("path", TEST_DOWNLOAD_PATH))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("image/jpeg"));
+    }
+
+    @Test
+    @WithMockUser(TEST_USERNAME)
+    public void testDownloadFail() throws Exception {
+        mockMvc.perform(get("/dbx/download").param("path", TEST_PATH + "/" + TEST_NONEXISTANT_FILE_NAME))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", 0))
+                .andExpect(view().name("dbx-error"))
+                .andExpect(forwardedUrl("/WEB-INF/pages/dbx-error.jsp"));
+    }
 
 }
 

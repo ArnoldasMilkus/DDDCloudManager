@@ -13,14 +13,16 @@
         <h3>
             <spring:message code="dbxerror.${error}"/>
         </h3>
-        <form name="authForm"
-              action="<c:url value="/dbx/auth-start" />" method='POST'>
-            <input type="submit" style="height:30px; width:245px" value="<spring:message
+        <c:if test="${error == 1 || error == 2}">
+            <form name="authForm"
+                  action="<c:url value="/dbx/auth-start" />" method='POST'>
+                <input type="submit" style="height:30px; width:245px" value="<spring:message
                         code="dbxfiles.linkbutton"/>"/>
 
-            <input type="hidden"
-                   name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        </form>
+                <input type="hidden"
+                       name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </c:if>
     </div>
     </body>
     </html>
