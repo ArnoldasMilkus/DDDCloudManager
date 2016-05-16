@@ -5,6 +5,7 @@ import lt.milkusteam.cloud.core.dao.DbxTokenDao;
 import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,17 +20,19 @@ import org.slf4j.LoggerFactory;
 @Service
 public class DbxAuthServiceImpl implements DbxAuthService {
 
-    private final static Logger LOG = LoggerFactory.getLogger(DbxAuthServiceImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DbxAuthServiceImpl.class);
 
-    private final static String IDENTIFIER = "DDD Cloud Manager";
+    @Value("${dbx.identifier}")
+    private String identifier;
 
-    private final static String KEY = "gcx6333853tq53z";
+    @Value("${dbx.key}")
+    private String key;
 
-    private final static String SECRET = "a09ge1pm1sru3ie";
+    @Value("${dbx.secret}")
+    private String secret;
 
-    private final static String REDIRECT_URI = "http://localhost:8080/dbx/auth-finish";
-
-    private final static DbxAppInfo APP_INFO = new DbxAppInfo(KEY, SECRET);
+    @Value("${dbx.redirect-uri}")
+    private String redirect_uri;
 
     @Autowired
     private DbxTokenDao dbxTokenDao;
@@ -38,15 +41,17 @@ public class DbxAuthServiceImpl implements DbxAuthService {
 
     @Override
     public String startAuth(String username, DbxSessionStore store) {
-        DbxRequestConfig config = new DbxRequestConfig(IDENTIFIER, Locale.getDefault().toString());
-        DbxWebAuth auth = new DbxWebAuth(config, APP_INFO, REDIRECT_URI, store);
+        LOGGER.info("startAuth() username={}", username);
+        DbxAppInfo app_info = new DbxAppInfo(key, secret);
+        DbxRequestConfig config = new DbxRequestConfig(identifier, Locale.getDefault().toString());
+        DbxWebAuth auth = new DbxWebAuth(config, app_info, redirect_uri, store);
         activeWebAuths.put(username, auth);
         return auth.start();
     }
 
     @Override
     public void finishAuth(String username, String state, String code) {
-
+        LOGGER.info("finishAuth() username={} state={} code={}", username, state, code);
         DbxWebAuth webAuth = activeWebAuths.get(username);
         if (webAuth != null) {
             Map<String, String[]> params = new HashMap<>();
@@ -57,7 +62,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
             try {
                 authResult = webAuth.finish(params);
             } catch (Exception e) {
-                LOG.error(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
 
             if (authResult != null) {
@@ -70,12 +75,7 @@ public class DbxAuthServiceImpl implements DbxAuthService {
 
     @Override
     public void undoAuth(String username) {
-
+        LOGGER.info("undoAuth() username={}", username);
         dbxTokenDao.delete(username);
-    }
-
-    @Override
-    public boolean isLinked(String username) {
-        return dbxTokenDao.findByUsername(username) != null;
     }
 }

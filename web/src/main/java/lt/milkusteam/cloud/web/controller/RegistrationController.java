@@ -115,18 +115,18 @@ public class RegistrationController {
         if (verificationToken == null) {
             String message = messages.getMessage("register.invalidToken", null, locale);
             model.addAttribute("message", message);
-            return "redirect:/badUser" + "?lang=" +locale.getLanguage();
+            return "redirect:/badUser";
         }
 
         User user = userDao.findByUsername(verificationToken.getUsername());
         Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
             model.addAttribute("message", messages.getMessage("register.expireToken", null, locale));
-            return "redirect:/badUser" + "?lang="+ locale.getLanguage();
+            return "redirect:/badUser";
         }
         user.setEnabled(true);
         userService.saveRegisteredUser(user.getUsername());
-        return "redirect:/login" + "?lang="+ request.getLocale().getLanguage();
+        return "redirect:/login";
     }
 
     private User createUserAccount(UserDTO accountDto, BindingResult result) {
