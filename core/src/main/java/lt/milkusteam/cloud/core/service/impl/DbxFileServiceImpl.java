@@ -143,7 +143,7 @@ public class DbxFileServiceImpl implements DbxFileService {
     }
 
     private void uploadSmall(String username, String path, InputStream inputStream) throws InvalidAccessTokenException {
-        LOGGER.info("uploadSmall() username={} dirPath={} size={}", username, path);
+        LOGGER.info("uploadSmall() username={} dirPath={}", username, path);
         DbxClientV2 client = dbxClients.get(username);
         try {
             long startTime = System.currentTimeMillis();
@@ -248,7 +248,6 @@ public class DbxFileServiceImpl implements DbxFileService {
         DbxClientV2 client = dbxClients.get(username);
         try {
             Metadata deletedFile = client.files().delete(path);
-            LOGGER.info(username + " deleted file: " + deletedFile.getName());
         } catch (InvalidAccessTokenException e) {
             LOGGER.error(e.getMessage());
             throw e;
@@ -291,6 +290,8 @@ public class DbxFileServiceImpl implements DbxFileService {
             throw e;
         } catch (DbxException e) {
             LOGGER.error(e.getMessage());
+        } catch (NullPointerException e) {
+            System.out.println("eh...");
         }
     }
 

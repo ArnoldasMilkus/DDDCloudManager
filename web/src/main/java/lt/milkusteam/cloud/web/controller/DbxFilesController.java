@@ -38,9 +38,9 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/dbx")
-public class DbxFilesControllerTest {
+public class DbxFilesController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbxFilesControllerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbxFilesController.class);
 
     @Autowired
     private DbxFileService dbxFileService;
@@ -89,7 +89,7 @@ public class DbxFilesControllerTest {
                                    @RequestParam(name = "path", required = false) String path)
             throws InvalidAccessTokenException, DbxNotLinkedException {
         String username = principal.getName();
-        if (!dbxFileService.containsClient(username)) {
+        if (!dbxFileService.containsClient(username) && !dbxFileService.addClient(username)) {
             throw new DbxNotLinkedException(username + " tried to access /dbx/trash without linked dropbox account.");
         }
         List<DeletedMetadata> metadataList = dbxFileService.getAllDeletedMetadata(username);
@@ -111,10 +111,11 @@ public class DbxFilesControllerTest {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String createFolder(Principal principal,
+    public String createFolder(Principal principal, RedirectAttributes redirectAttributes,
                                @RequestParam("path") String path,
                                @RequestParam("name") String name) throws InvalidAccessTokenException {
         dbxFileService.createFolder(principal.getName(), path + "/" + name);
+        redirectAttributes.addFlashAttribute("message", "createSuccess");
         return "redirect:/dbx/files?path=" + path;
     }
 
@@ -140,9 +141,10 @@ public class DbxFilesControllerTest {
     }
 
     @RequestMapping(value = "/restore", method = RequestMethod.GET)
-    public String restoreFile(Principal principal, @RequestParam("path") String path) throws InvalidAccessTokenException {
+    public String restoreFile(Principal principal, @RequestParam("path") String path, RedirectAttributes redirectAttributes) throws InvalidAccessTokenException {
         dbxFileService.restore(principal.getName(), path);
         dbxFileService.updateStorageInfo(principal.getName());
+        redirectAttributes.addFlashAttribute("message", "restoreSuccess");
         return "redirect:/dbx/files?path=" + path.substring(0, path.lastIndexOf("/"));
     }
 

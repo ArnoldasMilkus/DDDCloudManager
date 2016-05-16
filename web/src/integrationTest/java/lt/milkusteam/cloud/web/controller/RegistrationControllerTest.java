@@ -26,6 +26,7 @@ public class RegistrationControllerTest extends AbstractIntegrationTest {
     public void testGetRegistrationForm() throws Exception {
         mockMvc.perform(get("/registration")
                 .accept(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("user"))
                 .andExpect(view().name("registration"))
