@@ -9,7 +9,9 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 import com.dropbox.core.v2.users.SpaceUsage;
 import lt.milkusteam.cloud.core.model.Pair;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -29,7 +31,9 @@ public interface DbxFileService {
 
     boolean addClient(String username);
 
-    void upload(String username, String path, InputStream inputStream, long size) throws InvalidAccessTokenException;
+    void upload(String username, String dirPath, MultipartFile file) throws InvalidAccessTokenException, IOException;
+
+    void upload(String username, String fullPath, InputStream inputStream, long size) throws InvalidAccessTokenException;
 
     void download(String username, String path, OutputStream outputStream) throws InvalidAccessTokenException;
 

@@ -11,7 +11,6 @@ import lt.milkusteam.cloud.core.model.Pair;
 import lt.milkusteam.cloud.core.service.DbxAuthService;
 import lt.milkusteam.cloud.core.service.DbxFileService;
 import lt.milkusteam.cloud.core.service.GDriveFilesService;
-import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class DbxFilesController {
     private DbxAuthService dbxAuthService;
 
     @Autowired
-    private GDriveFilesService gdFilesService;
+    private GDriveFilesService gDriveFilesService;
 
     @RequestMapping(value = "/")
     public String checkDbxAuthentication(Principal principal, Model model) {
@@ -105,7 +104,7 @@ public class DbxFilesController {
                              @RequestParam("file") MultipartFile file,
                              RedirectAttributes redirectAttributes) throws InvalidAccessTokenException, IOException {
         String username = principal.getName();
-        dbxFileService.upload(username, path + "/" + file.getOriginalFilename(), file.getInputStream(), file.getSize());
+        dbxFileService.upload(username, path, file);
         dbxFileService.updateStorageInfo(username);
         redirectAttributes.addFlashAttribute("message", "uploadSuccess");
         return "redirect:/dbx/files?path=" + path;
@@ -122,7 +121,7 @@ public class DbxFilesController {
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public void downloadFile(Principal principal, HttpServletResponse response, @RequestParam("path") String path)
             throws InvalidAccessTokenException, IOException {
-        OutputStream stream = null;
+        OutputStream stream;
         stream = response.getOutputStream();
         response.setContentType(determineContentType(path));
         response.setHeader("Content-Disposition",
@@ -189,9 +188,9 @@ public class DbxFilesController {
         if (to == null) {
             to = "";
         }
-        InputStream is = gdFilesService.returnStream(principal.getName(), 0, from);
-        String filename = gdFilesService.getName(username, 0, from);
-        long size = gdFilesService.getSize(username, 0, from);
+        InputStream is = gDriveFilesService.returnStream(principal.getName(), 0, from);
+        String filename = gDriveFilesService.getName(username, 0, from);
+        long size = gDriveFilesService.getSize(username, 0, from);
         dbxFileService.upload(username, to + "/" + filename, is, size);
         is.close();
         redirectAttributes.addFlashAttribute("message", "copyFromGDSuccess");
