@@ -6,6 +6,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import lt.milkusteam.cloud.core.GDriveAPI.GDrive;
 import lt.milkusteam.cloud.core.dao.GDriveTokenDAO;
 import lt.milkusteam.cloud.core.model.GDriveToken;
 import lt.milkusteam.cloud.core.service.GDriveOAuth2Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * Created by Vilintas Strielčiūnas on 2016-05-12
@@ -25,25 +27,20 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GDriveOAuth2ServiceImpl.class);
 
-    private final static String CLIENT_ID = "851556385458-s35qkeog0h3ph9pn7sbot0klvks3hpr5.apps.googleusercontent.com";
-
-    private final static String CLIENT_SECRET = "eO-rG_3ANrQz0TsLrYmkxDEi";
-
-    private final static String REDIRECT_URL = "http://localhost:8080/GDriveFiles/finishAuth";
-
-    private final static String SCOPE = "https://www.googleapis.com/auth/drive";
-
     @Autowired
-    private GDriveTokenDAO GDriveTokenDAO;
+    private GDriveTokenDAO gDriveTokenDAO;
 
     @Override
     public boolean isLinked(String username) {
-        return GDriveTokenDAO.findByUsername(username) != null;
+        return gDriveTokenDAO.findByUsername(username) != null;
     }
 
     @Override
     public String getActivationURL() {
-        return new GoogleAuthorizationCodeRequestUrl(CLIENT_ID, REDIRECT_URL, Arrays.asList(SCOPE))
+        Properties properties = GDrive.getProperties();
+        return new GoogleAuthorizationCodeRequestUrl(properties.getProperty("GDrive.client_id"),
+                properties.getProperty("GDrive.redirect_uri"),
+                Arrays.asList(properties.getProperty("GDrive.scope")))
                 .setState("/profile")
                 .setAccessType("offline")
                 .build();
@@ -51,22 +48,24 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
 
     @Override
     public void unlinkUser(String username) {
-        GDriveTokenDAO.delete(username);
+        gDriveTokenDAO.delete(username);
     }
 
     @Override
-    public void requestRefreshToken(String username, String code) {
+    public String requestRefreshToken(String username, String code) {
+        Properties properties = GDrive.getProperties();
         try {
             GoogleTokenResponse response =
                     new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), new JacksonFactory(),
-                            CLIENT_ID, CLIENT_SECRET,
-                            code, REDIRECT_URL)
+                            properties.getProperty("GDrive.client_id"), properties.getProperty("GDrive.client_secret"),
+                            code, properties.getProperty("GDrive.redirect_uri"))
                             .execute();
-            System.out.println("This access token: " + response.getAccessToken());
-            System.out.println("This refresh token: " + response.getRefreshToken());
             if (response.getRefreshToken() != null && !response.getRefreshToken().isEmpty()) {
                 GDriveToken token = new GDriveToken(username, response.getRefreshToken());
-                GDriveTokenDAO.save(token);
+                gDriveTokenDAO.save(token);
+            }
+            else {
+                return "notUnlinked";
             }
         } catch (TokenResponseException e) {
             if (e.getDetails() != null) {
@@ -83,5 +82,6 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
+        return "";
     }
 }

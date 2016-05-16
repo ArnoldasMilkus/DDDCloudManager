@@ -23,33 +23,50 @@ import com.google.api.services.drive.model.FileList;
 import lt.milkusteam.cloud.core.comparators.FilesSortComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
 
 public class GDrive {
     private static final Logger LOGGER = LoggerFactory.getLogger(GDrive.class);
-    /** Application name. */
-    private static final String APPLICATION_NAME =
-            "DDD Cloud Manager";
+    private static final String APPLICATION_NAME = "DDD Cloud Manager";
     private static final String MIME_FOLDER = "application/vnd.google-apps.folder";
-    private static final String MIME_FILE = "application/vnd.google-apps.file";
+    private static final String REPLACE_FOLDER_TYPE_TO = "folder";
+    private static final String CONFIG_FILE_PATH = "/client_secret.json";
+    private static final String PROPERTIES_FILE_PATH = "/GDrive.properties";
 
-    private   Drive drive;
+    /** Global instance of the {@link FileDataStoreFactory}. */
+    private static FileDataStoreFactory DATA_STORE_FACTORY;
+    /** Global instance of the JSON factory. */
+    private static final JsonFactory JSON_FACTORY =
+            JacksonFactory.getDefaultInstance();
+    /** Global instance of the HTTP transport. */
+    private static HttpTransport HTTP_TRANSPORT;
+    private static final Resource resource = new ClassPathResource(PROPERTIES_FILE_PATH);
+    private static Properties properties = null;
+
+    private String revokeTokenUrl;
+    private Drive drive;
     private Credential credential;
-
     private java.io.File DATA_STORE_DIR;
 
-    public GDrive(String userId, String driveID, GoogleTokenResponse resp) {
+    public GDrive initGDrive(String userId, String driveID, GoogleTokenResponse resp) {
         try {
+            revokeTokenUrl = getProperties().getProperty("GDrive.revoke_url");
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             DATA_STORE_DIR = new java.io.File(".credentials/"+
                     userId +"/" + driveID );
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-            InputStream in = GDrive.class.getResourceAsStream("/client_secret.json");
+            InputStream in = GDrive.class.getResourceAsStream(CONFIG_FILE_PATH);
             if (in == null) {
                 LOGGER.error("Missing client secret.");
                 LOGGER.error("Download and add it into resources/client_secret.json");
@@ -63,53 +80,35 @@ public class GDrive {
                     .build()
                     .setFromTokenResponse(resp);
             drive = new Drive.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-        } catch (Throwable t) {
-            LOGGER.error(t.getMessage());
-            System.exit(1);
-        }
-    }
-
-    public GDrive(String userId, String driveID, String token) {
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_DIR = new java.io.File(".credentials/"+
-                    userId +"/" + driveID );
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-            InputStream in = GDrive.class.getResourceAsStream("/client_secret.json");
-            if (in == null) {
-                System.out.println("Missing client secret.");
-                System.out.println("Download and add it into resources/client_secret.json");
-            }
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-            CredentialRefreshListener list = new DataStoreCredentialRefreshListener(userId, DATA_STORE_FACTORY);
-           credential = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT)
-                    .setJsonFactory(JSON_FACTORY)
-                    .setClientSecrets(clientSecrets)
-                    .addRefreshListener(list)
-                    .build()
-                    .setRefreshToken(token);
-            drive = new Drive.Builder(
                     HTTP_TRANSPORT, JSON_FACTORY, credential)
                     .setApplicationName(APPLICATION_NAME)
                     .build();
-        } catch (Throwable t) {
-            LOGGER.error(t.getMessage());
-            System.exit(1);
+        } catch (GeneralSecurityException e) {
+            LOGGER.error(e.getMessage());
+            return null;
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return this;
+    }
+
+    private static void prepareProperties() {
+        if (properties != null) {
+            return;
+        }
+        try {
+            properties = PropertiesLoaderUtils.loadProperties(resource);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
-    /** Global instance of the {@link FileDataStoreFactory}. */
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
-
-    /** Global instance of the JSON factory. */
-    private static final JsonFactory JSON_FACTORY =
-            JacksonFactory.getDefaultInstance();
-
-    /** Global instance of the HTTP transport. */
-    private static HttpTransport HTTP_TRANSPORT;
+    public static Properties getProperties() {
+        if (properties == null) {
+            prepareProperties();
+        }
+        return properties;
+    }
 
     public String createFolder(String name, String parentId) {
         File fileMetadata = new File();
@@ -131,31 +130,7 @@ public class GDrive {
         }
         return "";
     }
-    public String findFileId(String name, String mimeType, Drive service) {
-        if (mimeType.isEmpty()) {
-            mimeType = MIME_FILE;
-        }
-        String pageToken = null;
-        do {
-            FileList result = null;
-            try {
-                result = service.files().list()
-                        .setSpaces("drive")
-                        .setFields("nextPageToken, files(id, name, mimeType)")
-                        .setPageToken(pageToken)
-                        .execute();
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage());
-            }
-            for(File file: result.getFiles()) {
-                if (file.getName().equals(name) && file.getMimeType().equals(mimeType)) {
-                    return file.getId();
-                }
-            }
-            pageToken = result.getNextPageToken();
-        } while (pageToken != null);
-        return null;
-    }
+
     public void setTrashed(String fileId, boolean isTrashed) {
         try {
             File fileMetadata = new File();
@@ -187,11 +162,14 @@ public class GDrive {
                         .setPageToken(pageToken)
                         .execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
+            }
+            if (result == null) {
+                return null;
             }
             for(File file: result.getFiles()) {
-                if (file.getMimeType().contains("folder")) {
-                    file.setMimeType("folder");
+                if (file.getMimeType().contains(REPLACE_FOLDER_TYPE_TO)) {
+                    file.setMimeType(REPLACE_FOLDER_TYPE_TO);
                 }
                 if (file.getSize() != null) {
                     file.setSize(file.getSize() / 1024);
@@ -210,7 +188,7 @@ public class GDrive {
         try {
             list = drive.files().get(fileId).setFields("parents").execute().getParents();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
         if (list != null && !list.isEmpty()) {
             parentId = list.get(list.size()-1);
@@ -226,10 +204,10 @@ public class GDrive {
         try {
             HttpResponse revokeResponse = HTTP_TRANSPORT.createRequestFactory()
                     .buildGetRequest(new GenericUrl(
-                            String.format("https://accounts.google.com/o/oauth2/revoke?token=%s", token)))
+                            String.format(revokeTokenUrl, token)))
                     .execute();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 }
