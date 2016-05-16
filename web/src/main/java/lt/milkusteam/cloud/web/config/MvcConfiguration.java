@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -21,8 +22,15 @@ import java.util.Locale;
  */
 @Configuration
 @EnableWebMvc
-@Import({ WebConfiguration.class, SecurityConfiguration.class })
+@Import({WebConfiguration.class, SecurityConfiguration.class})
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
+
+    @Bean
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("utf-8");
+        return resolver;
+    }
 
     @Bean
     public InternalResourceViewResolver getViewResolver() {
@@ -46,6 +54,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         bundle.setDefaultEncoding("UTF-8");
         return bundle;
     }
+
     @Bean
     public LocaleResolver localeResolver() {
         CookieLocaleResolver result = new CookieLocaleResolver();
@@ -61,6 +70,11 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         interceptor.setParamName("lang");
         return interceptor;
     }
+
+//    @Bean
+//    public RequestContextListener requestContextListener() {
+//        return new RequestContextListener();
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

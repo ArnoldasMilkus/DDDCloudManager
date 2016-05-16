@@ -1,5 +1,6 @@
 package lt.milkusteam.cloud.core.config;
 
+import com.dropbox.core.v2.DbxClientV2;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
@@ -10,11 +11,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -29,10 +34,13 @@ public class CoreConfiguration {
 
     @Value("${db.server}")
     private String databaseServer;
+
     @Value("${db.user}")
     private String databaseUser;
+
     @Value("${db.password}")
     private String databasePassword;
+
     @Value("${db.database}")
     private String databaseName;
 
@@ -74,32 +82,17 @@ public class CoreConfiguration {
         jpaProperties.put("hibernate.format_sql", true);
         jpaProperties.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
         jpaProperties.put("hibernate.show_sql", true);
-//        jpaProperties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-//        jpaProperties.put("hibernate.cache.use_query_cache", true);
-//        jpaProperties.put("hibernate.cache.use_second_level_cache", true);
+        //        jpaProperties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
+        //        jpaProperties.put("hibernate.cache.use_query_cache", true);
+        //        jpaProperties.put("hibernate.cache.use_second_level_cache", true);
         jpaProperties.put("hibernate.id.new_generator_mappings", false);
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
     }
-
-//    @Bean
-//    public EhCacheCacheManager ehcacheCacheManager() {
-//        EhCacheCacheManager ehCacheCacheManager = new EhCacheCacheManager();
-//        ehCacheCacheManager.setCacheManager(getEhCacheManagerFactoryBean().getObject());
-//
-//        return ehCacheCacheManager;
-//    }
-//
-//    @Bean
-//    public EhCacheManagerFactoryBean getEhCacheManagerFactoryBean() {
-//        EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
-//        bean.setConfigLocation(new ClassPathResource("ehcache.xml"));
-//
-//        return bean;
-//    }
-
-
-
+    @Bean
+    public JavaMailSender javaMailSender() {
+        return new JavaMailSenderImpl();
+    }
 }

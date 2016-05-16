@@ -11,10 +11,10 @@
     <meta name="author" content="Some guys">
     <link rel="icon" type="image/png" href="/resources/favicon.png">
 
-    <link href="/resources/bootstrap/css/custom.css" rel="stylesheet">
+    <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/resources/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-
+    <script src="/resources/jquery/reloader.js"></script>
     <script src="/resources/jquery/jquery-2.2.0.js"></script>
     <script src="/resources/bootstrap/js/bootstrap.js"></script>
 
@@ -44,70 +44,126 @@
             $('.nav li a').each(function(){
                 var currentPage = stripTrailingSlash($(this).attr('href'));
 
-                if (activePage == currentPage) {
+                if ((activePage.indexOf (currentPage) != -1 && currentPage.length > 0) || activePage == currentPage) {
                     $(this).parent().addClass('active');
                 }
             });
         });
     </script>
+
+    <script language="javascript">
+        function languageAction(kin) {
+            function stripTrailingSlash(str) {
+                if(str.substr(-1) == '/') {
+                    str = str.slice(0, str.length-1);
+                    return str;
+                }
+                return str;
+            }
+            var path = stripTrailingSlash(window.location.href);
+            if (path.indexOf("lang=en")>=0) {
+                path = path.replace("lang=en", kin);
+                window.location.href = path;
+            }
+            else if (path.indexOf("lang=lt")>=0) {
+                path = path.replace("lang=lt", kin);
+                window.location.href = path;
+            }
+            else if (path.indexOf("?")>=0) {
+                window.location.href = path.concat("&").concat(kin);
+            } else {
+                window.location.href = path.concat("?").concat(kin);
+            }
+        }
+    </script>
+
+    <script>
+        var myVar = setInterval(myTimer, 1000);
+
+        function myTimer() {
+            var d = new Date();
+            document.getElementById("clock").innerHTML = d.toLocaleTimeString();
+        }
+    </script>
+
+    <style>
+        ol {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: auto;
+            display: inline-block;
+            overflow:hidden;
+            position:fixed;
+            background-color: #2C2C2C;
+        }
+        #clock {
+            color: white;
+        }
+    </style>
 </head>
 
-<body>
+<body onload="reloader()">
+<ol style="z-index: 1">
+    <label id="clock" style="margin:5px 525px 0 20px"></label>
+    <c:if test="${!empty username}">
+            <label><font color="#337AB7"><spring:message code="template.logged"/>: </font>
+                <font color="#6D3ECD">${username}</font></label>
+    </c:if>
+    <li class="pull-right">
+        <a href="#" onclick="languageAction('lang=en')"><img src="/resources/uk_flag.png"></a>
+        <a href="#" onclick="languageAction('lang=lt')" style="margin-right: 10px"><img src="/resources/lt_flag.png"></a>
+</ol>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-2">
         </div>
         <div class="col-md-8">
-            <div class="page-header">
-                <h1>
-                    <spring:message code="template.header"/>
-                </h1>
+            <div class="page-header" style="z-index: -1">
+                <img src="/resources/DDD%20Cloud%20Manager%20logo.png" alt="Logotype" width="400" height="150"/>
             </div>
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-pills">
                 <li>
                     <a href="/"><spring:message code="template.home"/></a>
                 </li>
-                <li>
+                <sec:authorize access="hasRole('ROLE_ADMIN')">
+                    <li>
                     <a href="/users/all"><spring:message code="template.users"/></a>
-                </li>
+                    </li>
+                </sec:authorize>
                 <c:if test="${!empty username}">
                     <li>
                         <a href="/settings"><spring:message code="template.settings"/></a>
                     </li>
+                    <li>
+                        <a href="/dbx/"><spring:message code="template.dropbox"/></a>
+                    </li>
                 </c:if>
-                <li class="disabled">
-                    <a href="#"><spring:message code="template.about"/></a>
-                </li>
-                <li class="dropdown pull-right">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">
-                        <spring:message code="template.button.language"/>
-                        <strong class="caret"></strong></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="?lang=en"><spring:message code="template.language.en"/></a>
-                        </li>
-                        <li>
-                            <a href="?lang=lt"><spring:message code="template.language.lt"/></a>
-                        </li>
-                    </ul>
+                <c:if test="${!empty username}">
+                    <li>
+                        <a href="/GDriveFiles"><spring:message code="template.GDriveFiles"/></a>
+                    </li>
+                </c:if>
+                <li>
+                    <a href="/about"><spring:message code="template.about"/></a>
                 </li>
                 <li class="pull-right">
                     <c:choose>
                         <c:when test="${!empty username}">
-                            <a href="/logout"><spring:message code="template.logout"/></a>
+                            <a href="/logout" onclick="return confirm('<spring:message code="template.confirmation"/>');"><spring:message code="template.logout"/></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="/login"><spring:message code="template.login"/></a>
+                            <ul >
+                                <a href="/login"><b><spring:message code="template.login"/></b></a>
+                            </ul>
                         </c:otherwise>
                     </c:choose>
                 </li>
             </ul>
+            <div class="col-md-2">
+            </div>
             <jsp:doBody/>
-        </div>
-        <div class="col-md-2">
-            <c:if test="${!empty username}">
-                <label>${username}</label>
-            </c:if>
         </div>
     </div>
 </div>

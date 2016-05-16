@@ -1,16 +1,38 @@
 package lt.milkusteam.cloud.core.service;
 
 import lt.milkusteam.cloud.core.model.User;
+import lt.milkusteam.cloud.core.model.UserDTO;
+import lt.milkusteam.cloud.core.model.VerificationToken;
+import lt.milkusteam.cloud.core.validation.EmailExistsException;
+import lt.milkusteam.cloud.core.validation.UsernameExistsException;
 
 import java.util.List;
 
 /**
- * Created by gediminas on 3/30/16.
+ *
  */
 public interface UserService {
 
     List<User> findAll();
-    User findById(Integer id);
+
     User findByUsername(String username);
+
     User findByEmail(String email);
+
+    User registerNewUserAccount(UserDTO accountDto)
+            throws EmailExistsException, UsernameExistsException;
+
+
+
+    User getUser(String verificationToken);
+
+    void saveRegisteredUser(String username);
+
+    void createVerificationToken(String username, String token);
+
+    VerificationToken getVerificationToken(String VerificationToken);
+
+
+
+
 }

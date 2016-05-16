@@ -2,49 +2,62 @@ package lt.milkusteam.cloud.core.model;
 
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by gediminas on 3/30/16.
  */
 
 @Entity
+@Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
-    @Column(name = "username")
     private String username;
-    @Column(name = "email")
+    private String firstName;
+    private String lastName;
     private String email;
-    @Column(name = "password")
     private String password;
+    private boolean enabled;
+    private Set<UserRole> userRole = new HashSet<>(0);
 
     public User() {
     }
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password, boolean enabled) {
+        this(username, null, null, email, password, enabled, new HashSet<UserRole>(0));
+    }
+
+    public User(String username, String email, String password, boolean enabled, Set<UserRole> userRole) {
+        this(username, null, null, email, password, enabled, userRole);
+    }
+
+    public User(String username, String firstName, String lastName, String email, String password, boolean enabled) {
+        this(username, firstName, lastName, email, password, enabled, new HashSet<UserRole>(0));
+    }
+
+    public User(String username, String firstName, String lastName, String email, String password, boolean enabled, Set<UserRole> userRole) {
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.enabled = enabled;
+        this.userRole = userRole;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
+    @Id
+    @Column(name = "username", unique = true, nullable = false, length = 45)
     public String getUsername() {
         return username;
     }
+
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    @Column(name = "email", unique = true, nullable = false, length = 45)
     public String getEmail() {
         return email;
     }
@@ -53,12 +66,49 @@ public class User {
         this.email = email;
     }
 
+    @Column(name = "firstName", nullable = true, length = 45)
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Column(name = "lastName", nullable = true, length = 45)
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Column(name = "password", nullable = false, length = 60)
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Column(name = "enabled", nullable = false)
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<UserRole> getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(Set<UserRole> userRole) {
+        this.userRole = userRole;
     }
 
     @Override
@@ -68,25 +118,22 @@ public class User {
 
         User user = (User) o;
 
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
-        if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        return password != null ? password.equals(user.password) : user.password == null;
+        return username.equals(user.username);
+
     }
 
     @Override
     public int hashCode() {
-        int result = username != null ? username.hashCode() : 0;
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
+        return username.hashCode();
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 }

@@ -116,5 +116,6 @@ gradle-app.setting
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-#database information
+#sensitive project information
 core/src/main/resources/database.properties
+core/src/main/resources/client_secret.json

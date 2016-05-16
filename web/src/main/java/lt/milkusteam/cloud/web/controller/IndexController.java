@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class IndexController {
-
     @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)
     public String showIndex() {
-        return "index";
+
+
+
+            return "index";
     }
+
 }

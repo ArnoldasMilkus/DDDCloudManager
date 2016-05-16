@@ -13,8 +13,18 @@ subprojects {
     }
 
     dependencies {
+
+        compile 'com.google.api-client:google-api-client:1.20.0'
+        compile 'com.google.oauth-client:google-oauth-client-jetty:1.20.0'
+        compile 'com.google.apis:google-api-services-drive:v3-rev6-1.20.0'
+        compile 'javax.mail:mail:1.4'
         compile 'org.slf4j:slf4j-api:1.7.13'
         compile 'org.slf4j:slf4j-simple:1.7.13'
+        compile 'org.springframework.security:spring-security-config:4.0.4.RELEASE'
+        compile 'com.dropbox.core:dropbox-core-sdk:2.0.1'
+
+        compile group: 'org.springframework', name: 'spring-context-support', version: '3.2.2.RELEASE'
+
         testCompile group: 'junit', name: 'junit', version: '4.12'
         testCompile 'org.springframework:spring-test:4.2.4.RELEASE'
         testCompile 'org.hamcrest:hamcrest-all:1.3'

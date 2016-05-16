@@ -14,17 +14,12 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public List<User> findAll() {
         List<User> result = userRepository.findAll();
         return result;
-    }
-
-    @Override
-    public User findById(Integer id) {
-        return userRepository.findOne(id);
     }
 
     @Override
@@ -38,7 +33,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 }

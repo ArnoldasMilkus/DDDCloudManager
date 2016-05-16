@@ -6,15 +6,15 @@
     <html>
     <head>
         <style>
-            #login-form{
+            #login-form {
                 width: 300px;
                 padding: 20px;
                 margin: 100px auto;
-                background: #fff;
             }
         </style>
     </head>
 
+    <body>
     <div id="login-form">
 
         <c:if test="${not empty error}">
@@ -29,25 +29,27 @@
 
             <table>
                 <tr>
-                    <td><spring:message code="login.username" /></td>
+                    <td><spring:message code="login.username"/></td>
                     <td><input type="text" name="username" value=""></td>
                 </tr>
                 <tr>
-                    <td><spring:message code="login.password" /></td>
+                    <td><spring:message code="login.password"/></td>
                     <td><input type="password" name="password"/></td>
                 </tr>
-                <tr>
-                    <td>
-                        <input name="submit" type="submit" value=<spring:message code="login.submit"/> />
-                    </td>
-                </tr>
             </table>
-
+            <input type="submit" style="height:30px; width:278px; font-weight:bold; color:#337AB7" value="<spring:message code="login.submit"/>"/>
             <input type="hidden"
                    name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-    </div>
-
+            <c:if test="${param.error != null}">
+            <div class="alert alert-danger">
+                    <spring:message code="login.accountNotVerified"></spring:message>
+            </div>
+            </c:if>
+            <div class="container" style="max-width: 1000px">
+                <br>
+                <a href="/registration"><spring:message code="login.registration"/></a>
+            </div>
     </body>
     </html>
 </customtags:pageTemplate>
