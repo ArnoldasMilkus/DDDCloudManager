@@ -1,9 +1,7 @@
 package lt.milkusteam.cloud.core.dao.impl;
 
 import lt.milkusteam.cloud.core.dao.VerificationTokenDao;
-import lt.milkusteam.cloud.core.dao.repository.UserRepository;
 import lt.milkusteam.cloud.core.dao.repository.VerificationTokenRepository;
-import lt.milkusteam.cloud.core.model.User;
 import lt.milkusteam.cloud.core.model.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

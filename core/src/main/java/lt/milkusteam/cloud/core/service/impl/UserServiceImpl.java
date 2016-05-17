@@ -3,15 +3,15 @@ package lt.milkusteam.cloud.core.service.impl;
 import lt.milkusteam.cloud.core.dao.UserDao;
 import lt.milkusteam.cloud.core.dao.VerificationTokenDao;
 import lt.milkusteam.cloud.core.dao.repository.UserRepository;
-import lt.milkusteam.cloud.core.model.*;
+import lt.milkusteam.cloud.core.model.User;
+import lt.milkusteam.cloud.core.model.UserDTO;
+import lt.milkusteam.cloud.core.model.VerificationToken;
 import lt.milkusteam.cloud.core.service.UserService;
 import lt.milkusteam.cloud.core.validation.EmailExistsException;
 import lt.milkusteam.cloud.core.validation.UsernameExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +28,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     private UserRepository repository;

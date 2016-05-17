@@ -8,6 +8,8 @@ import lt.milkusteam.cloud.core.service.UserService;
 import lt.milkusteam.cloud.core.validation.EmailExistsException;
 import lt.milkusteam.cloud.core.validation.OnRegistrationCompleteEvent;
 import lt.milkusteam.cloud.core.validation.UsernameExistsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -34,6 +36,8 @@ import java.util.regex.Pattern;
  */
 @Controller
 public class RegistrationController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationController.class);
 
     private final static String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
@@ -103,7 +107,7 @@ public class RegistrationController {
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent
                     (registered, request.getLocale(), appUrl));
         } catch (Exception me) {
-            me.printStackTrace();
+            LOGGER.error(me.getMessage());
             return new ModelAndView("emailError", "user", accountDto);
         }
         if (result.hasErrors()) {
@@ -112,7 +116,6 @@ public class RegistrationController {
             return new ModelAndView("successRegistration", "user", accountDto);
         }
     }
-
 
     @RequestMapping(value = "/successRegistration", method = RequestMethod.GET)
     public String confirmRegistration
@@ -146,7 +149,6 @@ public class RegistrationController {
         } catch (UsernameExistsException e1) {
             return null;
         }
-
         return registered;
     }
 

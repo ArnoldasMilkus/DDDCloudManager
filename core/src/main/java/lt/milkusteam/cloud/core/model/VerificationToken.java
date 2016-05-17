@@ -1,8 +1,9 @@
 package lt.milkusteam.cloud.core.model;
 
-import lt.milkusteam.cloud.core.dao.UserDao;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Calendar;
 import java.util.Date;
 

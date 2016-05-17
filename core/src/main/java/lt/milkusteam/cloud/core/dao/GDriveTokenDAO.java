@@ -1,6 +1,5 @@
 package lt.milkusteam.cloud.core.dao;
 
-import lt.milkusteam.cloud.core.model.DbxToken;
 import lt.milkusteam.cloud.core.model.GDriveToken;
 
 /**
