@@ -103,6 +103,7 @@ public class RegistrationController {
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent
                     (registered, request.getLocale(), appUrl));
         } catch (Exception me) {
+            me.printStackTrace();
             return new ModelAndView("emailError", "user", accountDto);
         }
         if (result.hasErrors()) {
