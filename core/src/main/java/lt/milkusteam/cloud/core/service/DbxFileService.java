@@ -6,9 +6,6 @@ import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.v2.files.DeletedMetadata;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
-import com.dropbox.core.v2.files.Metadata;
-import com.dropbox.core.v2.users.FullAccount;
-import com.dropbox.core.v2.users.SpaceUsage;
 import lt.milkusteam.cloud.core.model.Pair;
 import org.springframework.web.multipart.MultipartFile;
 

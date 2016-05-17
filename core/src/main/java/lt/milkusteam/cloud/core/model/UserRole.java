@@ -2,8 +2,6 @@ package lt.milkusteam.cloud.core.model;
 
 import javax.persistence.*;
 
-import java.util.Collection;
-
 import static javax.persistence.GenerationType.IDENTITY;
 
 /**
