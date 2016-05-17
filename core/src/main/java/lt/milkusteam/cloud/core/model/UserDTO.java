@@ -1,5 +1,8 @@
 package lt.milkusteam.cloud.core.model;
 
+import org.springframework.validation.ObjectError;
+import org.springframework.web.servlet.ModelAndView;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -84,7 +87,13 @@ public class UserDTO {
     public void setMatchingPassword(final String matchingPassword) {
         this.matchingPassword = matchingPassword;
     }
-
+    public Boolean validateFields(){
+        if(matchingPassword.isEmpty() || username.isEmpty() || email.isEmpty() ||
+                firstName.isEmpty() || lastName.isEmpty() || password.isEmpty()){
+            return false;
+        }
+        return true;
+    }
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();

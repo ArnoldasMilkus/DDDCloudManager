@@ -65,21 +65,25 @@ public class RegistrationController {
     public ModelAndView registerUserAccount(@ModelAttribute("user") @Valid UserDTO accountDto,
                                             BindingResult result, WebRequest request, Errors errors) {
         User registered = new User();
+        Locale locale = request.getLocale();
 
-        if(accountDto.getMatchingPassword() == "" || accountDto.getUsername() == "" || accountDto.getEmail() == "" ||
-                accountDto.getFirstName()== "" || accountDto.getLastName() == "" || accountDto.getPassword() ==""){
-            ObjectError objectError = new ObjectError("error", "register.all");
+
+        if(!accountDto.validateFields()){
+            String message = messages.getMessage("register.all", null, locale);
+            ObjectError objectError = new ObjectError("error", message);
             result.addError(objectError);
             return new ModelAndView("registration", "user", accountDto);
         }
         if (!accountDto.getMatchingPassword().equals(accountDto.getPassword())) {
-
-            ObjectError objectError = new ObjectError("error", "register.psw");
+            String message = messages.getMessage("register.psw", null, locale);
+            ObjectError objectError = new ObjectError("error", message);
             result.addError(objectError);
             return new ModelAndView("registration", "user", accountDto);
         }
         if (!validateEmail(accountDto.getEmail())) {
-            ObjectError objectError = new ObjectError("error", "register.emailError");
+            String message = messages.getMessage("register.emailError", null, locale);
+
+            ObjectError objectError = new ObjectError("error", message);
             result.addError(objectError);
             return new ModelAndView("registration", "user", accountDto);
         }
@@ -90,7 +94,9 @@ public class RegistrationController {
         }
         if (registered == null) {
             result.rejectValue("email", "message.regError");
-            ObjectError objectError = new ObjectError("error", "register.databaseError");
+            String message = messages.getMessage("register.databaseError", null, locale);
+
+            ObjectError objectError = new ObjectError("error", message);
             result.addError(objectError);
             return new ModelAndView("registration", "user", accountDto);
         }
