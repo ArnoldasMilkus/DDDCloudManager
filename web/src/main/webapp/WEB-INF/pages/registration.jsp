@@ -9,7 +9,7 @@
     <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-        <title><spring:message code="register.title"></spring:message></title>
+        <%--<title><spring:message code="register.title"></spring:message></title>--%>
     </head>
     <body>
     <H1 align="center">
