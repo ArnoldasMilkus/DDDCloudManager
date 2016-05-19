@@ -64,13 +64,14 @@ public class GDriveOAuth2ServiceImpl implements GDriveOAuth2Service {
             }
         } catch (TokenResponseException e) {
             if (e.getDetails() != null) {
-                System.err.println("Error: " + e.getDetails().getError());
+                LOGGER.error("Error: " + e.getDetails().getError());
                 if (e.getDetails().getErrorDescription() != null) {
                     LOGGER.error(e.getDetails().getErrorDescription());
                 }
                 if (e.getDetails().getErrorUri() != null) {
                     LOGGER.error(e.getDetails().getErrorUri());
                 }
+                return e.getDetails().getError();
             } else {
                 LOGGER.error(e.getMessage());
             }

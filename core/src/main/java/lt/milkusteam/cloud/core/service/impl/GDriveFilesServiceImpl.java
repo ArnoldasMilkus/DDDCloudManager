@@ -88,7 +88,6 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
 
     @Override
     public int addClient(String username) {
-        String email = null;
         GDriveToken token = gDriveTokenDAO.findByUsername(username);
         GDrive client = new GDrive().initGDrive(token.getUsername(), "0", new GoogleTokenResponse().setRefreshToken(token.getToken()));
         if (client == null) {
@@ -132,11 +131,12 @@ public class GDriveFilesServiceImpl implements GDriveFilesService {
     }
 
     @Override
-    public void newFolder(String username, int ind, String folderName, String parentId) {
+    public String newFolder(String username, int ind, String folderName, String parentId) {
         GDrive drive = getDriveService(username, ind);
         if (drive != null) {
-            drive.createFolder(folderName, parentId);
+            return drive.createFolder(folderName, parentId);
         }
+        return null;
     }
 
     @Override

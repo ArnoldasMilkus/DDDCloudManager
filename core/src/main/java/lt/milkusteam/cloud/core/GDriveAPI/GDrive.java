@@ -121,10 +121,8 @@ public class GDrive {
         File file;
         try {
             file = drive.files().create(fileMetadata)
-                    .setFields("id")
-                    .setFields("mimeType, parents")
+                    .setFields("id, mimeType, parents")
                     .execute();
-            LOGGER.info("Folder ID: " + file.getId());
             return file.getId();
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
@@ -136,7 +134,7 @@ public class GDrive {
         try {
             File fileMetadata = new File();
             fileMetadata.setTrashed(isTrashed);
-            System.out.println("File is trashed " + drive.files().update(fileId, fileMetadata).execute().getTrashed());
+            drive.files().update(fileId, fileMetadata).execute();
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }

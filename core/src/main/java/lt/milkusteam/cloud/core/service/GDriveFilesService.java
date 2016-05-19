@@ -29,7 +29,7 @@ public interface GDriveFilesService {
 
     void fixTrashed(String username, int ind, boolean trashed, String fileId);
 
-    void newFolder(String username, int ind, String folderName, String parentId);
+    String newFolder(String username, int ind, String folderName, String parentId);
 
     InputStream returnStream(String username, int ind, String fileId);
 
